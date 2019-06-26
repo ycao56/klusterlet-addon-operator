@@ -1,0 +1,15 @@
+enabled: true
+containerd: false
+weave:
+  repository: ibmcom/mcm-weave-scope
+  tag: latest
+  pullPolicy: IfNotPresent
+collector:
+  repository: ibmcom/weave-collector
+  tag: latest
+  pullPolicy: IfNotPresent
+  updateInterval: 15
+router:
+  repository: ibmcom/icp-management-ingress
+  tag: latest
+  pullPolicy: IfNotPresent

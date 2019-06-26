@@ -1,0 +1,11 @@
+apiVersion: v1
+data:
+  watches.yaml: |
+    - version: v1alpha1
+      group: klusterlet.mcm.ibm.com
+      kind: Search
+      chart: /opt/helm/helm-charts/search
+kind: ConfigMap
+metadata:
+  name: klusterlet-component-watches
+  namespace: multicluster-endpoint

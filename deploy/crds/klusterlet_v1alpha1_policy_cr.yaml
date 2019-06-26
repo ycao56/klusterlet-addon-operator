@@ -1,0 +1,7 @@
+apiVersion: klusterlet.mcm.ibm.com/v1alpha1
+kind: Policy
+metadata:
+  name: example-policy
+spec:
+  # Add fields here
+  size: 3

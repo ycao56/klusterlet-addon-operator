@@ -1,0 +1,25 @@
+apiVersion: authorization.openshift.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ template "connection-manager.fullname" . }}
+  labels:
+    app: {{ template "connection-manager.name" . }}
+    chart: {{ template "connection-manager.chart" . }}
+    component: "connection-manager"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+rules:
+- apiGroups:
+  - '*'
+  attributeRestrictions: null
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups: null
+  attributeRestrictions: null
+  nonResourceURLs:
+  - '*'
+  resources: []
+  verbs:
+  - '*'

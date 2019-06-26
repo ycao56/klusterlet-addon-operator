@@ -1,0 +1,38 @@
+apiVersion: klusterlet.mcm.ibm.com/v1alpha1
+kind: ConnectionManager
+metadata:
+  name: connection-manager
+  namespace: multicluster-endpoint-new
+spec:
+  enabled: true
+  replicas: 1
+
+  clusterName: test-cluster
+  clusterNamespace: test-cluster
+
+  nodeSelector: {}
+
+  affinity: {}
+
+  image:
+    repository: ibmcom/mcm-operator
+    tag: 3.2.0
+    pullPolicy: IfNotPresent
+
+  bootstrapConfig:
+    hub0:
+      name: hub0
+      secret: kube-system/klusterlet-bootstrap
+    hub1:
+      name: null
+      secret: null
+
+  tolerations:
+  - key: "dedicated"
+    operator: "Equal"
+    value: "infra"
+    effect: "NoSchedule"
+
+  imagePullSecret: null
+
+  logLevel: 5

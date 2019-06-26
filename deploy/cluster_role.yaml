@@ -1,5 +1,5 @@
 apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
+kind: ClusterRole
 metadata:
   creationTimestamp: null
   name: klusterlet-component-operator
@@ -34,5 +34,13 @@ rules:
   - mcm.ibm.com
   resources:
   - '*'
+  - searches
+  verbs:
+  - '*'
+- apiGroups:
+  - klusterlet.mcm.ibm.com
+  resources:
+  - '*'
+  - connectionmanagers
   verbs:
   - '*'

@@ -1,0 +1,90 @@
+# Licensed Materials - Property of IBM
+# 5737-E67
+# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
+{{- if .Values.enabled }}
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: {{ template "policy.fullname" . }}-compliance
+  labels:
+    app: {{ template "policy.name" . }}
+    chart: {{ template "policy.chart" . }}
+    component: "compliance"
+    release: {{ .Release.Name }}
+    controller: "operator"
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "policy.name" . }}
+      component: "compliance"
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "policy.name" . }}
+        component: "compliance"
+        controller: "operator"
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+        chart: {{ template "policy.chart" . }}
+      annotations:
+        productName: "IBM Multicloud Manager - Klusterlet"
+        productID: "c18240a57c1c41969d5e81b39435da6c"
+        productVersion: "3.2.0"
+    spec:
+      containers:
+      - name: policy-controller
+        image: "{{ .Values.repository }}:{{ .Values.tag }}"
+        imagePullPolicy: "{{ .Values.pullPolicy }}"
+        command: ["policy-controller"]
+        args:
+          - "-logtostderr=true"
+          - "--watch-ns={{ .Values.global.clusterNamespace }}"
+          - "--cluster-name={{ .Values.global.clusterName }}"
+          - "-v={{ .Values.global.logLevel }}"
+          - "--alert-target={{ .Values.cemIntegration }}"
+        livenessProbe: null
+        readinessProbe: null
+      {{- if not (.Values.global.deployedOnHub) }}
+      - name: sync-controller
+        image: "{{ .Values.repository }}:{{ .Values.tag }}"
+        imagePullPolicy: "{{ .Values.pullPolicy }}"
+        command: ["sync-controller"]
+        args:
+          - "--remote-kubeconfig=/var/run/klusterlet/kubeconfig"
+          - "--watch-ns={{ .Values.global.clusterNamespace }}"
+          - "--klusterlet-ns={{ .Release.Namespace }}"
+          - "--alert-target={{ .Values.cemIntegration }}"
+          - "-logtostderr=true"
+          - "-v={{ .Values.global.logLevel }}"
+        livenessProbe: null
+        readinessProbe: null
+        volumeMounts:
+          - name: klusterlet-config
+            mountPath: /var/run/klusterlet
+      {{- end }}
+      volumes:
+        - name: klusterlet-config
+          secret:
+            secretName: {{ .Release.Name }}-hub-kubeconfig
+      {{- if .Values.global.imagePullSecret }}
+      imagePullSecrets:
+      - name: "{{ .Values.global.imagePullSecret }}"
+      {{- end }}
+      {{- with .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.global.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.global.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+{{- end }}
