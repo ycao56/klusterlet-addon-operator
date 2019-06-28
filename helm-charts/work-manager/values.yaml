@@ -1,0 +1,85 @@
+# Licensed Materials - Property of IBM
+# 5737-E67
+# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
+# Default values for work-manager.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+enabled: true
+connectionManager: connection-manager-cjecck2sz274y64wocwtkfhy4
+
+clusterName: test-cluster
+clusterNamespace: test-cluster
+
+clusterLabels:
+  cloud: "IBM"
+  vendor: "ICP"
+  environment: "Dev"
+  region: "US"
+  datacenter: "toronto"
+  owner: "marketing"
+
+deployedOnHub: false
+
+workManager:
+  enabled: true
+  image:
+    repository: ibmcom/mcm-klusterlet
+    tag: 3.2.0
+    pullPolicy: IfNotPresent
+
+deployable:
+  enabled: true
+  image:
+    repository: ibmcom/deployable
+    tag: 3.2.0
+    pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+
+ingress:
+  type: None
+  host: null
+  port: null
+
+tillerIntegration:
+  enabled: true
+  helmReleasePrefix: "md"
+  autoGenSecret: true
+  user: admin
+  secret: null
+
+prometheusIntegration:
+  enabled: true
+  service: "kube-system/monitoring-prometheus"
+  secret: "kube-system/monitoring-monitoring-client-certs"
+  useBearerToken: false
+
+nodeSelector: {}
+
+affinity: {}
+
+tolerations:
+- key: "dedicated"
+  operator: "Equal"
+  value: "infra"
+  effect: "NoSchedule"
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+imagePullSecret: null
+
+logLevel: 5

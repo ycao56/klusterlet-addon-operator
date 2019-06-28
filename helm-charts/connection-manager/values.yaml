@@ -9,19 +9,6 @@ replicas: 1
 clusterName: null
 clusterNamespace: null
 
-imagePullSecret: null
-logLevel: 5
-
-nodeSelector: {}
-
-affinity: {}
-
-tolerations:
-- key: "dedicated"
-  operator: "Equal"
-  value: "infra"
-  effect: "NoSchedule"
-
 image:
   repository: ibmcom/mcm-operator
   tag: latest
@@ -34,3 +21,17 @@ bootstrapConfig:
   hub1:
     name: null
     secret: null
+
+nodeSelector: {}
+
+affinity: {}
+
+tolerations:
+- key: "dedicated"
+  operator: "Equal"
+  value: "infra"
+  effect: "NoSchedule"
+
+imagePullSecret: null
+
+logLevel: 5

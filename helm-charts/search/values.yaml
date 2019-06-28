@@ -15,5 +15,6 @@ resources: {}
 nodeSelector: {}
 affinity: {}
 toleration: {}
+
 imagePullSecrets: null
 

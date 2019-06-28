@@ -1,0 +1,19 @@
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: {{ template "certificate-issuer.fullname" . }}-ca-cert
+  labels:
+    app: {{ template "certificate-issuer.name" . }}
+    chart: {{ template "certificate-issuer.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+spec:
+  secretName: {{ template "certificate-issuer.fullname" . }}-ca-cert
+  issuerRef:
+    name: {{ template "certificate-issuer.fullname" . }}-ca-issuer
+    kind: Issuer
+  commonName: {{ template "certificate-issuer.fullname" . }}
+  isCA: true
+  organization:
+  - IBM
+  dnsNames: null

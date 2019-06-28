@@ -1,0 +1,6 @@
+apiVersion: klusterlet.mcm.ibm.com/v1alpha1
+kind: WorkManager
+metadata:
+  name: work-manager
+spec:
+

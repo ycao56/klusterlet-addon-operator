@@ -7,3 +7,11 @@
   group: klusterlet.mcm.ibm.com
   kind: ConnectionManager
   chart: /Users/liuhao/go/src/github.ibm.com/IBMPrivateCloud/klusterlet-component-operator/helm-charts/connection-manager
+- version: v1alpha1
+  group: klusterlet.mcm.ibm.com
+  kind: CertificateIssuer
+  chart: /Users/liuhao/go/src/github.ibm.com/IBMPrivateCloud/klusterlet-component-operator/helm-charts/certificate-issuer
+- version: v1alpha1
+  group: klusterlet.mcm.ibm.com
+  kind: WorkManager
+  chart: /Users/liuhao/go/src/github.ibm.com/IBMPrivateCloud/klusterlet-component-operator/helm-charts/work-manager

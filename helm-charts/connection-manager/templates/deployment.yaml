@@ -44,8 +44,8 @@ spec:
           - "--operator-configmap={{ .Release.Namespace }}/{{ template "connection-manager.fullname" . }}"
           - "--cert-store-secret={{ .Release.Namespace }}/{{ template "connection-manager.fullname" . }}-cert-store"
           - "--cluster={{ .Values.clusterNamespace }}/{{ .Values.clusterName }}"
-          - "--klusterlet-secret={{ .Release.Namespace }}/{{ .Release.Name }}-hub-kubeconfig"
-          - "--klusterlet-labels=controller=operator,release={{ .Release.Name }}" 
+          - "--klusterlet-secret={{ .Release.Namespace }}/{{ template "connection-manager.fullname" . }}-hub-kubeconfig"
+          - "--klusterlet-labels=controller=operator,release={{ template "connection-manager.fullname" . }}" 
           {{- if gt .Values.replicas 1.0 }}
           - "--leader-elect=true"
           {{- end }}

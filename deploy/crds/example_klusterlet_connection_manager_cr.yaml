@@ -2,7 +2,6 @@ apiVersion: klusterlet.mcm.ibm.com/v1alpha1
 kind: ConnectionManager
 metadata:
   name: connection-manager
-  namespace: multicluster-endpoint-new
 spec:
   enabled: true
   replicas: 1

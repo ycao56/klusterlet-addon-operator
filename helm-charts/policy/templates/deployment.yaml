@@ -36,31 +36,32 @@ spec:
         productID: "c18240a57c1c41969d5e81b39435da6c"
         productVersion: "3.2.0"
     spec:
+      serviceAccountName: {{ template "policy.fullname" . }}
       containers:
       - name: policy-controller
-        image: "{{ .Values.repository }}:{{ .Values.tag }}"
-        imagePullPolicy: "{{ .Values.pullPolicy }}"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: "{{ .Values.image.pullPolicy }}"
         command: ["policy-controller"]
         args:
           - "-logtostderr=true"
-          - "--watch-ns={{ .Values.global.clusterNamespace }}"
-          - "--cluster-name={{ .Values.global.clusterName }}"
-          - "-v={{ .Values.global.logLevel }}"
-          - "--alert-target={{ .Values.cemIntegration }}"
+          - "--watch-ns={{ .Values.clusterNamespace }}"
+          - "--cluster-name={{ .Values.clusterName }}"
+          - "--alert-target={{ .Values.cemIntegration.enabled }}"
+          - "-v={{ .Values.logLevel }}"
         livenessProbe: null
         readinessProbe: null
-      {{- if not (.Values.global.deployedOnHub) }}
+      {{- if not (.Values.deployedOnHub) }}
       - name: sync-controller
-        image: "{{ .Values.repository }}:{{ .Values.tag }}"
-        imagePullPolicy: "{{ .Values.pullPolicy }}"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: "{{ .Values.image.pullPolicy }}"
         command: ["sync-controller"]
         args:
           - "--remote-kubeconfig=/var/run/klusterlet/kubeconfig"
-          - "--watch-ns={{ .Values.global.clusterNamespace }}"
+          - "--watch-ns={{ .Values.clusterNamespace }}"
           - "--klusterlet-ns={{ .Release.Namespace }}"
-          - "--alert-target={{ .Values.cemIntegration }}"
+          - "--alert-target={{ .Values.cemIntegration.enabled }}"
           - "-logtostderr=true"
-          - "-v={{ .Values.global.logLevel }}"
+          - "-v={{ .Values.logLevel }}"
         livenessProbe: null
         readinessProbe: null
         volumeMounts:
@@ -71,19 +72,19 @@ spec:
         - name: klusterlet-config
           secret:
             secretName: {{ .Release.Name }}-hub-kubeconfig
-      {{- if .Values.global.imagePullSecret }}
+      {{- if .Values.imagePullSecret }}
       imagePullSecrets:
-      - name: "{{ .Values.global.imagePullSecret }}"
+      - name: "{{ .Values.imagePullSecret }}"
       {{- end }}
-      {{- with .Values.global.nodeSelector }}
+      {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
       {{- end }}
-      {{- with .Values.global.affinity }}
+      {{- with .Values.affinity }}
       affinity:
 {{ toYaml . | indent 8 }}
       {{- end }}
-      {{- with .Values.global.tolerations }}
+      {{- with .Values.tolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
       {{- end }}

@@ -14,5 +14,5 @@ subjects:
   namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
-  name: klusterlet-component-operator
+  name: {{ template "connection-manager.fullname" . }}
   apiGroup: rbac.authorization.k8s.io

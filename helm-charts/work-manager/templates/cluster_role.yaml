@@ -1,0 +1,25 @@
+apiVersion: authorization.openshift.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ template "work-manager.fullname" . }}
+  labels:
+    app: {{ template "work-manager.name" . }}
+    chart: {{ template "work-manager.chart" . }}
+    component: "work-manager"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+rules:
+- apiGroups:
+  - '*'
+  attributeRestrictions: null
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups: null
+  attributeRestrictions: null
+  nonResourceURLs:
+  - '*'
+  resources: []
+  verbs:
+  - '*'

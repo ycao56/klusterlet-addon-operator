@@ -1,0 +1,11 @@
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Issuer
+metadata:
+  name: {{ template "certificate-issuer.fullname" . }}-ca-issuer
+  labels:
+    app: {{ template "certificate-issuer.name" . }}
+    chart: {{ template "certificate-issuer.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+spec:
+  selfSigned: {}
