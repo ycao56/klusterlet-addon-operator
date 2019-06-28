@@ -4,43 +4,17 @@ metadata:
   creationTimestamp: null
   name: klusterlet-component-operator
 rules:
-- apiGroups:
-  - ""
+-- apiGroups:
+  - '*'
+  attributeRestrictions: null
   resources:
-  - namespaces
-  verbs:
-  - get
-- apiGroups:
-  - ""
-  resources:
-  - configmaps
-  - secrets
+  - '*'
   verbs:
   - '*'
-- apiGroups:
-  - ""
-  resources:
-  - pods
-  - services
-  verbs:
+- apiGroups: null
+  attributeRestrictions: null
+  nonResourceURLs:
   - '*'
-- apiGroups:
-  - apps
-  resources:
-  - deployments
-  verbs:
-  - '*'
-- apiGroups:
-  - mcm.ibm.com
-  resources:
-  - '*'
-  - searches
-  verbs:
-  - '*'
-- apiGroups:
-  - klusterlet.mcm.ibm.com
-  resources:
-  - '*'
-  - connectionmanagers
+  resources: []
   verbs:
   - '*'

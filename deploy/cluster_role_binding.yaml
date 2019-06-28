@@ -8,5 +8,5 @@ subjects:
   namespace: multicluster-endpoint
 roleRef:
   kind: ClusterRole
-  name: klusterlet-component-operator
+  name: cluster-admin
   apiGroup: rbac.authorization.k8s.io
