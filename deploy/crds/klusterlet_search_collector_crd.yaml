@@ -1,15 +1,15 @@
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
-  name: klusterlets.mcm.ibm.com
+  name: searches.klusterlet.mcm.ibm.com
 spec:
-  group: mcm.ibm.com
+  group: klusterlet.mcm.ibm.com
   names:
-    kind: Klusterlet
-    listKind: KlusterletList
-    plural: klusterlets
-    singular: klusterlet
-  scope: Namespaced
+    kind: SearchCollector
+    listKind: SearchCollectorList
+    plural: searchcollectors
+    singular: searchcollector
+  scope: Cluster
   subresources:
     status: {}
   version: v1alpha1

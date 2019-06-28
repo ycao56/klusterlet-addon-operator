@@ -2,16 +2,28 @@
 #- version: v1alpha1
 #  group: klusterlet.mcm.ibm.com
 #  kind: Search
-#  chart: /Users/liuhao/go/src/github.ibm.com/IBMPrivateCloud/klusterlet-component-operator/helm-charts/search
+#  chart: /opt/helm/helm-charts/search
 - version: v1alpha1
   group: klusterlet.mcm.ibm.com
   kind: ConnectionManager
-  chart: /Users/liuhao/go/src/github.ibm.com/IBMPrivateCloud/klusterlet-component-operator/helm-charts/connection-manager
+  chart: /opt/helm/helm-charts/connection-manager
 - version: v1alpha1
   group: klusterlet.mcm.ibm.com
   kind: CertificateIssuer
-  chart: /Users/liuhao/go/src/github.ibm.com/IBMPrivateCloud/klusterlet-component-operator/helm-charts/certificate-issuer
+  chart: /opt/helm/helm-charts/certificate-issuer
 - version: v1alpha1
   group: klusterlet.mcm.ibm.com
   kind: WorkManager
-  chart: /Users/liuhao/go/src/github.ibm.com/IBMPrivateCloud/klusterlet-component-operator/helm-charts/work-manager
+  chart: /opt/helm/helm-charts/work-manager
+- version: v1alpha1
+  group: klusterlet.mcm.ibm.com
+  kind: PolicyController
+  chart: /opt/helm/helm-charts/policy
+- version: v1alpha1
+  group: klusterlet.mcm.ibm.com
+  kind: SearchCollector
+  chart: /opt/helm/helm-charts/search
+- version: v1alpha1
+  group: klusterlet.mcm.ibm.com
+  kind: TopologyCollector
+  chart: /opt/helm/helm-charts/topology

@@ -3,18 +3,3 @@ kind: Search
 metadata:
   name: search
 spec:
-  enabled: true
-  deployedOnHub: false
-
-  clusterName: test
-  clusterNamespace: test
-
-  repository: ibmcom/search-collector
-  tag: 3.2.0
-  pullPolicy: IfNotPresent
-
-  resources: {}
-  nodeSelector: {}
-  affinity: {}
-  toleration: {}
-  imagePullSecrets: null
