@@ -16,7 +16,7 @@ metadata:
     app: {{ template "work-manager.name" . }}
     chart: {{ template "work-manager.chart" . }}
     release: {{ .Release.Name }}
-    component: "klusterlet"
+    component: "work-manager"
     heritage: {{ .Release.Service }}
 spec:
   rules:

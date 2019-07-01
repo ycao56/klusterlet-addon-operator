@@ -13,7 +13,7 @@ metadata:
     app: {{ template "work-manager.name" . }}
     chart: {{ template "work-manager.chart" . }}
     release: {{ .Release.Name }}
-    component: "klusterlet"
+    component: "work-manager"
     heritage: {{ .Release.Service }}
 spec:
   type: {{ .Values.service.type }}
@@ -25,5 +25,5 @@ spec:
   selector:
     app: {{ template "work-manager.name" . }}
     chart: {{ template "work-manager.chart" . }}
-    component: "klusterlet"
+    component: "work-manager"
 {{- end }}

@@ -11,7 +11,7 @@ spec:
   secretName: {{ template "certificate-issuer.fullname" . }}-ca-cert
   issuerRef:
     name: {{ template "certificate-issuer.fullname" . }}-ca-issuer
-    kind: Issuer
+    kind: ClusterIssuer
   commonName: {{ template "certificate-issuer.fullname" . }}
   isCA: true
   organization:

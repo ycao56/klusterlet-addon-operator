@@ -15,6 +15,7 @@ metadata:
     component: "mcm-search"
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+    connectionManager: {{ .Values.connectionManager }}
 spec:
   replicas: 1
   selector:
@@ -39,8 +40,8 @@ spec:
     spec:
       containers:
       - name: collector
-        image: "{{ .Values.repository }}:{{ .Values.tag }}"
-        imagePullPolicy: {{ .Values.pullPolicy }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
         - name: CLUSTER_NAME
           value: {{ .Values.clusterName }}
@@ -60,10 +61,10 @@ spec:
       volumes:
       - name: hub-config
         secret:
-          secretName: {{ .Values.hubKubeConfigSecret }}
+          secretName: {{ .Values.connectionManager }}-hub-kubeconfig
       - name: helm-tiller-secret
         secret:
-          secretName: {{ .Values.tillerClientCertSecret }}
+          secretName: {{ template "search.fullname" . }}-tiller-client-certs
       {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

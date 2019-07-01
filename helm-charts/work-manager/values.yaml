@@ -8,7 +8,7 @@
 # Declare variables to be passed into your templates.
 
 enabled: true
-connectionManager: connection-manager-cjecck2sz274y64wocwtkfhy4
+connectionManager: null
 
 clusterName: test-cluster
 clusterNamespace: test-cluster
