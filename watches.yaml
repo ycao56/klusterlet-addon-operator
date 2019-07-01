@@ -2,32 +2,32 @@
 #- version: v1alpha1
 #  group: klusterlet.mcm.ibm.com
 #  kind: Search
-#  chart: /opt/helm/helm-charts/search
+#  chart: ./helm-charts/search
 - version: v1alpha1
   group: klusterlet.mcm.ibm.com
   kind: ConnectionManager
-  chart: /opt/helm/helm-charts/connection-manager
+  chart: ./helm-charts/connection-manager
 - version: v1alpha1
   group: klusterlet.mcm.ibm.com
   kind: CertificateIssuer
-  chart: /opt/helm/helm-charts/certificate-issuer
+  chart: ./helm-charts/certificate-issuer
 - version: v1alpha1
   group: klusterlet.mcm.ibm.com
   kind: WorkManager
-  chart: /opt/helm/helm-charts/work-manager
+  chart: ./helm-charts/work-manager
 - version: v1alpha1
   group: klusterlet.mcm.ibm.com
   kind: PolicyController
-  chart: /opt/helm/helm-charts/policy
+  chart: ./helm-charts/policy
 - version: v1alpha1
   group: klusterlet.mcm.ibm.com
   kind: SearchCollector
-  chart: /opt/helm/helm-charts/search
+  chart: ./helm-charts/search
 - version: v1alpha1
   group: klusterlet.mcm.ibm.com
   kind: TopologyCollector
-  chart: /opt/helm/helm-charts/topology
+  chart: ./helm-charts/topology
 - version: v1alpha1
   group: klusterlet.mcm.ibm.com
   kind: ServiceRegistryController
-  chart: /opt/helm/helm-charts/service-registry
+  chart: ./helm-charts/service-registry
