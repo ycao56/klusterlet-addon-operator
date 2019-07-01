@@ -1,8 +1,11 @@
 ---
+<<<<<<< HEAD
 #- version: v1alpha1
 #  group: klusterlet.mcm.ibm.com
 #  kind: Search
 #  chart: ./helm-charts/search
+=======
+>>>>>>> 74715c2e9b6f52b6c30d669405637222f395e305
 - version: v1alpha1
   group: klusterlet.mcm.ibm.com
   kind: ConnectionManager

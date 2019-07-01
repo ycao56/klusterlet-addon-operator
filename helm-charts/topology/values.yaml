@@ -1,4 +1,5 @@
 enabled: true
+connectionManager: null
 containerd: false
 weave:
   repository: ibmcom/mcm-weave-scope

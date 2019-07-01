@@ -1,20 +1,31 @@
 enabled: true
+
+connectionManager: null
+
 deployedOnHub: false
 
 clusterName: null
 clusterNamespace: null
 
-repository: ibmcom/search-collector
-tag: 3.2.0
-pullPolicy: IfNotPresent
+image:
+  repository: ibmcom/search-collector
+  tag: 3.2.0
+  pullPolicy: IfNotPresent
 
-hubKubeConfigSecret: null
-tillerClientCertSecret: null
+tillerIntegration:
+  autoGenSecret: true
+  user: null
 
 resources: {}
+
 nodeSelector: {}
+
 affinity: {}
-toleration: {}
+
+tolerations:
+- key: "dedicated"
+  operator: "Equal"
+  value: "infra"
+  effect: "NoSchedule"
 
 imagePullSecrets: null
-

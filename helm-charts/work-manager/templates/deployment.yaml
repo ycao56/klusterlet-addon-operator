@@ -11,22 +11,23 @@ metadata:
   labels:
     app: {{ template "work-manager.name" . }}
     chart: {{ template "work-manager.chart" . }}
-    component: "klusterlet"
+    component: "work-manager"
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+    connectionManager: {{ .Values.connectionManager }}
 spec:
   replicas: 1
   revisionHistoryLimit: 2
   selector:
     matchLabels:
       app: {{ template "work-manager.name" . }}
-      component: "klusterlet"
+      component: "work-manager"
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
         app: {{ template "work-manager.name" . }}
-        component: "klusterlet"
+        component: "work-manager"
         controller: "operator"
         release: {{ .Release.Name }}
         heritage: {{ .Release.Service }}
