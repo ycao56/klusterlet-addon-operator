@@ -1,7 +1,7 @@
 apiVersion: certmanager.k8s.io/v1alpha1
 kind: Issuer
 metadata:
-  name: {{ template "certificate-issuer.fullname" . }}-cert-issuer
+  name: {{ template "certificate-issuer.fullname" . }}
   labels:
     app: {{ template "certificate-issuer.name" . }}
     chart: {{ template "certificate-issuer.chart" . }}
