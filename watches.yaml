@@ -1,36 +1,29 @@
 ---
-<<<<<<< HEAD
-#- version: v1alpha1
-#  group: klusterlet.mcm.ibm.com
-#  kind: Search
-#  chart: ./helm-charts/search
-=======
->>>>>>> 74715c2e9b6f52b6c30d669405637222f395e305
 - version: v1alpha1
   group: klusterlet.mcm.ibm.com
   kind: ConnectionManager
-  chart: ./helm-charts/connection-manager
+  chart: /opt/helm/helm-charts/connection-manager
 - version: v1alpha1
   group: klusterlet.mcm.ibm.com
   kind: CertificateIssuer
-  chart: ./helm-charts/certificate-issuer
+  chart: /opt/helm/helm-charts/certificate-issuer
 - version: v1alpha1
   group: klusterlet.mcm.ibm.com
   kind: WorkManager
-  chart: ./helm-charts/work-manager
+  chart: /opt/helm/helm-charts/work-manager
 - version: v1alpha1
   group: klusterlet.mcm.ibm.com
   kind: PolicyController
-  chart: ./helm-charts/policy
+  chart: /opt/helm/helm-charts/policy
 - version: v1alpha1
   group: klusterlet.mcm.ibm.com
   kind: SearchCollector
-  chart: ./helm-charts/search
+  chart: /opt/helm/helm-charts/search
 - version: v1alpha1
   group: klusterlet.mcm.ibm.com
   kind: TopologyCollector
-  chart: ./helm-charts/topology
+  chart: /opt/helm/helm-charts/topology
 - version: v1alpha1
   group: klusterlet.mcm.ibm.com
   kind: ServiceRegistryController
-  chart: ./helm-charts/service-registry
+  chart: /opt/helm/helm-charts/service-registry
