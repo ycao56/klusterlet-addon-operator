@@ -17,7 +17,7 @@
   chart: /opt/helm/helm-charts/policy
 - version: v1alpha1
   group: klusterlet.mcm.ibm.com
-  kind: SearchCollectorNew
+  kind: SearchCollector
   chart: /opt/helm/helm-charts/search
 - version: v1alpha1
   group: klusterlet.mcm.ibm.com
