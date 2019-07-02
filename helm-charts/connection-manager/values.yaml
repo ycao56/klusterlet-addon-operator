@@ -11,7 +11,7 @@ clusterNamespace: null
 
 image:
   repository: ibmcom/mcm-operator
-  tag: latest
+  tag: 3.2.0
   pullPolicy: IfNotPresent
 
 bootstrapConfig:

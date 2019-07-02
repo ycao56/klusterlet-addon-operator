@@ -8,10 +8,11 @@
 # Declare variables to be passed into your templates.
 
 enabled: true
+
 connectionManager: null
 
-clusterName: test-cluster
-clusterNamespace: test-cluster
+clusterName: null
+clusterNamespace: null
 
 clusterLabels:
   cloud: "IBM"
@@ -37,6 +38,14 @@ deployable:
     tag: 3.2.0
     pullPolicy: IfNotPresent
 
+tillerIntegration:
+  enabled: true
+  helmReleasePrefix: "md"
+  autoGenSecret: true
+  user: admin
+  secret: null
+
+# klusterlet proxy related configuration
 service:
   type: ClusterIP
 
@@ -44,13 +53,6 @@ ingress:
   type: None
   host: null
   port: null
-
-tillerIntegration:
-  enabled: true
-  helmReleasePrefix: "md"
-  autoGenSecret: true
-  user: admin
-  secret: null
 
 prometheusIntegration:
   enabled: true

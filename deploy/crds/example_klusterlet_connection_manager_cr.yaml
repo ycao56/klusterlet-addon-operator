@@ -3,21 +3,9 @@ kind: ConnectionManager
 metadata:
   name: connection-manager
 spec:
-  enabled: true
-  replicas: 1
-
-  clusterName: test-cluster
-  clusterNamespace: test-cluster
-
-  nodeSelector: {}
-
-  affinity: {}
-
-  image:
-    repository: ibmcom/mcm-operator
-    tag: 3.2.0
-    pullPolicy: IfNotPresent
-
+  clusterName: hao-dev-cluster
+  clusterNamespace: hao-dev-cluster
+  
   bootstrapConfig:
     hub0:
       name: hub0
@@ -25,13 +13,3 @@ spec:
     hub1:
       name: null
       secret: null
-
-  tolerations:
-  - key: "dedicated"
-    operator: "Equal"
-    value: "infra"
-    effect: "NoSchedule"
-
-  imagePullSecret: null
-
-  logLevel: 5

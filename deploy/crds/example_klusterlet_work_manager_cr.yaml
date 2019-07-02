@@ -3,4 +3,60 @@ kind: WorkManager
 metadata:
   name: work-manager
 spec:
+  connectionManager: connection-manager-71qfbxx630des2xkrnz2tfacz
 
+  clusterName: hao-dev-cluster
+  clusterNamespace: hao-dev-cluster
+
+  clusterLabels:
+    cloud: "IBM"
+    vendor: "ICP"
+    environment: "Dev"
+    region: "US"
+    datacenter: "toronto"
+    owner: "marketing"
+
+  tillerIntegration:
+    enabled: true
+    helmReleasePrefix: "md"
+    autoGenSecret: true
+    user: admin
+
+  # ICP 
+  # service:
+  #   type: ClusterIP
+  # ingress:
+  #   type: Ingress
+  #   host: null #required
+  #   port: null #required
+
+  # OpenShift
+  service:
+    type: ClusterIP
+  ingress:
+    type: Route
+    host: null
+    port: null
+
+  # AKS EKS GKE IKS
+  # service:
+  #   type: LoadBalancer
+  #
+  # ingress:
+  #   type: None
+  #   host: null
+  #   port: null
+
+  # OpenShift monitoring
+  prometheusIntegration:
+    enabled: true
+    service: "openshift-monitoring/prometheus-k8s"
+    secret: "kube-system/monitoring-monitoring-client-certs"
+    useBearerToken: true
+
+  # ICP monitoring
+  # prometheusIntegration:
+  #   enabled: true
+  #   service: "kube-system/monitoring-prometheus"
+  #   secret: "kube-system/monitoring-monitoring-client-certs"
+  #   useBearerToken: false

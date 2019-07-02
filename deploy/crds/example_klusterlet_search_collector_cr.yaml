@@ -1,0 +1,13 @@
+apiVersion: klusterlet.mcm.ibm.com/v1alpha1
+kind: SearchCollector
+metadata:
+  name: search-collector
+spec:
+  connectionManager: connection-manager-71qfbxx630des2xkrnz2tfacz
+
+  clusterName: hao-dev-cluster
+  clusterNamespace: hao-dev-cluster
+
+  tillerIntegration:
+    autoGenSecret: true
+    user: admin

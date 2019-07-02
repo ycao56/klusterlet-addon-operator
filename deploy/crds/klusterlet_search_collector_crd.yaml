@@ -9,7 +9,7 @@ spec:
     listKind: SearchCollectorList
     plural: searchcollectors
     singular: searchcollector
-  scope: Cluster
+  scope: Namespaced
   subresources:
     status: {}
   version: v1alpha1
