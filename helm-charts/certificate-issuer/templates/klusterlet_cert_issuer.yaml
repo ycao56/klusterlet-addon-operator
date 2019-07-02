@@ -10,3 +10,4 @@ metadata:
 spec:
   ca:
     secretName: {{ template "certificate-issuer.fullname" . }}-ca-cert
+
