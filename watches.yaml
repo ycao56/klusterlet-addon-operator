@@ -1,6 +1,10 @@
 ---
 - version: v1alpha1
   group: klusterlet.mcm.ibm.com
+  kind: CertManager
+  chart: /opt/helm/helm-charts/ibm-cert-manager
+- version: v1alpha1
+  group: klusterlet.mcm.ibm.com
   kind: ConnectionManager
   chart: /opt/helm/helm-charts/connection-manager
 - version: v1alpha1

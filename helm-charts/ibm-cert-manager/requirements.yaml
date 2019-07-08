@@ -1,0 +1,14 @@
+# requirements.yaml
+dependencies:
+- name: webhook
+  version: "0.7.0"
+  repository: "file://webhook"
+  condition: webhook.enabled
+- name: cainjector
+  version: "0.7.0"
+  repository: "file://cainjector"
+  condition: cainjector.enabled
+- name: ibm-cert-manager-crd
+  version: "0.7.0"
+  repository: "file://ibm-cert-manager-crd"
+  condition: crd.enabled

@@ -1,5 +1,5 @@
 apiVersion: klusterlet.mcm.ibm.com/v1alpha1
 kind: CertificateIssuer
 metadata:
-  name: certificate-issuer
+  name: tiller
 spec:

@@ -1,0 +1,10 @@
+apiVersion: klusterlet.mcm.ibm.com/v1alpha1
+kind: CertManager
+metadata:
+  name: cert-manager
+spec:
+  hostNetwork: false
+  serviceAccount:
+    create: true
+    name: null
+  clusterResourceNamespace: multicluster-endpoint
