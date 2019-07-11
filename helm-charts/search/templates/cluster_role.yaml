@@ -1,0 +1,25 @@
+apiVersion: authorization.openshift.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ template "search.fullname" . }}
+  labels:
+    app: {{ template "search.name" . }}
+    chart: {{ template "search.chart" . }}
+    component: "search"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+rules:
+- apiGroups:
+  - '*'
+  attributeRestrictions: null
+  resources:
+  - '*'
+  verbs:
+  - '*'
+- apiGroups: null
+  attributeRestrictions: null
+  nonResourceURLs:
+  - '*'
+  resources: []
+  verbs:
+  - '*'

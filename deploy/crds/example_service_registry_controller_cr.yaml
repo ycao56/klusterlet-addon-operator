@@ -1,0 +1,5 @@
+apiVersion: klusterlet.mcm.ibm.com/v1alpha1
+kind: ServiceRegistryController
+metadata:
+  name: service-registry-controller
+spec:

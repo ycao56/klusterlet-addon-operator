@@ -1,0 +1,49 @@
+# Default values for tiller.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: ibmcom/tiller
+  tag: v2.12.3-icp-3.2.0
+  pullPolicy: IfNotPresent
+
+tiller_user: admin
+tiller_iam_host: platform-identity-management
+tiller_iam_port: 4500
+tiller_history_max: 5
+tiller_ciphersuites: ""
+default_admin_user: admin
+router_https_port: 8443
+tiller_host_network: false
+
+tiller_service_type: ClusterIP
+tiller_service_nodeport: 44134
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+nodeSelector: {}
+  # master: "true"
+
+tolerations:
+- key: "dedicated"
+  operator: "Exists"
+  effect: "NoSchedule"
+- key: "CriticalAddonsOnly"
+  operator: "Exists"
+- effect: NoSchedule
+  key: node.kubernetes.io/not-ready
+  operator: Exists
+
+affinity: {}

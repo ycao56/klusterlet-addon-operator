@@ -1,0 +1,19 @@
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: {{ template "tiller.fullname" . }}-ca-cert
+  labels:
+    app: {{ template "tiller.name" . }}
+    chart: {{ template "tiller.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+spec:
+  secretName: {{ template "tiller.fullname" . }}-ca-cert
+  issuerRef:
+    name: self-signed-cluster-issuer
+    kind: ClusterIssuer
+  commonName: {{ template "tiller.fullname" . }}
+  isCA: true
+  organization:
+  - IBM
+  dnsNames: null

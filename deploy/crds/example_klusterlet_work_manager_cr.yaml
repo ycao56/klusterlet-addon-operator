@@ -3,7 +3,8 @@ kind: WorkManager
 metadata:
   name: work-manager
 spec:
-  connectionManager: connection-manager-an44zleuy7wpjnx44648pminr
+  connectionManager: CONNECTION_MANAGER_RELEASE
+  tiller: TILLER_RELEASE
 
   clusterName: CLUSTER_NAME
   clusterNamespace: CLUSTER_NAMESPACE
@@ -18,6 +19,8 @@ spec:
 
   tillerIntegration:
     enabled: true
+    endpoint: TILLER_RELEASE:44134
+    certIssuer: TILLER_RELEASE
     helmReleasePrefix: "md"
     autoGenSecret: true
     user: admin

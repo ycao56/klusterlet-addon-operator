@@ -13,8 +13,12 @@ image:
   pullPolicy: IfNotPresent
 
 tillerIntegration:
+  enabled: true
+  endpoint: tiller-deploy
+  certIssuer: icp-ca-issuer
+  user: admin
   autoGenSecret: true
-  user: null
+  secret: null
 
 resources:
   requests:

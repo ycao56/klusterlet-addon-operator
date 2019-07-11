@@ -8,7 +8,7 @@
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  name: {{ template "search.fullname" . }}-search-collector
+  name: {{ template "search.fullname" . }}
   labels:
     app: {{ template "search.name" . }}
     chart: {{ template "search.chart" . }}
@@ -38,11 +38,14 @@ spec:
         productID: "c18240a57c1c41969d5e81b39435da6c"
         productVersion: "3.2.0"
     spec:
+      serviceAccountName: {{ template "search.fullname" . }}
       containers:
       - name: collector
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
+        - name: TILLER_URL
+          value: {{ .Values.tillerIntegration.endpoint }}
         - name: CLUSTER_NAME
           value: {{ .Values.clusterName }}
         - name: CLUSTER_NAMESPACE

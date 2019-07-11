@@ -3,7 +3,7 @@ enabled: true
 serviceRegistry:
   image:
     repository: ibmcom/mcm-service-registry
-    tag: latest
+    tag: 3.2.0
     pullPolicy: IfNotPresent
 
 coredns:

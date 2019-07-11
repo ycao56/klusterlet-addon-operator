@@ -10,6 +10,7 @@
 enabled: true
 
 connectionManager: null
+tillerCertIssuer: null
 
 clusterName: null
 clusterNamespace: null
@@ -40,9 +41,11 @@ deployable:
 
 tillerIntegration:
   enabled: true
+  endpoint: tiller-deploy
+  certIssuer: icp-ca-issuer
+  user: admin
   helmReleasePrefix: "md"
   autoGenSecret: true
-  user: admin
   secret: null
 
 # klusterlet proxy related configuration

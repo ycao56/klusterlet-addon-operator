@@ -1,0 +1,15 @@
+apiVersion: klusterlet.mcm.ibm.com/v1alpha1
+kind: ConnectionManager
+metadata:
+  name: connection-manager
+spec:
+  clusterName: CLUSTER_NAME
+  clusterNamespace: CLUSTER_NAMESPACE
+  
+  bootstrapConfig:
+    hub0:
+      name: hub0
+      secret: multicluster-endpoint/klusterlet-bootstrap
+    hub1:
+      name: null
+      secret: null

@@ -4,7 +4,7 @@ metadata:
   creationTimestamp: null
   name: klusterlet-component-operator
 rules:
--- apiGroups:
+- apiGroups:
   - '*'
   attributeRestrictions: null
   resources:

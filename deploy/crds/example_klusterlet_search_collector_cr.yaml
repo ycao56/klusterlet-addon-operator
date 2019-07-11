@@ -3,10 +3,15 @@ kind: SearchCollector
 metadata:
   name: search-collector
 spec:
-  connectionManager: connection-manager-an44zleuy7wpjnx44648pminr
-  clusterName: hao-dev-cluster
-  clusterNamespace: hao-dev-cluster
+  connectionManager: CONNECTION_MANAGER_RELEASE
+
+  clusterName: CLUSTER_NAME
+  clusterNamespace: CLUSTER_NAMESPACE
 
   tillerIntegration:
-    autoGenSecret: true
+    enabled: true
+    endpoint: TILLER_RELEASE:44134
+    certIssuer: TILLER_RELEASE
     user: admin
+    autoGenSecret: true
+    secret: null
