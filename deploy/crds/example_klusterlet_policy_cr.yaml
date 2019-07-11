@@ -1,0 +1,8 @@
+apiVersion: klusterlet.mcm.ibm.com/v1alpha1
+kind: PolicyController
+metadata:
+  name: policy-controller
+spec:
+  connectionManager: connection-manager-an44zleuy7wpjnx44648pminr
+  clusterName: CLUSTER_NAME
+  clusterNamespace: CLUSTER_NAMESPACE

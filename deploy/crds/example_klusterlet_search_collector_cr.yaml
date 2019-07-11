@@ -3,8 +3,7 @@ kind: SearchCollector
 metadata:
   name: search-collector
 spec:
-  connectionManager: connection-manager-71qfbxx630des2xkrnz2tfacz
-
+  connectionManager: connection-manager-an44zleuy7wpjnx44648pminr
   clusterName: hao-dev-cluster
   clusterNamespace: hao-dev-cluster
 

@@ -8,7 +8,7 @@
 # # US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
 
 # {{- if .Values.enabled }}
-# {{- if (not (.Values.global.deployedOnHub))}}
+# {{- if (not (.Values.deployedOnHub))}}
 # apiVersion: batch/v1
 # kind: Job
 # metadata:
@@ -41,9 +41,9 @@
 #         imagePullPolicy: "{{ .Values.pullPolicy }}"
 #         command: ["uninstall-crd"]
 #         args: ["--removelist=compliances,policies,alerttargets"]
-#       {{- if .Values.global.imagePullSecret }}
+#       {{- if .Values.imagePullSecret }}
 #       imagePullSecrets:
-#       - name: "{{ .Values.global.imagePullSecret }}"
+#       - name: "{{ .Values.imagePullSecret }}"
 #       {{- end }}
 # {{- end }}
 # {{- end }}

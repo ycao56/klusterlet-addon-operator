@@ -13,7 +13,7 @@ deployedOnHub: false
 
 image:
   repository: ibmcom/mcm-compliance
-  tag: latest
+  tag: 3.2.0
   pullPolicy: IfNotPresent
 
 cemIntegration: 
