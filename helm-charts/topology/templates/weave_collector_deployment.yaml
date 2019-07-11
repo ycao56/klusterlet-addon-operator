@@ -38,14 +38,15 @@ spec:
         productID: "c18240a57c1c41969d5e81b39435da6c"
         productVersion: "3.2.0"
     spec:
+      serviceAccountName: {{ template "topology.fullname" . }}
       containers:
         - name: weave-collector
           image: "{{ .Values.collector.repository }}:{{ .Values.collector.tag }}"
           imagePullPolicy: {{ .Values.collector.pullPolicy }}
           args:
             - "/collector"
-            - "--cluster-name={{ .Values.global.clusterName }}"
-            - "--cluster-namespace={{ .Values.global.clusterNamespace }}"
+            - "--cluster-name={{ .Values.clusterName }}"
+            - "--cluster-namespace={{ .Values.clusterNamespace }}"
             - "--controller-config-file=/var/lib/hcm/kubeconfig"
             - "--weave-cert=/opt/ibm/router/client-certs/tls.crt"
             - "--weave-key=/opt/ibm/router/client-certs/tls.key"
@@ -57,23 +58,20 @@ spec:
               mountPath: /var/lib/hcm/ 
           env:
             - name: WEAVE_INTERVAL
-              valueFrom:
-                configMapKeyRef:
-                  name: {{ template "topology.fullname" . }}-weave-collector-configmap
-                  key: weave-interval
-      {{- if .Values.global.imagePullSecret }}
+              value: "{{ .Values.collector.updateInterval }}"
+      {{- if .Values.imagePullSecret }}
       imagePullSecrets:
-      - name: "{{ .Values.global.imagePullSecret }}"
+      - name: "{{ .Values.imagePullSecret }}"
       {{- end }}
-      {{- with .Values.global.nodeSelector }}
+      {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
       {{- end }}
-      {{- with .Values.global.affinity }}
+      {{- with .Values.affinity }}
       affinity:
 {{ toYaml . | indent 8 }}
       {{- end }}
-      {{- with .Values.global.tolerations }}
+      {{- with .Values.tolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
       {{- end }}
@@ -81,9 +79,9 @@ spec:
         {{- if .Values.enabled }}
         - name: hub-config
           secret:
-            secretName: {{ .Value.connectionManager }}-hub-kubeconfig
+            secretName: {{ .Values.connectionManager }}-hub-kubeconfig
         {{- end }}
         - name: weavescope-client-cert
           secret:
-            secretName: {{ .Release.Name }}-weavescope-client-secret
+            secretName: {{ .Release.Name }}-client-secret
 {{- end }}

@@ -1,0 +1,24 @@
+apiVersion: klusterlet.mcm.ibm.com/v1alpha1
+kind: TopologyCollector
+metadata:
+  name: topology-collector
+spec:
+  enabled: true
+  clusterName: CLUSTER_NAME
+  clusterNamespace: CLUSTER_NAMESPACE
+  connectionManager: CONNECTION_MANAGER_RELEASE
+  containerRuntime: docker
+
+  weave:
+    repository: ibmcom/mcm-weave-scope
+    tag: 3.2.0
+    pullPolicy: IfNotPresent
+  collector:
+    repository: ibmcom/weave-collector
+    tag: 3.2.0
+    pullPolicy: IfNotPresent
+    updateInterval: 15
+  router:
+    repository: ibmcom/icp-management-ingress
+    tag: 2.3.0
+    pullPolicy: IfNotPresent

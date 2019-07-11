@@ -1,0 +1,23 @@
+# Licensed Materials - Property of IBM
+# 5737-E67
+# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ template "topology.fullname" . }}
+  labels:
+    app: {{ template "topology.name" . }}
+    chart: {{ template "topology.chart" . }}
+    component: "topology"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+subjects:
+- kind: ServiceAccount
+  name: {{ template "topology.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ template "topology.fullname" . }}
+  apiGroup: rbac.authorization.k8s.io

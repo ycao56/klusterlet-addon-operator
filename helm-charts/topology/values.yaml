@@ -1,6 +1,9 @@
 enabled: true
+clusterName: null
+clusterNamespace: null
 connectionManager: null
-containerd: false
+containerRuntime: null
+
 weave:
   repository: ibmcom/mcm-weave-scope
   tag: latest
@@ -10,7 +13,10 @@ collector:
   tag: latest
   pullPolicy: IfNotPresent
   updateInterval: 15
+
 router:
   repository: ibmcom/icp-management-ingress
   tag: latest
   pullPolicy: IfNotPresent
+
+imagePullSecret: null
