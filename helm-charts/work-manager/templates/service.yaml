@@ -7,9 +7,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "work-manager.fullname" . }}-klusterlet
+  name: {{ template "work-manager.fullname" . }}
   labels:
-    name: {{ template "work-manager.fullname" . }}-klusterlet
+    name: {{ template "work-manager.fullname" . }}
     app: {{ template "work-manager.name" . }}
     chart: {{ template "work-manager.chart" . }}
     release: {{ .Release.Name }}

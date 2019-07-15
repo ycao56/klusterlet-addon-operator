@@ -9,20 +9,20 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   labels:
-    name: {{ template "work-manager.fullname" . }}-klusterlet
+    name: {{ template "work-manager.fullname" . }}
     app: {{ template "work-manager.name" . }}
     chart: {{ template "work-manager.chart" . }}
     release: {{ .Release.Name }}
     component: "work-manager"
     heritage: {{ .Release.Service }}
-  name: {{ template "work-manager.fullname" . }}-klusterlet
+  name: {{ template "work-manager.fullname" . }}
 spec:
   host: {{ .Values.ingress.host }}
   tls:
     termination: passthrough
   to:
     kind: Service
-    name: {{ template "work-manager.fullname" . }}-klusterlet
+    name: {{ template "work-manager.fullname" . }}
     weight: 100
   wildcardPolicy: None
 status:

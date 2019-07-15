@@ -10,9 +10,9 @@ kind: Ingress
 metadata:
   annotations:
     ingress.kubernetes.io/ssl-passthrough: "true"
-  name: {{ template "work-manager.fullname" . }}-klusterlet
+  name: {{ template "work-manager.fullname" . }}
   labels:
-    name: {{ template "work-manager.fullname" . }}-klusterlet
+    name: {{ template "work-manager.fullname" . }}
     app: {{ template "work-manager.name" . }}
     chart: {{ template "work-manager.chart" . }}
     release: {{ .Release.Name }}
@@ -23,7 +23,7 @@ spec:
   - http:
       paths:
       - backend:
-          serviceName: {{ template "work-manager.fullname" . }}-klusterlet
+          serviceName: {{ template "work-manager.fullname" . }}
           servicePort: 443
   {{- if .Values.ingress.host }}
     host: {{ .Values.ingress.host }}

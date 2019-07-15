@@ -51,6 +51,17 @@ spec:
           - "-v={{ .Values.logLevel }}"
         livenessProbe: null
         readinessProbe: null
+      - name: compliance-controller
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+        command: ["compliance-controller"]
+        args:
+          - "--watch-ns={{ .Values.clusterNamespace }}"
+          - "--cluster-name={{ .Values.clusterName }}"
+          - "-logtostderr=true"
+          - "-v={{ .Values.logLevel }}"
+        livenessProbe: null
+        readinessProbe: null
       {{- if not (.Values.deployedOnHub) }}
       - name: sync-controller
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
