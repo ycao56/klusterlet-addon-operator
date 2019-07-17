@@ -58,7 +58,7 @@ spec:
               mountPath: /var/lib/hcm/ 
           env:
             - name: WEAVE_INTERVAL
-              value: "{{ .Values.collector.updateInterval }}"
+              value: "{{ .Values.updateInterval }}"
       {{- if .Values.imagePullSecret }}
       imagePullSecrets:
       - name: "{{ .Values.imagePullSecret }}"

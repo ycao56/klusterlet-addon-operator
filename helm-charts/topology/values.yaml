@@ -3,6 +3,7 @@ clusterName: null
 clusterNamespace: null
 connectionManager: null
 containerRuntime: null
+updateInterval: 15
 
 weave:
   repository: ibmcom/mcm-weave-scope
@@ -12,7 +13,6 @@ collector:
   repository: ibmcom/weave-collector
   tag: latest
   pullPolicy: IfNotPresent
-  updateInterval: 15
 
 router:
   repository: ibmcom/icp-management-ingress
@@ -20,3 +20,13 @@ router:
   pullPolicy: IfNotPresent
 
 imagePullSecret: null
+
+nodeSelector: {}
+
+affinity: {}
+
+tolerations:
+- key: "dedicated"
+  operator: "Equal"
+  value: "infra"
+  effect: "NoSchedule"
