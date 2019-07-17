@@ -15,12 +15,7 @@ image:
   pullPolicy: IfNotPresent
 
 bootstrapConfig:
-  hub0:
-    name: hub0
-    secret: kube-system/klusterlet-bootstrap
-  hub1:
-    name: null
-    secret: null
+  hub0: kube-system/klusterlet-bootstrap
 
 nodeSelector: {}
 

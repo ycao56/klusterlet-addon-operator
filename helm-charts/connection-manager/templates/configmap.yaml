@@ -15,10 +15,7 @@ metadata:
     chart: {{ template "connection-manager.chart" . }}
     component: connection-manager
 data:
-  {{- if and .Values.bootstrapConfig.hub0.name .Values.bootstrapConfig.hub0.secret}}
-  {{ .Values.bootstrapConfig.hub0.name }}-bootstrap-secret: {{ .Values.bootstrapConfig.hub0.secret }}
-  {{- end }}
-  {{- if and .Values.bootstrapConfig.hub1.name .Values.bootstrapConfig.hub1.secret}}
-  {{ .Values.bootstrapConfig.hub1.name }}-bootstrap-secret: {{ .Values.bootstrapConfig.hub1.secret }}
+  {{ range $key, $value := .Values.bootstrapConfig -}}
+  {{ $key }}-bootstrap-secret: {{ $value }}
   {{- end }}
 {{- end }}

@@ -6,6 +6,12 @@ SCRATCH_TAG ?= ${shell whoami}
 install-crd:
 	for file in `ls deploy/crds/*crd.yaml`; do kubectl apply -f $$file; done
 
+.PHONY: run
+run:
+	operator-sdk up local --zap-devel --namespace=""
+
 .PHONY: operator
 operator:
 	operator-sdk build ${SCRATCH_REPO}/${IMAGE_NAME}:${SCRATCH_TAG}
+
+
