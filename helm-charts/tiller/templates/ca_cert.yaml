@@ -10,7 +10,7 @@ metadata:
 spec:
   secretName: {{ template "tiller.fullname" . }}-ca-cert
   issuerRef:
-    name: self-signed
+    name: {{ .Values.caCertIssuer}}
     kind: ClusterIssuer
   commonName: {{ template "tiller.fullname" . }}
   isCA: true

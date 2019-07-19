@@ -8,7 +8,7 @@
 apiVersion: certmanager.k8s.io/v1alpha1
 kind: Certificate
 metadata:
-  name: {{ .Release.Name }}-tiller-client-certs
+  name: {{ template "work-manager.fullname" . }}-tiller-client-certs
   labels:
     app: {{ template "work-manager.name" . }}
     chart: {{ template "work-manager.chart" . }}
@@ -22,6 +22,6 @@ spec:
   issuerRef:
     kind: ClusterIssuer
     name: {{ .Values.tillerIntegration.certIssuer }}
-  secretName: {{ .Release.Name }}-tiller-client-certs
+  secretName: {{ template "work-manager.fullname" . }}-tiller-client-certs
 {{- end }}
 {{- end }}

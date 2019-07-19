@@ -3,21 +3,20 @@ Klusterlet component operator is a helm operator created using the operator-sdk
 
 
 ## Running Klusterlet Component Operator for development 
-
-1. Install CRDs required by the operator 
-```
-make install-crd
-```
-
-2. Link the `klusterlet-component-operator/helm-charts` directory to `/opt/helm/helm-charts`
+1. Link the `klusterlet-component-operator/helm-charts` directory to `/opt/helm/helm-charts`
 ```
 sudo mkdir /opt/helm
 sudo ln -s $(pwd)/helm-charts /opt/helm/
 ```
 
+2. Install CRDs required by the operator 
+```
+make install-crd
+```
+
 3. Run Klusterlet Component Operator on your laptop
 ```
-make run
+make operator:run
 ```
 
 ## Using Klusterlet Component Operator to deploy the components 
