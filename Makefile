@@ -4,14 +4,14 @@ SCRATCH_TAG ?= ${shell whoami}
 
 .PHONY: install-crd
 install-crd:
-	for file in `ls deploy/crds/*crd.yaml`; do kubectl apply -f $$file; done
+	kubectl apply -f deploy/crds/klusterlet_v1alpha1_klusterletservice_crd.yaml
 
-.PHONY: run
-run:
+.PHONY: operator\:run
+operator\:run:
 	operator-sdk up local --zap-devel --namespace=""
 
-.PHONY: operator
-operator:
+.PHONY: operator\:build
+operator\:build:
 	operator-sdk build ${SCRATCH_REPO}/${IMAGE_NAME}:${SCRATCH_TAG}
 
 

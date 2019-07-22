@@ -9,12 +9,12 @@ image:
   tag: v2.12.3-icp-3.2.0
   pullPolicy: IfNotPresent
 
-tiller_user: admin
+
+tiller_default_admin_user: admin
 tiller_iam_host: platform-identity-management
 tiller_iam_port: 4500
 tiller_history_max: 5
 tiller_ciphersuites: ""
-default_admin_user: admin
 router_https_port: 8443
 tiller_host_network: false
 

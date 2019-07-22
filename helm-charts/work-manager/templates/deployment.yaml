@@ -136,7 +136,7 @@ spec:
       {{- else if .Values.tillerIntegration.autoGenSecret}}
         - name: tiller-secret
           secret:
-            secretName: {{ .Release.Name }}-tiller-client-certs
+            secretName: {{ template "work-manager.fullname" . }}-tiller-client-certs
       {{- end }}
       {{- if .Values.imagePullSecret }}
       imagePullSecrets:

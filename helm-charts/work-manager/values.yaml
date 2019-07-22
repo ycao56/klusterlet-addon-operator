@@ -10,7 +10,6 @@
 enabled: true
 
 connectionManager: null
-tillerCertIssuer: null
 
 clusterName: null
 clusterNamespace: null
