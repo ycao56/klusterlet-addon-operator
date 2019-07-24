@@ -1,5 +1,8 @@
 apiVersion: klusterlet.mcm.ibm.com/v1alpha1
 kind: Tiller
 metadata:
-  name: tiller
+  name: klusterlet-tiller
 spec:
+  fullNameOverride: "klusterlet-tiller"
+  caCertIssuer: "klusterlet-self-signed"
+  tiller_default_admin_user: "klusterlet-admin"
