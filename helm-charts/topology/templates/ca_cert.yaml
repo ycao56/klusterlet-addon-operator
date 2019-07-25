@@ -10,7 +10,7 @@ metadata:
 spec:
   secretName: {{ template "topology.fullname" . }}-ca-cert
   issuerRef:
-    name: self-signed-cluster-issuer
+    name: {{ .Values.caCertIssuer }}
     kind: ClusterIssuer
   commonName: {{ template "topology.fullname" . }}
   isCA: true

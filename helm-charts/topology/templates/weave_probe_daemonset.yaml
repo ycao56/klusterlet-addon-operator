@@ -112,7 +112,7 @@ spec:
             path: /sys/kernel/debug
         - name: weavescope-client-secret
           secret:
-            secretName: {{ .Release.Name }}-client-secret
+            secretName: {{ template "topology.fullname" . }}-client-secret
       {{- if .Values.imagePullSecret }}
       imagePullSecrets:
       - name: "{{ .Values.imagePullSecret }}"

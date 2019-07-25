@@ -87,7 +87,7 @@ spec:
             secretName: {{ template "topology.fullname" . }}-ca-cert
         - name: weavescope-server-cert
           secret:
-            secretName: {{ .Release.Name }}-server-secret
+            secretName: {{ template "topology.fullname" . }}-server-secret
         - name: weavescope-router-entry
           configMap:
             name: {{ template "topology.fullname" . }}-weavescope-router-entry-config

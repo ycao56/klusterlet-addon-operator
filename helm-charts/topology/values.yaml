@@ -4,19 +4,18 @@ clusterNamespace: null
 connectionManager: null
 containerRuntime: null
 updateInterval: 15
-
 weave:
   repository: ibmcom/mcm-weave-scope
-  tag: latest
+  tag: 3.2.0
   pullPolicy: IfNotPresent
 collector:
   repository: ibmcom/weave-collector
-  tag: latest
+  tag: 3.2.0
   pullPolicy: IfNotPresent
 
 router:
   repository: ibmcom/icp-management-ingress
-  tag: latest
+  tag: 2.3.0
   pullPolicy: IfNotPresent
 
 imagePullSecret: null

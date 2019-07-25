@@ -83,5 +83,5 @@ spec:
         {{- end }}
         - name: weavescope-client-cert
           secret:
-            secretName: {{ .Release.Name }}-client-secret
+            secretName: {{ template "topology.fullname" . }}-client-secret
 {{- end }}
