@@ -1,0 +1,83 @@
+language: go
+dist: xenial
+cache:
+  - apt: true
+
+go:
+  - "1.12"
+
+services:
+  - docker
+
+# Only build on master, stable branches and tag
+# The stable branch and tag should be leading with numbers
+branches:
+  only:
+    - master
+    - /^[0-9]+\..*$/
+    - /^v[0-9]+\..*$/
+    - /^release-[0-9]+\..*$/
+
+jobs:
+  include:
+    - stage: "Build Images"
+      os: linux
+
+      before_install:
+        - git config --global url."git@github.ibm.com:".insteadOf "https://github.ibm.com"
+        - source travis-env.sh
+        - make init
+
+      script:
+        - make check
+        - make test
+        - make operator:build
+        - test "$TRAVIS_EVENT_TYPE" != "pull_request" && make docker:push-arch rhel-push || echo "success"
+
+      after_script:
+        - test "$TRAVIS_PULL_REQUEST" = "false" && test "$TRAVIS_TEST_RESULT" = "1" && ./build/slack-notification.sh || echo "Slack notification not sent"
+
+    - os: linux-ppc64le
+
+      before_install:
+        - git config --global url."git@github.ibm.com:".insteadOf "https://github.ibm.com"
+        - source travis-env.sh
+        - make init
+
+      script:
+        - make check
+        - make test
+        - make operator:build
+        - test "$TRAVIS_EVENT_TYPE" != "pull_request" && make docker:push-arch || echo "success"
+
+      after_script:
+        - test "$TRAVIS_PULL_REQUEST" = "false" && test "$TRAVIS_TEST_RESULT" = "1" && ./build/slack-notification.sh || echo "Slack notification not sent"
+
+    - os: linux-s390
+
+      before_install:
+        - git config --global url."git@github.ibm.com:".insteadOf "https://github.ibm.com"
+        - source travis-env.sh
+        - make init
+
+      script:
+        - make check
+        - make test
+        - make operator:build
+        - test "$TRAVIS_EVENT_TYPE" != "pull_request" && make docker:push-arch || echo "success"
+
+      after_script:
+        - test "$TRAVIS_PULL_REQUEST" = "false" && test "$TRAVIS_TEST_RESULT" = "1" && ./build/slack-notification.sh || echo "Slack notification not sent"
+
+    - stage: "Build Multi-Arch Image"
+
+      before_install:
+        - git config --global url."git@github.ibm.com:".insteadOf "https://github.ibm.com"
+        - source travis-env.sh
+        - make init
+
+      script:
+        - test "$TRAVIS_EVENT_TYPE" != "pull_request" && make docker:manifest-tool docker:multi-arch || echo "Not building multi-arch image on a pull request"
+
+      after_script:
+        - test "$TRAVIS_PULL_REQUEST" = "false" && test "$TRAVIS_TEST_RESULT" = "1" && ./build/slack-notification.sh || echo "Slack notification not sent"
