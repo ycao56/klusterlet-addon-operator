@@ -5,16 +5,20 @@ Klusterlet component operator is a helm operator created using the operator-sdk
 ## Running Klusterlet Component Operator for development 
 1. Link the `klusterlet-component-operator/helm-charts` directory to `/opt/helm/helm-charts`
 ```
-sudo mkdir /opt/helm
-sudo ln -s $(pwd)/helm-charts /opt/helm/
+sudo make utils:link:setup
 ```
 
 2. Install CRDs required by the operator 
 ```
-make install-crd
+make utils:crds:install
 ```
 
-3. Run Klusterlet Component Operator on your laptop
+3. Set helm-chart Version
+```
+make utils:charts:version version=3.2.0
+```
+
+4. Run Klusterlet Component Operator on your laptop
 ```
 make operator:run
 ```

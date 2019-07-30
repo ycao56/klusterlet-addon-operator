@@ -70,11 +70,7 @@ check:
 test:
 	$(info TODO Skipping tests initially)
 
-.PHONY: install-crd
-install-crd:
-	kubectl apply -f deploy/crds/klusterlet_v1alpha1_klusterletservice_crd.yaml
-
-# ### OPERATOR SDK #######################
+### OPERATOR SDK #######################
 .PHONY: operator\:tools
 operator\:tools:
 	./build/install-operator-sdk.sh
@@ -90,3 +86,25 @@ operator\:build:
 .PHONY: operator\:run
 operator\:run:
 	operator-sdk up local --zap-devel --namespace=""
+
+### HELPER UTILS #######################
+.PHONY: utils\:crds\:install
+utils\:crds\:install:
+	for file in `ls deploy/crds/*_crd.yaml`; do kubectl apply -f $$file; done
+
+.PHONY: utils\:crds\:uninstall
+utils\:crds\:uninstall:
+	for file in `ls deploy/crds/*_crd.yaml`; do kubectl delete -f $$file; done
+
+.PHONY: utils\:charts\:versions
+utils\:charts\:versions:
+	ls versions
+
+.PHONY: utils\:charts\:version
+utils\:charts\:version:
+	ln -sfn versions/$$version/watches.yaml watches.yaml
+	ln -sfn versions/$$version/helm-charts helm-charts
+	
+.PHONY: utils\:link\:setup
+utils\:link\:setup:
+	sudo ln -sfn $$PWD/versions /opt
