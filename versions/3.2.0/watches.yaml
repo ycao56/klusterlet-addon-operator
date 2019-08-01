@@ -25,7 +25,7 @@
   chart: /opt/helm/versions/3.2.0/helm-charts/topology
 - version: v1alpha1
   group: klusterlet.mcm.ibm.com
-  kind: ServiceRegistryController
+  kind: ServiceRegistry
   chart: /opt/helm/versions/3.2.0/helm-charts/service-registry
 - version: v1alpha1
   group: klusterlet.mcm.ibm.com
