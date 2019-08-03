@@ -5,6 +5,7 @@
 
 {{- if .Values.enabled }}
 {{- if .Values.tillerIntegration.autoGenSecret}}
+{{- if .Values.tillerIntegration.enabled}}
 apiVersion: certmanager.k8s.io/v1alpha1
 kind: Certificate
 metadata:
@@ -23,5 +24,6 @@ spec:
     kind: ClusterIssuer
     name: {{ .Values.tillerIntegration.certIssuer }}
   secretName: {{ template "search.fullname" . }}-tiller-client-certs
+{{- end }}
 {{- end }}
 {{- end }}

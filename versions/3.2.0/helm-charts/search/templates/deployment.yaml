@@ -44,8 +44,10 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
+        {{- if .Values.tillerIntegration.enabled }}
         - name: TILLER_URL
           value: {{ .Values.tillerIntegration.endpoint }}
+        {{- end }}
         - name: CLUSTER_NAME
           value: {{ .Values.clusterName }}
         - name: CLUSTER_NAMESPACE
@@ -59,15 +61,19 @@ spec:
         volumeMounts:
         - name: hub-config
           mountPath: /hubconfig
+        {{- if .Values.tillerIntegration.enabled }}
         - name: helm-tiller-secret
           mountPath: /helmcerts
+        {{- end }}
       volumes:
       - name: hub-config
         secret:
           secretName: {{ .Values.connectionManager }}-hub-kubeconfig
+      {{- if .Values.tillerIntegration.enabled }}
       - name: helm-tiller-secret
         secret:
           secretName: {{ template "search.fullname" . }}-tiller-client-certs
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
