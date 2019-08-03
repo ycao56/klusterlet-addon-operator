@@ -47,3 +47,5 @@ tolerations:
   operator: Exists
 
 affinity: {}
+
+imagePullSecret: null
