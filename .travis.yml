@@ -27,15 +27,30 @@ jobs:
         - git config --global url."git@github.ibm.com:".insteadOf "https://github.ibm.com"
         - source travis-env.sh
         - make init
+        - make operator:tools
 
       script:
         - make check
         - make test
         - make operator:build
-        - test "$TRAVIS_EVENT_TYPE" != "pull_request" && make docker:push-arch rhel-push || echo "success"
+        - echo "TRAVIS_EVENT_TYPE = $TRAVIS_EVENT_TYPE"
+        - |
+          if [[ "$TRAVIS_EVENT_TYPE" != "pull_request" ]]; then
+            make docker:push-arch
+            make docker:rhel-push
+          else
+            echo "Not pushing build on a pull request"
+          fi
 
       after_script:
-        - test "$TRAVIS_PULL_REQUEST" = "false" && test "$TRAVIS_TEST_RESULT" = "1" && ./build/slack-notification.sh || echo "Slack notification not sent"
+        - echo "TRAVIS_PULL_REQUEST = $TRAVIS_PULL_REQUEST"
+        - echo "TRAVIS_TEST_RESULT  = $TRAVIS_TEST_RESULT"
+        - |
+          if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_TEST_RESULT" == "1" ]]; then
+            ./build/slack-notification.sh
+          else
+            echo "Slack notification not sent"
+          fi
 
     - os: linux-ppc64le
 
@@ -43,15 +58,30 @@ jobs:
         - git config --global url."git@github.ibm.com:".insteadOf "https://github.ibm.com"
         - source travis-env.sh
         - make init
+        - make operator:tools
 
       script:
         - make check
         - make test
         - make operator:build
-        - test "$TRAVIS_EVENT_TYPE" != "pull_request" && make docker:push-arch || echo "success"
+        - echo "TRAVIS_EVENT_TYPE = $TRAVIS_EVENT_TYPE"
+        - |
+          if [[ "$TRAVIS_EVENT_TYPE" != "pull_request" ]]; then
+            make docker:push-arch
+            make docker:rhel-push
+          else
+            echo "Not pushing build on a pull request"
+          fi
 
       after_script:
-        - test "$TRAVIS_PULL_REQUEST" = "false" && test "$TRAVIS_TEST_RESULT" = "1" && ./build/slack-notification.sh || echo "Slack notification not sent"
+        - echo "TRAVIS_PULL_REQUEST = $TRAVIS_PULL_REQUEST"
+        - echo "TRAVIS_TEST_RESULT  = $TRAVIS_TEST_RESULT"
+        - |
+          if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_TEST_RESULT" == "1" ]]; then
+            ./build/slack-notification.sh
+          else
+            echo "Slack notification not sent"
+          fi
 
     - os: linux-s390
 
@@ -59,15 +89,30 @@ jobs:
         - git config --global url."git@github.ibm.com:".insteadOf "https://github.ibm.com"
         - source travis-env.sh
         - make init
+        - make operator:tools
 
       script:
         - make check
         - make test
         - make operator:build
-        - test "$TRAVIS_EVENT_TYPE" != "pull_request" && make docker:push-arch || echo "success"
+        - echo "TRAVIS_EVENT_TYPE = $TRAVIS_EVENT_TYPE"
+        - |
+          if [[ "$TRAVIS_EVENT_TYPE" != "pull_request" ]]; then
+            make docker:push-arch
+            make docker:rhel-push
+          else
+            echo "Not pushing build on a pull request"
+          fi
 
       after_script:
-        - test "$TRAVIS_PULL_REQUEST" = "false" && test "$TRAVIS_TEST_RESULT" = "1" && ./build/slack-notification.sh || echo "Slack notification not sent"
+        - echo "TRAVIS_PULL_REQUEST = $TRAVIS_PULL_REQUEST"
+        - echo "TRAVIS_TEST_RESULT  = $TRAVIS_TEST_RESULT"
+        - |
+          if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_TEST_RESULT" == "1" ]]; then
+            ./build/slack-notification.sh
+          else
+            echo "Slack notification not sent"
+          fi
 
     - stage: "Build Multi-Arch Image"
 
@@ -78,6 +123,21 @@ jobs:
 
       script:
         - test "$TRAVIS_EVENT_TYPE" != "pull_request" && make docker:manifest-tool docker:multi-arch || echo "Not building multi-arch image on a pull request"
+        - echo "TRAVIS_EVENT_TYPE = $TRAVIS_EVENT_TYPE"
+        - |
+          if [[ "$TRAVIS_EVENT_TYPE" != "pull_request" ]]; then
+            make docker:manifest-tool
+            make docker:multi-arch
+          else
+            echo "Not building multi-arch image on a pull request"
+          fi
 
       after_script:
-        - test "$TRAVIS_PULL_REQUEST" = "false" && test "$TRAVIS_TEST_RESULT" = "1" && ./build/slack-notification.sh || echo "Slack notification not sent"
+        - echo "TRAVIS_PULL_REQUEST = $TRAVIS_PULL_REQUEST"
+        - echo "TRAVIS_TEST_RESULT  = $TRAVIS_TEST_RESULT"
+        - |
+          if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_TEST_RESULT" == "1" ]]; then
+            ./build/slack-notification.sh
+          else
+            echo "Slack notification not sent"
+          fi

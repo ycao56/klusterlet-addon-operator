@@ -2,7 +2,7 @@ BINDIR ?= output
 
 DOCKER_USER      ?=$(ARTIFACTORY_USER)
 DOCKER_PASS      ?=$(ARTIFACTORY_PASS)
-DOCKER_REGISTRY  ?= hyc-cloud-private-scratch-docker-local.artifactory.swg-devops.com
+DOCKER_REGISTRY  ?= hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com
 DOCKER_NAMESPACE ?= ibmcom
 DOCKER_TAG       ?= $(RELEASE_TAG)
 
@@ -50,7 +50,7 @@ include .build-harness
 
 
 .PHONY: init
-init:: operator\:tools
+init::
 ifndef GITHUB_USER
 	$(info GITHUB_USER not defined)
 	exit -1
