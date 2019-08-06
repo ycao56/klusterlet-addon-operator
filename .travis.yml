@@ -36,8 +36,8 @@ jobs:
         - echo "TRAVIS_EVENT_TYPE = $TRAVIS_EVENT_TYPE"
         - |
           if [[ "$TRAVIS_EVENT_TYPE" != "pull_request" ]]; then
+            make docker:login
             make docker:push-arch
-            make docker:rhel-push
           else
             echo "Not pushing build on a pull request"
           fi
@@ -67,8 +67,8 @@ jobs:
         - echo "TRAVIS_EVENT_TYPE = $TRAVIS_EVENT_TYPE"
         - |
           if [[ "$TRAVIS_EVENT_TYPE" != "pull_request" ]]; then
+            make docker:login
             make docker:push-arch
-            make docker:rhel-push
           else
             echo "Not pushing build on a pull request"
           fi
@@ -98,8 +98,8 @@ jobs:
         - echo "TRAVIS_EVENT_TYPE = $TRAVIS_EVENT_TYPE"
         - |
           if [[ "$TRAVIS_EVENT_TYPE" != "pull_request" ]]; then
+            make docker:login
             make docker:push-arch
-            make docker:rhel-push
           else
             echo "Not pushing build on a pull request"
           fi
@@ -126,6 +126,7 @@ jobs:
         - echo "TRAVIS_EVENT_TYPE = $TRAVIS_EVENT_TYPE"
         - |
           if [[ "$TRAVIS_EVENT_TYPE" != "pull_request" ]]; then
+            make docker:login
             make docker:manifest-tool
             make docker:multi-arch
           else
