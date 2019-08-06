@@ -79,9 +79,9 @@ operator\:tools:
 operator\:build:
 	$(info Building operator)
 	$(info --REPO: $(DOCKER_REGISTRY)/$(DOCKER_NAMESPACE))
-	$(info --IMAGE: $(DOCKER_IMAGE))
+	$(info --IMAGE: $(IMAGE_NAME_ARCH))
 	$(info --TAG: $(DOCKER_TAG))
-	operator-sdk build $(DOCKER_REGISTRY)/$(DOCKER_NAMESPACE)/$(DOCKER_IMAGE):$(DOCKER_TAG) --image-build-args "$(DOCKER_BUILD_OPTS)"
+	operator-sdk build $(DOCKER_REGISTRY)/$(DOCKER_NAMESPACE)/$(IMAGE_NAME_ARCH):$(DOCKER_TAG) --image-build-args "$(DOCKER_BUILD_OPTS)"
 
 .PHONY: operator\:run
 operator\:run:
