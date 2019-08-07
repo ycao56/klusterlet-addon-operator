@@ -1,0 +1,11 @@
+apiVersion: multicloud.ibm.com/v1beta1
+kind: Tiller
+metadata:
+  name: endpoint-tiller
+spec:
+  fullNameOverride: "endpoint-tiller"
+  caCertIssuer: "endpoint-self-signed"
+  tiller_default_admin_user: "endpoint-admin"
+  kubernetes_cluster_type: "noticp" 
+  random_ip_enabled: false
+  tiller_service_ip: 0.0.0.0

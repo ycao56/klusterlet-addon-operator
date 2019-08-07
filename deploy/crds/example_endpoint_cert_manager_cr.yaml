@@ -15,4 +15,3 @@ spec:
     pullPolicy: IfNotPresent
   policy-controller:
     enabled: false
-

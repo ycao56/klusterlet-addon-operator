@@ -1,0 +1,35 @@
+# Licensed Materials - Property of IBM
+# 5737-E67
+# @ Copyright IBM Corporation 2016, 2018 All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    # name: {{ template "tiller.fullname" . }}
+    # app: {{ template "tiller.name" . }}
+    # chart: {{ template "tiller.chart" . }}
+    # release: {{ .Release.Name }}
+    # component: "tiller"
+    # heritage: {{ .Release.Service }}
+    app: helm
+    name: tiller
+  name: {{ template "tiller.fullname" . }}
+spec:
+  {{- if .Values.random_ip_enabled }}
+  clusterIP: "{{ .Values.tiller_service_ip }}"
+  {{- end}}
+  type: {{ .Values.tiller_service_type}}
+  ports:
+  - name: grpc
+    protocol: TCP
+    port: 44134
+    targetPort: 44134
+    {{- if eq .Values.tiller_service_type "NodePort" }}
+    nodePort: {{ .Values.tiller_service_nodeport }}
+    {{- end }}
+  selector:
+    app: helm
+    name: tiller

@@ -35,7 +35,7 @@
   group: klusterlet.mcm.ibm.com
   kind: ServiceRegistry
   chart: /opt/helm/versions/3.2.0/helm-charts/service-registry
-- version: v1alpha1
-  group: klusterlet.mcm.ibm.com
+- version: v1beta1
+  group: multicloud.ibm.com
   kind: Tiller
-  chart: /opt/helm/versions/3.2.0/helm-charts/tiller
+  chart: /opt/helm/versions/3.2.1/helm-charts/tiller

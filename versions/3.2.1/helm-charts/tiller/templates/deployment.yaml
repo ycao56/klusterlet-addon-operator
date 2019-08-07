@@ -1,0 +1,126 @@
+# Licensed Materials - Property of IBM
+# 5737-E67
+# @ Copyright IBM Corporation 2016, 2018 All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
+---
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  labels:
+    # name: {{ template "tiller.fullname" . }}
+    # app: {{ template "tiller.name" . }}
+    # chart: {{ template "tiller.chart" . }}
+    # release: {{ .Release.Name }}
+    # component: "tiller"
+    # heritage: {{ .Release.Service }}
+    app: helm
+    name: tiller
+  name: {{ template "tiller.fullname" . }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: helm
+      name: tiller
+      # app: {{ template "tiller.name" . }}
+      # name: {{ template "tiller.fullname" . }}
+      # release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: helm
+        name: tiller
+        # app: {{ template "tiller.name" . }}
+        # name: {{ template "tiller.fullname" . }}
+        # release: {{ .Release.Name }}
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ''
+        seccomp.security.alpha.kubernetes.io/pod: docker/default
+    spec:
+      volumes:
+      - name: tiller-certs
+        secret:
+          secretName: {{ template "tiller.fullname" . }}-server-cert
+      {{- if eq .Values.kubernetes_cluster_type "icp" }}
+      hostNetwork: true
+      {{- else }}
+      hostNetwork: {{ .Values.tiller_host_network }}
+      {{- end }}
+      dnsPolicy: ClusterFirstWithHostNet
+      serviceAccountName: {{ template "tiller.fullname" . }}
+      containers:
+      - name: tiller
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        volumeMounts:
+        - mountPath: /etc/certs
+          name: tiller-certs
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        env:
+        - name: IAM_HOST
+          value: "{{ .Values.tiller_iam_host }}"
+        - name: IAM_PORT
+          value: "{{ .Values.tiller_iam_port }}"
+        - name: TILLER_HISTORY_MAX
+          value: "{{ .Values.tiller_history_max }}"
+        - name: TILLER_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: TILLER_TLS_CERTS
+          value: /etc/certs
+        - name: TILLER_TLS_VERIFY
+          value: "1"
+        - name: TILLER_TLS_ENABLE
+          value: "1"
+        - name: CIPHERSUITES
+          value: "{{ .Values.tiller_ciphersuites }}"
+        - name: default_admin_user
+          value: "{{ .Values.tiller_default_admin_user }}"
+        - name: CLUSTER_PORT
+          value: "{{ .Values.router_https_port }}"
+        livenessProbe:
+          httpGet:
+            path: "/liveness"
+            port: 44135
+            scheme: HTTP
+          initialDelaySeconds: 1
+          timeoutSeconds: 1
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: "/readiness"
+            port: 44135
+            scheme: HTTP
+          initialDelaySeconds: 1
+          timeoutSeconds: 1
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+      {{- if .Values.imagePullSecret }}
+      imagePullSecrets:
+      - name: "{{ .Values.imagePullSecret }}"
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
