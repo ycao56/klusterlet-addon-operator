@@ -1,0 +1,21 @@
+appVersion: 4.1.0
+description: A Helm chart for deploying the Certificate Policy Controller
+keywords:
+- certificates
+- certificate
+- cert
+- expiration
+- grc
+- policy
+- mcm
+- tls
+- ICP
+- amd64
+- ppc64le
+- s390x
+- Development
+- Beta
+kubeVersion: '>=1.9.0'
+name: ibm-cert-policy-controller
+tillerVersion: '>=2.7.0'
+version: 0.0.1

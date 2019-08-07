@@ -1,0 +1,30 @@
+# Licensed Materials - Property of IBM
+# 5737-E67
+# @ Copyright IBM Corporation 2016, 2018. All Rights Reserved.
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ .Release.Name }}-test-cm-test"
+  annotations:
+    "helm.sh/hook": test-success
+  labels:
+    app: {{ template "cert-manager.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    component: "cert-manager-test"
+    release: {{ .Release.Name }}
+    heritage: "{{ .Release.Service }}"
+spec:
+  containers:
+  - name: {{ .Release.Name }}-test-cm-health
+    image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+    command: ["sh", "-c", "echo cert-manager-tests"]
+    resources:
+      limits:
+        memory: "300Mi"
+        cpu: "200m"
+      requests:
+        memory: "150Mi"
+        cpu: "100m"
+  restartPolicy: Never

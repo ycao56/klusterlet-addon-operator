@@ -1,0 +1,18 @@
+apiVersion: multicloud.ibm.com/v1beta1
+kind: CertManager
+metadata:
+  name: cert-manager
+spec:
+  fullnameOverride: endpoint-certmgr
+  hostNetwork: false
+  serviceAccount:
+    create: true
+    name: null
+  clusterResourceNamespace: multicluster-endpoint
+  image:
+    repository: ibmcom/icp-cert-manager-controller
+    tag: 0.7.0.1
+    pullPolicy: IfNotPresent
+  policy-controller:
+    enabled: false
+

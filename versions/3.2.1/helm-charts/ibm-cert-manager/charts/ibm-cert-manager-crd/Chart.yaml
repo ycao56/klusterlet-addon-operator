@@ -1,0 +1,19 @@
+apiVersion: v1
+appVersion: 0.7.0.1
+description: Create custom resource definitions needed by IBM Cloud Private cert-manager
+  chart
+keywords:
+- amd64
+- ppc64le
+- OpenSource
+- ICP
+- IcpClusterResource
+- Security
+- cert-manager
+- Development
+- IBM Cloud Private
+- Beta
+kubeVersion: '>=1.9.0'
+name: ibm-cert-manager-crd
+tillerVersion: '>=2.7.0'
+version: 0.7.1

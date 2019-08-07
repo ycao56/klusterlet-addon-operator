@@ -1,0 +1,10 @@
+# requirements.yaml
+dependencies:
+- name: ibm-cert-manager-crd
+  version: "0.7.1"
+  repository: "file://ibm-cert-manager-crd"
+  condition: policy-controller.enabled
+- name: ibm-cert-policy-controller
+  version: "0.0.1"
+  repository: "file://ibm-cert-policy-controller"
+  condition: policy-controller.enabled
