@@ -1,0 +1,48 @@
+# A headless service to create DNS records
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+  {{- if .Values.serviceAnnotations }}
+{{ toYaml .Values.serviceAnnotations | indent 4 }}
+  {{- end }}
+  labels:
+    app: {{ template "mongodb-replicaset.name" . }}
+    chart: {{ template "mongodb-replicaset.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "mongodb-replicaset.fullname" . }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - name: peer
+      port: {{ .Values.port }}
+  selector:
+    app: {{ template "mongodb-replicaset.name" . }}
+    release: {{ .Release.Name }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: {{ template "mongodb-replicaset.name" . }}
+    chart: {{ template "mongodb-replicaset.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ .Values.serviceName }}
+spec:
+  type: ClusterIP
+  ports:
+  - port: {{ .Values.port }}
+    protocol: TCP
+    targetPort: {{ .Values.port }}
+  selector:
+    app: {{ template "mongodb-replicaset.name" . }}
+    release: {{ .Release.Name }}

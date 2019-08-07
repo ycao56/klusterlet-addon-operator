@@ -1,0 +1,23 @@
+{{- if .Values.metrics.enabled -}}
+# Licensed Materials - Property of IBM
+# 5737-E67
+# @ Copyright IBM Corporation 2016,2019. All Rights Reserved.
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
+# origin: https://github.com/ibm-cloud-architecture/CSMO-ICP/tree/master/grafana/csmodashboards
+apiVersion: monitoringcontroller.cloud.ibm.com/v1
+kind: MonitoringDashboard
+metadata:
+  labels:
+    app: {{ template "mongodb-replicaset.name" . }}
+    chart: {{ template "mongodb-replicaset.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    component: grafana
+  name: {{ template "mongodb-replicaset.fullname" . }}-monitoring-wiredtiger
+spec:
+  enabled: true
+  data: |
+{{ .Files.Get "grafana-dashboards/wiredtiger.json" | indent 4 }}
+
+{{- end -}}

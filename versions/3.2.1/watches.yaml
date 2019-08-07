@@ -1,0 +1,9 @@
+---
+- version: v1beta1
+  group: multicloud.ibm.com
+  kind: Metering
+  chart: /opt/helm/versions/3.2.1/helm-charts/metering
+- version: v1beta1
+  group: multicloud.ibm.com
+  kind: MongoDB
+  chart: /opt/helm/versions/3.2.1/helm-charts/icp-mongodb

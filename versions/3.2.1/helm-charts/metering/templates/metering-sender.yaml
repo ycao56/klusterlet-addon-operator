@@ -1,0 +1,234 @@
+{{- if .Values.sender.enabled }}
+---
+#
+# The metering-sender deployment sends aggregated cluster metering data to the multi cluster hub.
+#
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: {{ template "metering-sender.fullname" . }}
+  labels:
+    app: metering-sender
+    component: meteringsvc
+spec:
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: metering-sender
+      component: meteringsvc
+  template:
+    metadata:
+      labels:
+        app: metering-sender
+        component: meteringsvc
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ""
+        seccomp.security.alpha.kubernetes.io/pod: docker/default
+        productName: "IBM Multicloud Manager - Server"
+        productID: "c18240a57c1c41969d5e81b39435da6c"
+        productVersion: "3.2.0"
+    spec:
+      terminationGracePeriodSeconds: 60
+{{- if .Values.sender.nodeSelectorEnabled }}
+    {{- with .Values.sender.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+{{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+      tolerations:
+{{ toYaml .Values.sender.tolerations | indent 8 }}
+      initContainers:
+        - name: "metering-sender-secret-check"
+          image: "{{ .Values.sender.image.repository }}:{{ .Values.sender.image.tag }}"
+          imagePullPolicy: "{{ .Values.sender.image.pullPolicy }}"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          env:
+            - name: SECRET_LIST
+              value: "{{ .Values.sender.hubKubeConfigSecret }}       {{ .Values.mongo.username.secret }}       {{ .Values.mongo.password.secret }} {{ .Values.mongo.clustercertssecret }} {{ .Values.mongo.clientcertssecret }}"
+            - name: SECRET_DIR_LIST
+              value: "{{ .Values.sender.hubKubeConfigSecret }} muser-{{ .Values.mongo.username.secret }} mpass-{{ .Values.mongo.password.secret }} {{ .Values.mongo.clustercertssecret }} {{ .Values.mongo.clientcertssecret }}"
+          volumeMounts:
+            - name: muser-{{ .Values.mongo.username.secret }}
+              mountPath: /sec/muser-{{ .Values.mongo.username.secret }}
+            - name: mpass-{{ .Values.mongo.password.secret }}
+              mountPath: /sec/mpass-{{ .Values.mongo.password.secret }}
+            - name: mongodb-ca-cert
+              mountPath: /sec/{{ .Values.mongo.clustercertssecret }}
+            - name: mongodb-client-cert
+              mountPath: /sec/{{ .Values.mongo.clientcertssecret }}
+            - name: hub-config
+              mountPath: /sec/{{ .Values.sender.hubKubeConfigSecret }}
+{{ toYaml .Values.secretcheck | indent 10 }}            
+
+        - name: "metering-sender-init"
+          image: "{{ .Values.sender.image.repository }}:{{ .Values.sender.image.tag }}"
+          imagePullPolicy: "{{ .Values.sender.image.pullPolicy }}"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          env:
+            - name: NODE_TLS_REJECT_UNAUTHORIZED
+              value: "0"
+            - name: MCM_VERBOSE
+              value: "true"
+            - name: HC_MONGO_HOST
+              value: "{{ .Values.mongo.host }}"
+            - name: HC_MONGO_PORT
+              value: "{{ .Values.mongo.port }}"
+            - name: HC_MONGO_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mongo.username.secret }}
+                  key: {{ .Values.mongo.username.key }}
+                  optional: true
+            - name: HC_MONGO_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mongo.password.secret }}
+                  key: {{ .Values.mongo.password.key }}
+                  optional: true
+            - name: HC_MONGO_ISSSL
+              value: "true"
+            - name: HC_MONGO_SSL_CA
+              value: "/certs/mongodb-ca/tls.crt"
+            - name: HC_MONGO_SSL_CERT
+              value: "/certs/mongodb-client/tls.crt"
+            - name: HC_MONGO_SSL_KEY
+              value: "/certs/mongodb-client/tls.key"
+          volumeMounts:
+            - name: mongodb-ca-cert
+              mountPath: /certs/mongodb-ca
+            - name: mongodb-client-cert
+              mountPath: /certs/mongodb-client
+          command: ["node", "/datamanager/lib/metering_init.js", "verifyOnlyMongo"]
+{{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+      {{- range .Values.imagePullSecrets }}
+        - name: {{ . }}
+      {{- end}}
+{{- end }}
+{{- if .Values.serviceAccountNameEnabled }}
+      serviceAccountName: {{ template "metering.fullname" . }}
+{{- end }}
+      containers:
+        - name: metering-sender
+          image: "{{ .Values.sender.image.repository }}:{{ .Values.sender.image.tag }}"
+          imagePullPolicy: "{{ .Values.sender.image.pullPolicy }}"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          resources:
+{{ toYaml .Values.sender.resources | indent 12 }}
+          env:
+            - name: HC_CLUSTER_NAME
+              value: {{ .Values.sender.clusterName }}
+            - name: HC_CLUSTER_NAMESPACE
+              value: {{ .Values.sender.clusterNamespace }}
+            - name: HC_HUB_CONFIG
+              value: /hubconfig/kubeconfig
+            - name: METERING_API_ENABLED
+              value: "false"
+            - name: HC_DM_SELFMETER_PURGER_ENABLED
+              value: "false"
+            - name: HC_DM_REPORTER2_ENABLED
+              value: "false"
+            - name: HC_DM_PURGER2_ENABLED
+              value: "false"
+            - name: HC_DM_PREAGGREGATOR_ENABLED
+              value: "false"
+            - name: HC_DM_METRICS_ENABLED
+              value: "false"
+            - name: HC_DM_READER_APIENABLED
+              value: "false"
+            - name: HC_DM_MCM_RECEIVER_ENABLED
+              value: "false"
+            - name: HC_DM_MCM_SENDER_ENABLED
+              value: "true"
+            - name: HC_DM_IS_ICP
+              value: "true"
+            - name: HC_MONGO_HOST
+              value: "{{ .Values.mongo.host }}"
+            - name: HC_MONGO_PORT
+              value: "{{ .Values.mongo.port }}"
+            - name: HC_MONGO_USER
+              valueFrom:
+                secretKeyRef:
+                  key: {{ .Values.mongo.username.key }}
+                  name: {{ .Values.mongo.username.secret }}
+                  optional: true
+            - name: HC_MONGO_PASS
+              valueFrom:
+                secretKeyRef:
+                  key: {{ .Values.mongo.password.key }}
+                  name: {{ .Values.mongo.password.secret }}
+                  optional: true
+            - name: HC_MONGO_ISSSL
+              value: "true"
+            - name: HC_MONGO_SSL_CA
+              value: /certs/mongodb-ca/tls.crt
+            - name: HC_MONGO_SSL_CERT
+              value: /certs/mongodb-client/tls.crt
+            - name: HC_MONGO_SSL_KEY
+              value: /certs/mongodb-client/tls.key
+            - name: HC_DM_ALLOW_TEST
+              value: "false"
+            - name: NODE_TLS_REJECT_UNAUTHORIZED
+              value: "0"
+          readinessProbe:
+            httpGet:
+              path: "/readinessProbe"
+              scheme: HTTP
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            timeoutSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: "/livenessProbe"
+              scheme: HTTP
+              port: 3000
+            initialDelaySeconds: 305
+            periodSeconds: 300
+            timeoutSeconds: 5
+          volumeMounts:
+            - name: hub-config
+              mountPath: /hubconfig          
+            - name: mongodb-ca-cert
+              mountPath: /certs/mongodb-ca
+            - name: mongodb-client-cert
+              mountPath: /certs/mongodb-client
+      volumes:
+        - name: hub-config
+          secret:
+            secretName: {{ .Values.sender.hubKubeConfigSecret }}
+            optional: true
+        - name: mongodb-ca-cert
+          secret:
+            defaultMode: 0644
+            secretName: {{ .Values.mongo.clustercertssecret }}
+            optional: true
+        - name: mongodb-client-cert
+          secret:
+            defaultMode: 0644
+            secretName: {{ .Values.mongo.clientcertssecret }}
+            optional: true
+        - name: muser-{{ .Values.mongo.username.secret }}
+          secret:
+            defaultMode: 0644
+            secretName: {{ .Values.mongo.username.secret }}
+            optional: true
+        - name: mpass-{{ .Values.mongo.password.secret }}
+          secret:
+            defaultMode: 0644
+            secretName: {{ .Values.mongo.password.secret }}
+            optional: true
+{{- end }}

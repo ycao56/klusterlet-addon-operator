@@ -1,0 +1,69 @@
+apiVersion: multicloud.ibm.com/v1beta1
+kind: MongoDB
+metadata:
+  name: klusterlet-mongodb
+spec:
+  fullnameOverride: klusterlet-mongo
+  auth:
+    enabled: true
+
+  curl:
+    image:
+      repository: hyc-cloud-private-edge-docker-local.artifactory.swg-devops.com/ibmcom-amd64/curl
+
+  image:
+    pullPolicy: IfNotPresent
+    repository: hyc-cloud-private-edge-docker-local.artifactory.swg-devops.com/ibmcom-amd64/icp-mongodb
+    tag: 4.0.6
+
+  installImage:
+    pullPolicy: IfNotPresent
+    repository: hyc-cloud-private-edge-docker-local.artifactory.swg-devops.com/ibmcom-amd64/icp-mongodb-install
+
+  metrics:
+    enabled: false
+    image:
+      repository: hyc-cloud-private-edge-docker-local.artifactory.swg-devops.com/ibmcom-amd64/icp-mongodb-exporter
+
+  persistentVolume:
+    accessModes:
+    - ReadWriteOnce
+    size: 10Gi
+    enabled: true
+
+  replicas: '1'
+
+  tls:
+    casecret: klusterlet-mongo-ca-cert
+    issuer: klusterlet-mongo
+    issuerKind: ClusterIssuer
+    enabled: true
+
+  imagePullSecrets: 
+    - metering-mongodb-pull
+
+  #CS??? workaround
+  priorityClassNameEnabled: false
+  serviceAccountNameEnabled: true
+  
+  nodeSelector:
+
+  livenessProbe:
+    failureThreshold: 60
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 5
+
+  readinessProbe:
+    failureThreshold: 60
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 5
+
+  resources:
+    limits:
+      memory: 4Gi
+    requests:
+      memory: 2Gi

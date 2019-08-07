@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: {{ template "mongodb-replicaset.name" . }}
+    chart: {{ template "mongodb-replicaset.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "mongodb-replicaset.fullname" . }}
+data:
+  mongod.conf: |
+    storage:
+      dbPath: /data/db
+    net:
+{{- if eq  .Values.network_ip_version "ipv6" }}
+      ipv6: true
+{{- end }}
+      bindIpAll: true
+      port: {{ .Values.port }}
+{{- if .Values.tls.enabled }}
+      ssl:
+        mode: requireSSL
+        CAFile: /data/configdb/tls.crt
+        PEMKeyFile: /work-dir/mongo.pem
+{{- end }}
+    replication:
+      replSetName: {{ .Values.replicaSet }}
+    # Uncomment for TLS support or keyfile access control without TLS
+{{- if or .Values.tls.enabled .Values.auth.enabled}}
+    security:
+      authorization: enabled
+      keyFile: /data/configdb/key.txt
+{{- end }}

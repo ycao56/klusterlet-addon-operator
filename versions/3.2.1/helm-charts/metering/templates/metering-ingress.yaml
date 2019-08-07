@@ -1,0 +1,108 @@
+{{- if .Values.ui.enabled }}
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: metering-ui
+  annotations:
+    kubernetes.io/ingress.class: "ibm-icp-management"
+    icp.management.ibm.com/auth-type: "id-token"
+    icp.management.ibm.com/rewrite-target: "/"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /metering/
+        backend:
+          serviceName: metering-ui
+          servicePort: 3130
+{{- end }}
+
+
+{{- if .Values.mcmui.enabled }}
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: metering-mcmui
+  annotations:
+    kubernetes.io/ingress.class: "ibm-icp-management"
+    icp.management.ibm.com/auth-type: "id-token"
+    icp.management.ibm.com/rewrite-target: "/metering-mcm/"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /metering-mcm/
+        backend:
+          serviceName: metering-mcmui
+          servicePort: 3001
+{{- end }}
+
+{{- if .Values.api.enabled }}
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: metering-api-rbac
+  annotations:
+    kubernetes.io/ingress.class: "ibm-icp-management"
+    icp.management.ibm.com/authz-type: "rbac"
+    icp.management.ibm.com/rewrite-target: "/api"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /meteringapi/api/
+        backend:
+          serviceName: metering-server
+          servicePort: 4000
+
+---
+
+# /meteringapi/api/v1 enables a user to check if the API is available.
+# It returns status code 204. It can be called without passing an Authentication header.
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: metering-api-check
+  annotations:
+    kubernetes.io/ingress.class: "ibm-icp-management"
+    icp.management.ibm.com/location-modifier: "="
+    icp.management.ibm.com/upstream-uri: /api/v1
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /meteringapi/api/v1
+        backend:
+          serviceName: metering-server
+          servicePort: 4000
+
+---
+
+# The swagger API can be called without passing an Authentication header.
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: metering-api-swagger
+  annotations:
+    kubernetes.io/ingress.class: "ibm-icp-management"
+    icp.management.ibm.com/location-modifier: "="
+    icp.management.ibm.com/upstream-uri: "/api/swagger"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /meteringapi/api/swagger
+        backend:
+          serviceName: metering-server
+          servicePort: 4000
+
+{{- end }}

@@ -1,0 +1,8 @@
+apiVersion: v1
+description: A Helm chart for deploying the metering service of IBM Cloud Private
+name: metering
+version: 99.99.99
+# the 'keywords' section must be the last section in Chart.yaml
+# so that properties can be appended to this section at build time.
+keywords:
+  - IcpClusterResource

@@ -1,0 +1,28 @@
+# Licensed Materials - Property of IBM
+# 5737-E67
+# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
+{{- if .Values.api.enabled }}
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: icp-metering-receiver-ca-cert
+  labels:
+    app: metering-dm
+    chart: metering
+    release: {{ .Release.Name }}
+    component: "metering-receiver"
+    heritage: {{ .Release.Service }}
+spec:
+  secretName: icp-metering-receiver-secret
+  issuerRef:
+    name: icp-ca-issuer
+    kind: ClusterIssuer
+  commonName: metering-receiver
+  dnsNames:
+  - metering-receiver
+  isCA: false
+  organization:
+  - IBM
+{{- end }}

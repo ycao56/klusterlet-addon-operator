@@ -1,0 +1,295 @@
+{{- if .Values.ui.enabled }}
+
+---
+#
+#  This service definition exposes the UI server pod as a loadbalanced service named "metering-ui"
+#  in K8s
+#
+#  The full URL for accessing the UI looks something like the following where the IP addr and
+#  port need to be adjusted for the particular cluster and service name defined for the UI server:
+#    https://<cluster-ip>:8443/metering/dashboard?dashboard=cpi.icp.main
+#
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: metering-ui
+  labels:
+    app: metering-ui
+    component: meteringsvc
+
+spec:
+  type: ClusterIP
+  ports:
+    - name: dashboard
+      port: 3130
+      targetPort: 3130
+  selector:
+    app: metering-ui
+    component: meteringsvc
+
+---
+# Source: metering/templates/ui-deployment.yaml
+#
+# The meteringui pod deploys the Product Insights UI server as a container
+#
+# The userid and password for the database are hard-coded in the docker image through
+# environment variables in the containers: section below
+#
+
+kind: Deployment
+apiVersion: extensions/v1beta1
+
+metadata:
+  name: metering-ui
+  labels:
+    app: metering-ui
+    component: meteringsvc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: metering-ui
+      component: meteringsvc
+  template:
+    metadata:
+      labels:
+        app: metering-ui
+        component: meteringsvc
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ""
+        seccomp.security.alpha.kubernetes.io/pod: docker/default
+    spec:
+      terminationGracePeriodSeconds: 60
+    {{- with .Values.ui.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+      tolerations:
+{{ toYaml .Values.ui.tolerations | indent 8 }}
+      initContainers:
+        - name: "metering-ui-secret-check"
+          image: "{{ .Values.dm.image.repository }}:{{ .Values.dm.image.tag }}"
+          imagePullPolicy: "{{ .Values.dm.image.pullPolicy }}"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          env:
+            - name: SECRET_LIST
+              value: "icp-serviceid-apikey-secret platform-oidc-credentials       {{ .Values.mongo.username.secret }}       {{ .Values.mongo.password.secret }} {{ .Values.mongo.clustercertssecret }} {{ .Values.mongo.clientcertssecret }}"
+            - name: SECRET_DIR_LIST
+              value: "icp-serviceid-apikey-secret platform-oidc-credentials muser-{{ .Values.mongo.username.secret }} mpass-{{ .Values.mongo.password.secret }} {{ .Values.mongo.clustercertssecret }} {{ .Values.mongo.clientcertssecret }}"
+          volumeMounts:
+            - name: icp-serviceid-apikey-secret
+              mountPath: /sec/icp-serviceid-apikey-secret
+            - name: platform-oidc-credentials
+              mountPath: /sec/platform-oidc-credentials
+            - name: muser-{{ .Values.mongo.username.secret }}
+              mountPath: /sec/muser-{{ .Values.mongo.username.secret }}
+            - name: mpass-{{ .Values.mongo.password.secret }}
+              mountPath: /sec/mpass-{{ .Values.mongo.password.secret }}
+            - name: mongodb-ca-cert
+              mountPath: /sec/{{ .Values.mongo.clustercertssecret }}
+            - name: mongodb-client-cert
+              mountPath: /sec/{{ .Values.mongo.clientcertssecret }}
+{{ toYaml .Values.secretcheck | indent 10 }}            
+
+        - name: "metering-ui-init"
+          image: "{{ .Values.dm.image.repository }}:{{ .Values.dm.image.tag }}"
+          imagePullPolicy: "{{ .Values.dm.image.pullPolicy }}"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          env:
+            - name: NODE_TLS_REJECT_UNAUTHORIZED
+              value: "0"
+            - name: ICP_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: icp-serviceid-apikey-secret
+                  key: ICP_API_KEY
+                  optional: true
+            - name: HC_MONGO_HOST
+              value: "{{ .Values.mongo.host }}"
+            - name: HC_MONGO_PORT
+              value: "{{ .Values.mongo.port }}"
+            - name: HC_MONGO_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mongo.username.secret }}
+                  key: {{ .Values.mongo.username.key }}
+                  optional: true
+            - name: HC_MONGO_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mongo.password.secret }}
+                  key: {{ .Values.mongo.password.key }}
+                  optional: true
+            - name: HC_MONGO_ISSSL
+              value: "true"
+            - name: HC_MONGO_SSL_CA
+              value: "/certs/mongodb-ca/tls.crt"
+            - name: HC_MONGO_SSL_CERT
+              value: "/certs/mongodb-client/tls.crt"
+            - name: HC_MONGO_SSL_KEY
+              value: "/certs/mongodb-client/tls.key"
+          volumeMounts:
+            - name: mongodb-ca-cert
+              mountPath: /certs/mongodb-ca
+            - name: mongodb-client-cert
+              mountPath: /certs/mongodb-client
+          command: ["node", "/datamanager/lib/metering_init.js", "verifyOnlyMongo"]
+      priorityClassName: "system-cluster-critical"
+    {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+      {{- range .Values.imagePullSecrets }}
+        - name: {{ . }}
+      {{- end}}
+    {{- end }}
+      containers:
+        - name: metering-ui
+          image: "{{ .Values.ui.image.repository }}:{{ .Values.ui.image.tag }}"
+          imagePullPolicy: "{{ .Values.ui.image.pullPolicy }}"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          resources:
+{{ toYaml .Values.ui.resources | indent 12 }}
+          ports:
+            - containerPort: 3130
+          env:
+            - name: HC_HCAPI_URI
+              value: https://metering-server:9443
+            - name: IS_PRIVATECLOUD
+              value: "true"
+            - name: NODE_TLS_REJECT_UNAUTHORIZED
+              value: "0"
+            - name: ICP_DEFAULT_DASHBOARD
+              value: "cpi.icp.main"
+            # beginning of vars needed by security-middleware
+            - name: cfcRouterUrl
+              value: https://icp-management-ingress:8443
+            - name: PLATFORM_IDENTITY_PROVIDER_URL
+              value: https://platform-identity-provider:4300
+            - name: WLP_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: platform-oidc-credentials
+                  key: WLP_CLIENT_ID
+                  optional: true
+            - name: WLP_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: platform-oidc-credentials
+                  key: WLP_CLIENT_SECRET
+                  optional: true
+            # end of vars needed by security-middleware
+            - name: USE_PRIVATECLOUD_SECURITY
+              value: "true"
+            - name: PORT
+              value: "3130"
+            - name: PROXY_URI
+              value: metering
+            - name: ICP_EXTERNAL_IP
+              value: "{{ .Values.external.cluster_ip }}"
+            - name: ICP_EXTERNAL_PORT
+              value: "{{ .Values.external.cluster_port }}"
+            - name: ICP_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: icp-serviceid-apikey-secret
+                  key: ICP_API_KEY
+                  optional: true
+            - name: HC_MONGO_HOST
+              value: "{{ .Values.mongo.host }}"
+            - name: HC_MONGO_PORT
+              value: "{{ .Values.mongo.port }}"
+            - name: HC_MONGO_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mongo.username.secret }}
+                  key: {{ .Values.mongo.username.key }}
+                  optional: true
+            - name: HC_MONGO_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mongo.password.secret }}
+                  key: {{ .Values.mongo.password.key }}
+                  optional: true
+            - name: HC_MONGO_ISSSL
+              value: "true"
+            - name: HC_MONGO_SSL_CA
+              value: "/certs/mongodb-ca/tls.crt"
+            - name: HC_MONGO_SSL_CERT
+              value: "/certs/mongodb-client/tls.crt"
+            - name: HC_MONGO_SSL_KEY
+              value: "/certs/mongodb-client/tls.key"
+            - name: HC_DM_ALLOW_TEST
+              value: "false"
+            - name: CLUSTER_NAME
+              value: {{ .Values.external.cluster_name }}
+            - name: DEFAULT_IAM_TOKEN_SERVICE_PORT
+              value: "{{ .Values.serviceport.iam_token }}"
+            - name: DEFAULT_IAM_PAP_SERVICE_PORT
+              value: "{{ .Values.serviceport.iam_pap }}"
+            - name: DEFAULT_PLATFORM_IDENTITY_MANAGEMENT_SERVICE_PORT
+              value: "{{ .Values.serviceport.platform_identity_management }}"
+            - name: DEFAULT_PLATFORM_HEADER_SERVICE_PORT
+              value: "{{ .Values.serviceport.platform_header }}"
+          volumeMounts:
+            - name: mongodb-ca-cert
+              mountPath: /certs/mongodb-ca
+            - name: mongodb-client-cert
+              mountPath: /certs/mongodb-client
+          readinessProbe:
+            httpGet:
+              path: "/unsecure/c2c/status/readinessProbe"
+              scheme: HTTP
+              port: 3130
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            timeoutSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: "/unsecure/c2c/status/livenessProbe"
+              scheme: HTTP
+              port: 3130
+            initialDelaySeconds: 305
+            periodSeconds: 300
+            timeoutSeconds: 5
+      volumes:
+        - name: mongodb-ca-cert
+          secret:
+            defaultMode: 0644
+            secretName: {{ .Values.mongo.clustercertssecret }}
+            optional: true
+        - name: mongodb-client-cert
+          secret:
+            defaultMode: 0644
+            secretName: {{ .Values.mongo.clientcertssecret }}
+            optional: true
+        - name: muser-{{ .Values.mongo.username.secret }}
+          secret:
+            defaultMode: 0644
+            secretName: {{ .Values.mongo.username.secret }}
+            optional: true
+        - name: mpass-{{ .Values.mongo.password.secret }}
+          secret:
+            defaultMode: 0644
+            secretName: {{ .Values.mongo.password.secret }}
+            optional: true
+        - name: icp-serviceid-apikey-secret
+          secret:
+            defaultMode: 0644
+            secretName: icp-serviceid-apikey-secret
+            optional: true
+        - name: platform-oidc-credentials
+          secret:
+            defaultMode: 0644
+            secretName: platform-oidc-credentials
+            optional: true
+{{- end }}

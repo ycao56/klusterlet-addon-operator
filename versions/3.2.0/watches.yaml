@@ -31,3 +31,11 @@
   group: klusterlet.mcm.ibm.com
   kind: Tiller
   chart: /opt/helm/versions/3.2.0/helm-charts/tiller
+- version: v1beta1
+  group: multicloud.ibm.com
+  kind: MongoDB
+  chart: /opt/helm/versions/3.2.1/helm-charts/icp-mongodb
+- version: v1beta1
+  group: multicloud.ibm.com
+  kind: Metering
+  chart: /opt/helm/versions/3.2.1/helm-charts/metering
