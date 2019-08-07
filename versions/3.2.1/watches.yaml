@@ -11,10 +11,10 @@
   group: multicloud.ibm.com
   kind: CertManager
   chart: /opt/helm/versions/3.2.1/helm-charts/ibm-cert-manager
-- version: v1alpha1
-  group: klusterlet.mcm.ibm.com
+- version: v1beta1
+  group: multicloud.ibm.com
   kind: ConnectionManager
-  chart: /opt/helm/versions/3.2.0/helm-charts/connection-manager
+  chart: /opt/helm/versions/3.2.1/helm-charts/connection-manager
 - version: v1alpha1
   group: klusterlet.mcm.ibm.com
   kind: WorkManager

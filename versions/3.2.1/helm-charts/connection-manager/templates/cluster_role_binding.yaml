@@ -1,0 +1,18 @@
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ template "connection-manager.fullname" . }}
+  labels:
+    app: {{ template "connection-manager.name" . }}
+    chart: {{ template "connection-manager.chart" . }}
+    component: "connection-manager"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+subjects:
+- kind: ServiceAccount
+  name: {{ template "connection-manager.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ template "connection-manager.fullname" . }}
+  apiGroup: rbac.authorization.k8s.io
