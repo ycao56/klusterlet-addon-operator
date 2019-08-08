@@ -39,3 +39,7 @@
   group: multicloud.ibm.com
   kind: Tiller
   chart: /opt/helm/versions/3.2.1/helm-charts/tiller
+- version: v1beta1
+  group: multicloud.ibm.com
+  kind: ApplicationManager
+  chart: /opt/helm/versions/3.2.1/helm-charts/application-manager
