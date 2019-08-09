@@ -1,0 +1,31 @@
+enabled: true
+clusterName: null
+clusterNamespace: null
+connectionManager: null
+containerRuntime: null
+updateInterval: 15
+weave:
+  repository: ibmcom/mcm-weave-scope
+  tag: 3.2.0
+  pullPolicy: IfNotPresent
+collector:
+  repository: ibmcom/weave-collector
+  tag: 3.2.0
+  pullPolicy: IfNotPresent
+
+router:
+  repository: ibmcom/icp-management-ingress
+  tag: 2.3.0
+  pullPolicy: IfNotPresent
+
+imagePullSecret: null
+
+nodeSelector: {}
+
+affinity: {}
+
+tolerations:
+- key: "dedicated"
+  operator: "Equal"
+  value: "infra"
+  effect: "NoSchedule"

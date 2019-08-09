@@ -19,22 +19,22 @@
   group: multicloud.ibm.com
   kind: WorkManager
   chart: /opt/helm/versions/3.2.1/helm-charts/work-manager
-- version: v1alpha1
-  group: klusterlet.mcm.ibm.com
+- version: v1beta1
+  group: multicloud.ibm.com
   kind: PolicyController
-  chart: /opt/helm/versions/3.2.0/helm-charts/policy
-- version: v1alpha1
-  group: klusterlet.mcm.ibm.com
+  chart: /opt/helm/versions/3.2.1/helm-charts/policy
+- version: v1beta1
+  group: multicloud.ibm.com
   kind: SearchCollector
-  chart: /opt/helm/versions/3.2.0/helm-charts/search
-- version: v1alpha1
-  group: klusterlet.mcm.ibm.com
+  chart: /opt/helm/versions/3.2.1/helm-charts/search
+- version: v1beta1
+  group: multicloud.ibm.com
   kind: TopologyCollector
-  chart: /opt/helm/versions/3.2.0/helm-charts/topology
-- version: v1alpha1
-  group: klusterlet.mcm.ibm.com
+  chart: /opt/helm/versions/3.2.1/helm-charts/topology
+- version: v1beta1
+  group: multicloud.ibm.com
   kind: ServiceRegistry
-  chart: /opt/helm/versions/3.2.0/helm-charts/service-registry
+  chart: /opt/helm/versions/3.2.1/helm-charts/service-registry
 - version: v1beta1
   group: multicloud.ibm.com
   kind: Tiller

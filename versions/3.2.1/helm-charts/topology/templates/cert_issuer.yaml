@@ -1,0 +1,12 @@
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Issuer
+metadata:
+  name: {{ template "topology.fullname" . }}
+  labels:
+    app: {{ template "topology.name" . }}
+    chart: {{ template "topology.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+spec:
+  ca:
+    secretName: {{ template "topology.fullname" . }}-ca-cert

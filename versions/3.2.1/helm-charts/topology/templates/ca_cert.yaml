@@ -1,0 +1,19 @@
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: {{ template "topology.fullname" . }}-ca-cert
+  labels:
+    app: {{ template "topology.name" . }}
+    chart: {{ template "topology.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+spec:
+  secretName: {{ template "topology.fullname" . }}-ca-cert
+  issuerRef:
+    name: {{ .Values.caCertIssuer }}
+    kind: ClusterIssuer
+  commonName: {{ template "topology.fullname" . }}
+  isCA: true
+  organization:
+  - IBM
+  dnsNames: null

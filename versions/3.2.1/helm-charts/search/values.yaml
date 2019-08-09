@@ -1,0 +1,41 @@
+enabled: true
+
+connectionManager: null
+
+deployedOnHub: false
+
+clusterName: null
+clusterNamespace: null
+
+image:
+  repository: ibmcom/search-collector
+  tag: 3.2.0
+  pullPolicy: IfNotPresent
+
+tillerIntegration:
+  enabled: true
+  endpoint: tiller-deploy
+  certIssuer: icp-ca-issuer
+  user: admin
+  autoGenSecret: true
+  secret: null
+
+resources:
+  requests:
+    memory: 128Mi
+    cpu: 25m
+  limits:
+    memory: 256Mi
+    cpu: 250m
+
+nodeSelector: {}
+
+affinity: {}
+
+tolerations:
+- key: "dedicated"
+  operator: "Equal"
+  value: "infra"
+  effect: "NoSchedule"
+
+imagePullSecrets: null

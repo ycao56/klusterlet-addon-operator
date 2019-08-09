@@ -3,7 +3,7 @@ kind: CustomResourceDefinition
 metadata:
   name: certmanagers.multicloud.ibm.com
 spec:
-  group: multicloud.mcm.ibm.com
+  group: multicloud.ibm.com
   names:
     kind: CertManager
     listKind: CertManagerList
