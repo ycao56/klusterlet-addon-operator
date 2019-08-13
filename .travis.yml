@@ -36,7 +36,12 @@ jobs:
         - echo "TRAVIS_EVENT_TYPE = $TRAVIS_EVENT_TYPE"
         - |
           if [[ "$TRAVIS_EVENT_TYPE" != "pull_request" ]]; then
+            export DOCKER_REGISTRY = hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com
             make docker:login
+            make docker:tag-arch
+            make docker:push-arch
+            export DOCKER_TAG=$DOCKER_TAG-rhel
+            make docker:tag-arch
             make docker:push-arch
           else
             echo "Not pushing build on a pull request"
@@ -67,7 +72,9 @@ jobs:
         - echo "TRAVIS_EVENT_TYPE = $TRAVIS_EVENT_TYPE"
         - |
           if [[ "$TRAVIS_EVENT_TYPE" != "pull_request" ]]; then
+            export DOCKER_REGISTRY = hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com
             make docker:login
+            make docker:tag-arch
             make docker:push-arch
           else
             echo "Not pushing build on a pull request"
@@ -98,7 +105,9 @@ jobs:
         - echo "TRAVIS_EVENT_TYPE = $TRAVIS_EVENT_TYPE"
         - |
           if [[ "$TRAVIS_EVENT_TYPE" != "pull_request" ]]; then
+            export DOCKER_REGISTRY = hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com
             make docker:login
+            make docker:tag-arch
             make docker:push-arch
           else
             echo "Not pushing build on a pull request"

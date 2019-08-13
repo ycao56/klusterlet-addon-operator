@@ -2,9 +2,10 @@ BINDIR ?= output
 
 DOCKER_USER      ?=$(ARTIFACTORY_USER)
 DOCKER_PASS      ?=$(ARTIFACTORY_PASS)
-DOCKER_REGISTRY  ?= hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com
+DOCKER_REGISTRY  ?= hyc-cloud-private-scratch-docker-local.artifactory.swg-devops.com
 DOCKER_NAMESPACE ?= ibmcom
-DOCKER_TAG       ?= $(RELEASE_TAG)
+DOCKER_BUILD_TAG ?= latest
+DOCKER_TAG       ?= $(shell whoami)
 
 WORKING_CHANGES   = $(shell git status --porcelain)
 BUILD_DATE        = $(shell date '+%m/%d@%H:%M:%S')
@@ -78,10 +79,9 @@ operator\:tools:
 .PHONY: operator\:build
 operator\:build:
 	$(info Building operator)
-	$(info --REPO: $(DOCKER_REGISTRY)/$(DOCKER_NAMESPACE))
-	$(info --IMAGE: $(IMAGE_NAME_ARCH))
-	$(info --TAG: $(DOCKER_TAG))
-	operator-sdk build $(DOCKER_REGISTRY)/$(DOCKER_NAMESPACE)/$(IMAGE_NAME_ARCH):$(DOCKER_TAG) --image-build-args "$(DOCKER_BUILD_OPTS)"
+	$(info --IMAGE: $(DOCKER_IMAGE))
+	$(info --TAG: $(DOCKER_BUILD_TAG))
+	operator-sdk build $(DOCKER_IMAGE):$(DOCKER_BUILD_TAG) --image-build-args "$(DOCKER_BUILD_OPTS)"
 
 .PHONY: operator\:run
 operator\:run:
