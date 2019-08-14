@@ -7,13 +7,13 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "service-registry.fullname" . }}-coredns
+  name: "{{ template "service-registry.fullname" . }}-coredns"
   labels:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
     app: {{ template "service-registry.name" . }}
     chart: {{ template "service-registry.chart" . }}
-    component: service-registry
+    component: mcm-svc-registry-dns
 data:
   Corefile: |
     .:53 {
@@ -22,10 +22,10 @@ data:
         health
         reload
         cache 30
-        file /etc/coredns/svcregistry.db {{ .Values.coredns.dnsSuffix }} {
+        file /etc/coredns/svcregistry.db {{ .Values.dnsSuffix }} {
           reload 5s
         }
     }
   svcregistry.db: |
-    {{ .Values.coredns.dnsSuffix }}.    IN    SOA    mcm-svc-registry-dns.{{ .Release.Namespace }}.svc.cluster.local. hostmaster.cluster.local. {{ .Release.Time.Seconds }} 7200 1800 86400 30
+    {{ .Values.dnsSuffix }}.    IN    SOA    mcm-svc-registry-dns.{{ .Release.Namespace }}.svc.cluster.local. hostmaster.cluster.local. {{ .Release.Time.Seconds }} 7200 1800 86400 30
 {{- end }}

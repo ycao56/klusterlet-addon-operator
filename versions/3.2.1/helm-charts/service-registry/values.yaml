@@ -1,5 +1,17 @@
 enabled: true
 
+connectionManager: test
+
+clusterName: test
+clusterNamespace: test
+
+logLevel: 1
+
+dnsSuffix: "mcm.svc"
+plugins: "kube-service"
+istioIngressGateway: ""
+istioServiceEntryRegistryNamespace: ""
+
 serviceRegistry:
   image:
     repository: ibmcom/mcm-service-registry
@@ -11,9 +23,6 @@ coredns:
     repository: ibmcom/coredns
     tag: 1.2.6
     pullPolicy: IfNotPresent
-  dnsSuffix: "mcm.svc"
-  plugins: "kube-service"
-  clusterProxyIP: ""
 
 nodeSelector: {}
 
