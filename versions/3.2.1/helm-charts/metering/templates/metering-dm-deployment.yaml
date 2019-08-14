@@ -1,68 +1,24 @@
-{{- if .Values.dm.enabled }}
-
-{{- if .Values.api.enabled }}
-
----
-#  This service definition exposes the DM server pod as a loadbalanced service named "metering-dm"
-#  in K8s
-#
-
-apiVersion: v1
-kind: Service
-metadata:
-  annotations:
-    prometheus.io/scrape: 'false'
-    prometheus.io/scheme: 'http'
-  name: metering-dm
-  labels:
-    app: metering-dm
-    component: meteringsvc
-
-spec:
-  ports:
-    - name: datamanager
-      port: 3000
-  selector:
-    app: metering-dm
-    component: meteringsvc
-
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: metering-receiver
-  labels:
-    app: metering-dm
-    component: meteringsvc
-
-spec:
-  ports:
-    - name: metering-receiver
-      port: 5000
-  selector:
-    app: metering-dm
-    component: meteringsvc
-
-{{- end }}
-
----
-# Source: metering/templates/metering-dm.yaml
+# Source: metering/templates/metering-dm-deployment.yaml
 #
 # The metering-dm pod deploys the Metering Data Manager server as a container
 #
 # The userid and password for the database are hard-coded in the docker image through
 # environment variables in the "containers:" section below
 #
-
+{{- if .Values.dm.enabled }}
 kind: Deployment
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 
 metadata:
   name: {{ template "metering-dm.fullname" . }}
   labels:
-    app: metering-dm
-    component: meteringsvc
+    app.kubernetes.io/name: metering-dm
+    app.kubernetes.io/component: meteringsvc
+    app.kubernetes.io/managed-by: "{{ .Release.Service }}"
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    app.kubernetes.io/instance: "{{ .Release.Name }}"
+    release: "{{ .Release.Name }}"
+
 spec:
   replicas: 1
   selector:
@@ -74,10 +30,32 @@ spec:
       labels:
         app: metering-dm
         component: meteringsvc
+        app.kubernetes.io/name: metering-dm
+        app.kubernetes.io/component: meteringsvc
+        helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/managed-by: "{{ .Release.Service }}"
+        release: "{{ .Release.Name }}"
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ""
         seccomp.security.alpha.kubernetes.io/pod: docker/default
+        productName: IBM Cloud Private
+        productID: 01t50000004X1PWAA0
+        productVersion: v4.1.0
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: beta.kubernetes.io/arch
+                  operator: In
+                  values:
+                  {{- if .Values.arch }}
+                  - {{ .Values.arch }}
+                  {{- else }}
+                  - {{ template "arch" . }}
+                  {{- end }}
       terminationGracePeriodSeconds: 60
 {{- if .Values.dm.nodeSelectorEnabled }}
     {{- with .Values.dm.nodeSelector }}
@@ -85,10 +63,6 @@ spec:
 {{ toYaml . | indent 8 }}
     {{- end }}
 {{- end }}
-    {{- with .Values.affinity }}
-      affinity:
-{{ toYaml . | indent 8 }}
-    {{- end }}
       tolerations:
 {{ toYaml .Values.dm.tolerations | indent 8 }}
       initContainers:
@@ -98,6 +72,11 @@ spec:
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+              - ALL
+          resources:
+{{ toYaml .Values.dm.init.resources | indent 12 }}  
           env:
             - name: SECRET_LIST
               value: "{{- if .Values.api.enabled }} icp-serviceid-apikey-secret  icp-metering-receiver-secret {{- end }}       {{ .Values.mongo.username.secret }}       {{ .Values.mongo.password.secret }} {{ .Values.mongo.clustercertssecret }} {{ .Values.mongo.clientcertssecret }}" 
@@ -126,6 +105,11 @@ spec:
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+              - ALL
+          resources:
+{{ toYaml .Values.dm.init.resources | indent 12 }}  
           env:
             - name: NODE_TLS_REJECT_UNAUTHORIZED
               value: "0"
@@ -188,6 +172,9 @@ spec:
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+              - ALL          
           resources:
 {{ toYaml .Values.dm.resources | indent 12 }}
           ports:

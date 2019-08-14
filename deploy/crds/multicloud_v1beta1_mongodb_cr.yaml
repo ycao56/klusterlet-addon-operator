@@ -1,7 +1,7 @@
 apiVersion: multicloud.ibm.com/v1beta1
 kind: MongoDB
 metadata:
-  name: klusterlet-mongodb
+  name: klusterlet-mongo-cr
 spec:
   fullnameOverride: klusterlet-mongo
   auth:
@@ -42,11 +42,17 @@ spec:
   imagePullSecrets: 
     - metering-mongodb-pull
 
-  #CS??? workaround
+  # priorityClassName is used when the chart is deployed in an ICP environment
   priorityClassNameEnabled: false
+
+  # nodeSelector is used when the chart is deployed in an ICP environment
+  nodeSelectorEnabled: false
+
+  # serviceAccount is used when the chart is deployed by an operator in a non-ICP environment
   serviceAccountNameEnabled: true
-  
-  nodeSelector:
+
+  # clusterRole is used when the chart is deployed by an operator in a non-ICP environment
+  clusterRoleEnabled: true
 
   livenessProbe:
     failureThreshold: 60

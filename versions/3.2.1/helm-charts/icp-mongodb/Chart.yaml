@@ -1,14 +1,14 @@
-appVersion: "3.4"
+name: icp-mongodb
+home: https://github.com/mongodb/mongo
+version: 4.1
+appVersion: 3.4
 description: NoSQL document-oriented database that stores JSON-like documents with
   dynamic schemas, simplifying the integration of data in content-driven applications.
-home: https://github.com/mongodb/mongo
 icon: https://webassets.mongodb.com/_com_assets/cms/mongodb-logo-rgb-j6w271g1xn.jpg
-keywords:
-- IcpClusterResource
-maintainers:
-- email: ckandag@us.ibm.com
-  name: ckandag
-name: icp-mongodb
 sources:
-- https://github.com/mongodb/mongo
-version: "4.1"
+  - https://github.com/mongodb/mongo
+maintainers:
+  - name: ckandag
+    email: ckandag@us.ibm.com
+keywords:
+  - IcpClusterResource

@@ -24,7 +24,7 @@ image:
 curl:
   image:
     repository: ibmcom/curl
-    tag: 4.2.0-f3
+    tag: 4.2.0-f4
     pullPolicy: IfNotPresent
 
 
@@ -46,8 +46,6 @@ resources:
 nodeSelector: {
   master: "true"
 }
-
-nodeSelectorEnabled: true
 
 affinity: {}
 
@@ -109,9 +107,6 @@ persistentVolume:
 # Annotations to be added to the service
 serviceAnnotations: {}
 
-#CS??? workaround
-priorityClassNameEnabled: true
-
 securityContext:
   enabled: true
   values:
@@ -166,5 +161,14 @@ metrics:
     limits:
       memory: 256Mi
 
+# priorityClassName is used when the chart is deployed in an ICP environment
+priorityClassNameEnabled: true
+
+# nodeSelector is used when the chart is deployed in an ICP environment
+nodeSelectorEnabled: true
+
+# serviceAccount is used when the chart is deployed by an operator in a non-ICP environment
 serviceAccountNameEnabled: false
-      
+
+# clusterRole is used when the chart is deployed by an operator in a non-ICP environment
+clusterRoleEnabled: false

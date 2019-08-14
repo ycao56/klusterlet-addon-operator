@@ -1,8 +1,8 @@
-# IBM Cloud Private metering service helm chart
+# IBM metering service helm chart
 
 ## Introduction 
 
-This chart deploys the IBM Cloud Private metering service that can be used to view and download detailed usage metrics for your applications and cluster.  
+This chart deploys the IBM metering service that can be used to view and download detailed usage metrics for your applications and cluster.  
 **The metering service chart should only be deployed once per cluster, must be named "metering", and must be installed into the kube-system namespace.**
 
 ## Chart Details
@@ -15,23 +15,27 @@ This chart includes
 
 None
 
+## PodSecurityPolicy Requirements 
+
+## Red Hat OpenShift SecurityContextConstraints Requirements
+
 ## Resources Required
 
-Metering uses the IBM Cloud Private MongoDB service.
+Metering uses the IBM MongoDB service.
 
 ## Installing the Chart
 
-To install the chart:
+To install the chart with the release name `metering`:
 
 ```console
-$ helm repo add mgmt-charts https://mycluster.icp:8443/mgmt-repo/charts
-$ helm install --name metering --namespace kube-system mgmt-charts/metering
+$ helm repo add mgmt-charts ${CLUSTER_ADDRESS}/mgmt-repo/charts
+$ helm install --name metering mgmt-charts/metering --namespace kube-system --set license=accept --tls
 ```
 
 To uninstall/delete the metering deployment:
 
 ```console
-$ helm delete metering
+$ helm delete metering --purge --tls
 ```
 
 The command removes all the Kubernetes components associated with the chart and deletes the release.

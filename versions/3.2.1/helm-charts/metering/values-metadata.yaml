@@ -28,6 +28,23 @@ external:
       type: "string"
       immutable: false
       required: true
+
+arch:
+  __metadata:
+    name: "Architecture"
+    label: "Node architecture"
+    description: "Node architecture to deploy to. The helm chart will try to detect the architecture based on the master node."
+    type: "string"
+    immutable: false
+    required: false
+    options:
+      - label: "amd64"
+        value: "amd64"
+      - label: "ppc64le"
+        value: "ppc64le"
+      - label: "s390x"
+        value: "s390x"
+
 mongo:
   __metadata:
     name: "mongo"
@@ -191,7 +208,44 @@ dm:
           description: "Memory limit for data manager"
           type: "string"
           immutable: false
-          required: false      
+          required: false
+  
+  init:
+    resources:
+      requests:
+        cpu:
+          __metadata:
+            name: "dm.init.resources.requests.cpu"
+            label: "Requested CPU"
+            description: "Init container requested CPU amount"
+            type: "string"
+            immutable: false
+            required: false      
+        memory:
+          __metadata:
+            name: "dm.init.resources.requests.memory"
+            label: "Requested memory"
+            description: "Init container requested memory amount"
+            type: "string"
+            immutable: false
+            required: false  
+      limits:
+        cpu:
+          __metadata:
+            name: "dm.init.resources.limits.cpu"
+            label: "CPU limit"
+            description: "Init container CPU limit for reader"
+            type: "string"
+            immutable: false
+            required: false      
+        memory:
+          __metadata:
+            name: "dm.init.resources.limits.memory"
+            label: "Memory limit"
+            description: "Init container memory limit for reader"
+            type: "string"
+            immutable: false
+            required: false
 
   nodeSelector:
     management:
@@ -305,6 +359,43 @@ ui:
       label: "Console tolerations"
       description: "Console tolerations settings"
       hidden: true
+  
+  init:
+    resources:
+      requests:
+        cpu:
+          __metadata:
+            name: "ui.init.resources.requests.cpu"
+            label: "Requested CPU"
+            description: "Init container requested CPU amount"
+            type: "string"
+            immutable: false
+            required: false      
+        memory:
+          __metadata:
+            name: "ui.init.resources.requests.memory"
+            label: "Requested memory"
+            description: "Init container requested memory amount"
+            type: "string"
+            immutable: false
+            required: false  
+      limits:
+        cpu:
+          __metadata:
+            name: "ui.init.resources.limits.cpu"
+            label: "CPU limit"
+            description: "Init container CPU limit for reader"
+            type: "string"
+            immutable: false
+            required: false      
+        memory:
+          __metadata:
+            name: "ui.init.resources.limits.memory"
+            label: "Memory limit"
+            description: "Init container memory limit for reader"
+            type: "string"
+            immutable: false
+            required: false
 
 
 mcmui:
@@ -405,6 +496,42 @@ mcmui:
           immutable: false
           required: false      
 
+  init:
+    resources:
+      requests:
+        cpu:
+          __metadata:
+            name: "mcmui.init.resources.requests.cpu"
+            label: "Requested CPU"
+            description: "Init container requested CPU amount"
+            type: "string"
+            immutable: false
+            required: false      
+        memory:
+          __metadata:
+            name: "mcmui.init.resources.requests.memory"
+            label: "Requested memory"
+            description: "Init container requested memory amount"
+            type: "string"
+            immutable: false
+            required: false  
+      limits:
+        cpu:
+          __metadata:
+            name: "mcmui.init.resources.limits.cpu"
+            label: "CPU limit"
+            description: "Init container CPU limit for reader"
+            type: "string"
+            immutable: false
+            required: false      
+        memory:
+          __metadata:
+            name: "mcmui.init.resources.limits.memory"
+            label: "Memory limit"
+            description: "Init container memory limit for reader"
+            type: "string"
+            immutable: false
+            required: false
 
 reader:
   __metadata:
@@ -478,7 +605,43 @@ reader:
           description: "Memory limit for reader"
           type: "string"
           immutable: false
-          required: false    
+          required: false
+  init:
+    resources:
+      requests:
+        cpu:
+          __metadata:
+            name: "reader.init.resources.requests.cpu"
+            label: "Requested CPU"
+            description: "Init container requested CPU amount"
+            type: "string"
+            immutable: false
+            required: false      
+        memory:
+          __metadata:
+            name: "reader.init.resources.requests.memory"
+            label: "Requested memory"
+            description: "Init container requested memory amount"
+            type: "string"
+            immutable: false
+            required: false  
+      limits:
+        cpu:
+          __metadata:
+            name: "reader.init.resources.limits.cpu"
+            label: "CPU limit"
+            description: "Init container CPU limit for reader"
+            type: "string"
+            immutable: false
+            required: false      
+        memory:
+          __metadata:
+            name: "reader.init.resources.limits.memory"
+            label: "Memory limit"
+            description: "Init container memory limit for reader"
+            type: "string"
+            immutable: false
+            required: false
 
   tolerations:
     __metadata:
@@ -487,6 +650,12 @@ reader:
       description: "Reader tolerations settings"
       hidden: true
 
+  tolerations:
+    __metadata:
+      name: "reader.tolerations"
+      label: "Reader tolerations"
+      description: "Reader tolerations settings"
+      hidden: true
 
 sender:
   __metadata:
@@ -610,7 +779,6 @@ sender:
       hidden: true
 
 
-
 secretcheck:
   __metadata:
     name: "secretcheck"
@@ -662,3 +830,14 @@ serviceport:
       immutable: true
       required: true
     
+ingress:
+  __metadata:
+    name: "ingress"
+    label: "Ingress configuration"
+    description: "Ingresss spec for rule enforcement"
+  host:
+    __metadata:
+      name: "ingress.host"
+      label: "Ingress host"
+      description: "Host to apply ingress rules"
+      type: "string"

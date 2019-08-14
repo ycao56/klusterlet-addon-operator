@@ -3,8 +3,9 @@
 #
 # The metering-sender deployment sends aggregated cluster metering data to the multi cluster hub.
 #
-apiVersion: extensions/v1beta1
-kind: DaemonSet
+kind: Deployment
+apiVersion: apps/v1
+
 metadata:
   name: {{ template "metering-sender.fullname" . }}
   labels:
@@ -53,9 +54,11 @@ spec:
             readOnlyRootFilesystem: true
           env:
             - name: SECRET_LIST
-              value: "{{ .Values.sender.hubKubeConfigSecret }}       {{ .Values.mongo.username.secret }}       {{ .Values.mongo.password.secret }} {{ .Values.mongo.clustercertssecret }} {{ .Values.mongo.clientcertssecret }}"
+              value: "{{ .Values.mongo.username.secret }}       {{ .Values.mongo.password.secret }} {{ .Values.mongo.clustercertssecret }} {{ .Values.mongo.clientcertssecret }}"
             - name: SECRET_DIR_LIST
-              value: "{{ .Values.sender.hubKubeConfigSecret }} muser-{{ .Values.mongo.username.secret }} mpass-{{ .Values.mongo.password.secret }} {{ .Values.mongo.clustercertssecret }} {{ .Values.mongo.clientcertssecret }}"
+              value: "muser-{{ .Values.mongo.username.secret }} mpass-{{ .Values.mongo.password.secret }} {{ .Values.mongo.clustercertssecret }} {{ .Values.mongo.clientcertssecret }}"
+            - name: HC_HUB_CONFIG
+              value: {{ .Values.sender.hubKubeConfigSecret }}
           volumeMounts:
             - name: muser-{{ .Values.mongo.username.secret }}
               mountPath: /sec/muser-{{ .Values.mongo.username.secret }}
@@ -65,9 +68,9 @@ spec:
               mountPath: /sec/{{ .Values.mongo.clustercertssecret }}
             - name: mongodb-client-cert
               mountPath: /sec/{{ .Values.mongo.clientcertssecret }}
-            - name: hub-config
-              mountPath: /sec/{{ .Values.sender.hubKubeConfigSecret }}
-{{ toYaml .Values.secretcheck | indent 10 }}            
+{{ toYaml .Values.secretcheck | indent 10 }}  
+            echo "Further, checking for kubeConfig secret....."
+            node /datamanager/lib/metering_init.js kubeconfig_secretcheck     
 
         - name: "metering-sender-init"
           image: "{{ .Values.sender.image.repository }}:{{ .Values.sender.image.tag }}"
@@ -134,7 +137,7 @@ spec:
             - name: HC_CLUSTER_NAMESPACE
               value: {{ .Values.sender.clusterNamespace }}
             - name: HC_HUB_CONFIG
-              value: /hubconfig/kubeconfig
+              value: {{ .Values.sender.hubKubeConfigSecret }}
             - name: METERING_API_ENABLED
               value: "false"
             - name: HC_DM_SELFMETER_PURGER_ENABLED
@@ -199,18 +202,12 @@ spec:
             initialDelaySeconds: 305
             periodSeconds: 300
             timeoutSeconds: 5
-          volumeMounts:
-            - name: hub-config
-              mountPath: /hubconfig          
+          volumeMounts:        
             - name: mongodb-ca-cert
               mountPath: /certs/mongodb-ca
             - name: mongodb-client-cert
               mountPath: /certs/mongodb-client
       volumes:
-        - name: hub-config
-          secret:
-            secretName: {{ .Values.sender.hubKubeConfigSecret }}
-            optional: true
         - name: mongodb-ca-cert
           secret:
             defaultMode: 0644

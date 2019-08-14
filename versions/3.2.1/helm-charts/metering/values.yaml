@@ -26,6 +26,8 @@ external:
 api:
   enabled: true
 
+arch: ""
+
 mongo:
   host: mongodb
   port: 27017
@@ -45,10 +47,11 @@ dm:
     tag: latest
     pullPolicy: IfNotPresent
 
+  # nodeSelector is used when the chart is deployed in an ICP environment
   nodeSelectorEnabled: true
   nodeSelector:
     management: "true"
-
+  
   priorityClassNameEnabled: true
 
   tolerations:
@@ -65,6 +68,15 @@ dm:
     limits:
       cpu: 1000m
       memory: 2560Mi
+
+  init:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 100Mi
+      limits:
+        cpu: 100m
+        memory: 100Mi
     
 ui:
   enabled: true
@@ -91,6 +103,15 @@ ui:
       cpu: 500m
       memory: 512Mi
 
+  init:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 100Mi
+      limits:
+        cpu: 100m
+        memory: 100Mi
+
 mcmui:
   enabled: true
   image:
@@ -116,6 +137,15 @@ mcmui:
       cpu: 500m
       memory: 256Mi
 
+  init:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 100Mi
+      limits:
+        cpu: 100m
+        memory: 100Mi
+
 reader:
   enabled: true
   image:
@@ -137,6 +167,15 @@ reader:
     limits:
       cpu: 500m
       memory: 512Mi
+  
+  init:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 100Mi
+      limits:
+        cpu: 100m
+        memory: 100Mi
 
 sender:
   enabled: false
@@ -147,6 +186,11 @@ sender:
     repository: ibmcom/metering-data-manager
     tag: latest
     pullPolicy: IfNotPresent
+
+  # nodeSelector is used when the chart is deployed in an ICP environment
+  nodeSelectorEnabled: true
+  nodeSelector:
+    management: "true"
 
   tolerations:
     - key: "dedicated"
@@ -168,7 +212,11 @@ sender:
 #imagePullSecrets: []
 #   - myregcred
 
+# serviceAccount is used when the chart is deployed by an operator in a non-ICP environment
 serviceAccountNameEnabled: false
+
+# clusterRole is used when the chart is deployed by an operator in a non-ICP environment
+clusterRoleEnabled: false
 
 secretcheck:
   command:
@@ -194,3 +242,6 @@ serviceport:
   iam_pap: 39001
   platform_identity_management: 4500
   platform_header: 3000
+
+ingress:
+  host: ""

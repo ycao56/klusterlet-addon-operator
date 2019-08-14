@@ -6,13 +6,21 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: metering-ui
+  labels:
+    app.kubernetes.io/name: metering-ui
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    release: "{{ .Release.Name }}"
   annotations:
     kubernetes.io/ingress.class: "ibm-icp-management"
     icp.management.ibm.com/auth-type: "id-token"
     icp.management.ibm.com/rewrite-target: "/"
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
   rules:
-  - http:
+  - host: {{ .Values.ingress.host }}
+    http:
       paths:
       - path: /metering/
         backend:
@@ -29,13 +37,21 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: metering-mcmui
+  labels:
+    app.kubernetes.io/name: metering-mcmui
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    release: "{{ .Release.Name }}"
   annotations:
     kubernetes.io/ingress.class: "ibm-icp-management"
     icp.management.ibm.com/auth-type: "id-token"
     icp.management.ibm.com/rewrite-target: "/metering-mcm/"
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
   rules:
-  - http:
+  - host: {{ .Values.ingress.host }}
+    http:
       paths:
       - path: /metering-mcm/
         backend:
@@ -51,13 +67,21 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: metering-api-rbac
+  labels:
+    app.kubernetes.io/name: metering-api-rbac
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    release: "{{ .Release.Name }}"
   annotations:
     kubernetes.io/ingress.class: "ibm-icp-management"
     icp.management.ibm.com/authz-type: "rbac"
     icp.management.ibm.com/rewrite-target: "/api"
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
   rules:
-  - http:
+  - host: {{ .Values.ingress.host }}
+    http:
       paths:
       - path: /meteringapi/api/
         backend:
@@ -72,13 +96,21 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: metering-api-check
+  labels:
+    app.kubernetes.io/name: metering-api-check
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    release: "{{ .Release.Name }}"
   annotations:
     kubernetes.io/ingress.class: "ibm-icp-management"
     icp.management.ibm.com/location-modifier: "="
     icp.management.ibm.com/upstream-uri: /api/v1
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
   rules:
-  - http:
+  - host: {{ .Values.ingress.host }}
+    http:
       paths:
       - path: /meteringapi/api/v1
         backend:
@@ -92,13 +124,21 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: metering-api-swagger
+  labels:
+    app.kubernetes.io/name: metering-api-swagger
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    release: "{{ .Release.Name }}"
   annotations:
     kubernetes.io/ingress.class: "ibm-icp-management"
     icp.management.ibm.com/location-modifier: "="
     icp.management.ibm.com/upstream-uri: "/api/swagger"
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
   rules:
-  - http:
+  - host: {{ .Values.ingress.host }}
+    http:
       paths:
       - path: /meteringapi/api/swagger
         backend:
