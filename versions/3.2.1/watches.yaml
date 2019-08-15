@@ -43,3 +43,7 @@
   group: multicloud.ibm.com
   kind: ApplicationManager
   chart: /opt/helm/versions/3.2.1/helm-charts/application-manager
+- version: v1beta1
+  group: multicloud.ibm.com
+  kind: Monitoring
+  chart: /opt/helm/versions/3.2.1/helm-charts/ibm-icpmonitoring

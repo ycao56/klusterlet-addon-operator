@@ -1,0 +1,139 @@
+{{- if .Values.nodeExporter.enabled -}}
+# Licensed Materials - Property of IBM
+# 5737-E67
+# @ Copyright IBM Corporation 2016, 2019. All Rights Reserved.
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  labels:
+    app: {{ template "prometheus.fullname" . }}
+    chart: {{ .Chart.Name }}
+    component: nodeexporter
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    role: "nodeexporter"
+  name: {{ template "prometheus.fullname" . }}-nodeexporter
+spec:
+  updateStrategy:
+    type: RollingUpdate
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: {{ template "prometheus.fullname" . }}
+        chart: {{ .Chart.Name }}
+        component: nodeexporter
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+        role: "nodeexporter"
+      annotations:
+        productName: node-exporter
+        productVersion: v0.16.0
+        productID: none
+        scheduler.alpha.kubernetes.io/critical-pod: ""
+    spec:
+{{- if eq .Values.mode "managed" }}
+      priorityClassName: system-cluster-critical
+{{- end }}
+      tolerations:
+      - key: "dedicated"
+        operator: "Exists"
+        effect: "NoSchedule"
+    {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets }}
+    {{- end }}
+      containers:
+        - name: nodeexporter
+          image: {{ .Values.nodeExporter.image.repository }}:{{ .Values.nodeExporter.image.tag }}
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          securityContext:
+            runAsUser: 65534
+            allowPrivilegeEscalation: false
+          args:
+            - --path.procfs=/host/proc
+            - --path.sysfs=/host/sys
+            - --web.listen-address=127.0.0.1:{{ .Values.nodeExporter.listenPort }}
+          resources:
+{{ toYaml .Values.nodeExporter.resources | indent 12 }}
+          volumeMounts:
+            - name: proc
+              mountPath: /host/proc
+              readOnly:  true
+            - name: sys
+              mountPath: /host/sys
+              readOnly: true
+      {{- if .Values.tls.enabled }}
+        - name: router
+          image: {{ .Values.router.image.repository }}:{{ .Values.router.image.tag }}
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          resources:
+{{ toYaml .Values.router.resources | indent 12 }}
+          command: ["/opt/ibm/router/entry/entrypoint.sh"]
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          volumeMounts:
+            - mountPath: "/opt/ibm/router/conf"
+              name: router-config
+            - mountPath: "/opt/ibm/router/entry"
+              name: router-entry
+            - mountPath: "/opt/ibm/router/caCerts"
+              name: monitoring-ca-certs
+            - mountPath: "/opt/ibm/router/certs"
+              name: monitoring-certs
+        {{- if .Values.nodeExporter.probe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: /healthy
+              scheme: HTTPS
+              port: {{ .Values.nodeExporter.healthyPort }}
+            initialDelaySeconds: 30
+            timeoutSeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthy
+              scheme: HTTPS
+              port: {{ .Values.nodeExporter.healthyPort }}
+            initialDelaySeconds: 30
+            timeoutSeconds: 30
+            periodSeconds: 10
+        {{- end }}
+      {{- end }}
+      hostNetwork: true
+      hostPID: true
+      volumes:
+        - name: proc
+          hostPath:
+            path: /proc
+        - name: sys
+          hostPath:
+            path: /sys
+      {{- if .Values.tls.enabled }}
+        - name: router-config
+          configMap:
+            name: {{ template "prometheus.fullname" . }}-exporter-router-nginx-config
+            items:
+              - key: nodeexporter.nginx.conf
+                path: nginx.conf
+        - name: router-entry
+          configMap:
+            name: {{ template "monitoring.fullname" . }}-router-entry-config
+            defaultMode: 0744
+        - name: monitoring-ca-certs
+          secret:
+            secretName: {{ .Values.tls.ca.secretName }}
+        - name: monitoring-certs
+          secret:
+          {{- if .Values.tls.exporter.existingSecretName }}
+            secretName: {{ .Values.tls.exporter.existingSecretName }}
+          {{- else }}
+            secretName: {{ template "monitoring.fullname" . }}-exporter-certs
+          {{- end }}
+      {{- end }}
+{{- end -}}

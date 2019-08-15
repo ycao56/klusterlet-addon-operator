@@ -1,0 +1,50 @@
+{{- if .Values.grafana.enabled -}}
+# Licensed Materials - Property of IBM
+# 5737-E67
+# @ Copyright IBM Corporation 2016, 2019. All Rights Reserved.
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: {{ template "grafana.fullname" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    component: grafana
+  name: {{ template "grafana.fullname" . }}-ds-entry-config
+data:
+  entrypoint.sh: |
+    #!/bin/sh
+    chown -R 472:472 /var/lib/grafana
+
+    {{- if .Values.tls.enabled }}
+    export CA=$(sed -E ':a;N;$!ba;s/\r{0,1}\n/\\n/g' /opt/ibm/monitoring/ca-certs/{{ .Values.tls.ca.certFieldName }})
+    export CERT=$(sed -E ':a;N;$!ba;s/\r{0,1}\n/\\n/g' /opt/ibm/monitoring/certs/{{ .Values.tls.client.certFieldName }})
+    export KEY=$(sed -E ':a;N;$!ba;s/\r{0,1}\n/\\n/g' /opt/ibm/monitoring/certs/{{ .Values.tls.client.keyFieldName }})
+    {{- end }}
+
+    cat >> /etc/grafana/provisioning/datasources/datasource.yaml <<EOF
+    apiVersion: 1
+    datasources:
+    - name: prometheus
+      type: prometheus
+      access: proxy
+    {{- if .Values.tls.enabled }}
+      url: https://{{ template "prometheus.fullname" . }}:{{ .Values.prometheus.port }}
+      isDefault: true
+      jsonData:
+         keepCookies:
+           - cfc-access-token-cookie
+         tlsAuth: true
+         tlsAuthWithCACert: true
+      secureJsonData:
+        tlsCACert: "$CA"
+        tlsClientCert: "$CERT"
+        tlsClientKey: "$KEY"
+    {{- else }}
+      url: http://{{ template "prometheus.fullname" . }}:{{ .Values.prometheus.port }}
+    {{- end }}
+    EOF
+{{- end -}}

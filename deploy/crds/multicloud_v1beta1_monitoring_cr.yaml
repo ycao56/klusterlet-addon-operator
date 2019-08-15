@@ -1,0 +1,50 @@
+apiVersion: multicloud.ibm.com/v1beta1
+kind: MongoDB
+metadata:
+  name: klusterlet-mongodb
+spec:
+  fullnameOverride: klusterlet-monitoring
+  enabled: true
+
+  mode: standard
+  imagePullSecrets: "regcred"
+  tls:
+    enabled: true
+    issuer: klusterlet-tiller
+    ca:
+      secretName: klusterlet-tiller-ca-cert
+  prometheus:
+    image:
+      repository: hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com/ibmcom/prometheus-amd64
+    etcdTarget:
+      enabled: false
+  alertmanager:
+    enabled: false
+  grafana:
+    enabled: false
+  kubeStateMetrics:
+    enabled: false
+  nodeExporter:
+    enabled: false
+  collectdExporter:
+    enabled: false
+  elasticsearchExporter:
+    enabled: false
+  configmapReload:
+    image:
+      repository: hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com/ibmcom/configmap-reload-amd64
+  router:
+    image:
+      repository: hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com/ibmcom/icp-management-ingress-amd64
+  alertruleController:
+    image:
+      repository: hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com/ibmcom/alert-rule-controller-amd64
+  prometheusOperatorController:
+    image:
+      repository: hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com/ibmcom/prometheus-operator-controller-amd64
+  prometheusOperator:
+    image:
+      repository: hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com/ibmcom/prometheus-operator-amd64
+  prometheusConfigReloader:
+    image:
+      repository: hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com/ibmcom/prometheus-config-reloader-amd64
