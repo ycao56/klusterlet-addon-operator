@@ -13,7 +13,7 @@ metadata:
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
 spec:
-  commonName: {{ .Values.tiller_default_admin_user }}
+  commonName: {{ template "tiller.fullname" . }}
   organization:
   - system:masters
   dnsNames: null
