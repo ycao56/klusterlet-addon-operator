@@ -57,6 +57,18 @@ spec:
           - "--managed-cluster-name={{ .Values.clusterName }}"
           - "--managed-cluster-namespace={{ .Values.clusterNamespace }}"
           - "--remote-cluster-configfile=/var/run/klusterlet/kubeconfig"
+        livenessProbe:
+          exec:
+            command:
+            - ls
+          initialDelaySeconds: 15
+          periodSeconds: 15
+        readinessProbe:
+          exec:
+            command:
+            - ls
+          initialDelaySeconds: 15
+          periodSeconds: 15
         volumeMounts:
           - name: klusterlet-config
             mountPath: /var/run/klusterlet
@@ -78,6 +90,18 @@ spec:
           - "--managed-cluster-name={{ .Values.clusterName }}"
           - "--managed-cluster-namespace={{ .Values.clusterNamespace }}"
           - "--remote-cluster-configfile=/var/run/klusterlet/kubeconfig"
+        livenessProbe:
+          exec:
+            command:
+            - ls
+          initialDelaySeconds: 15
+          periodSeconds: 15
+        readinessProbe:
+          exec:
+            command:
+            - ls
+          initialDelaySeconds: 15
+          periodSeconds: 15
         volumeMounts:
           - name: klusterlet-config
             mountPath: /var/run/klusterlet
