@@ -162,7 +162,7 @@
 
       metric_relabel_configs:
         - source_labels: ['namespace']
-          regex: (.*)
+          regex: (.+)
           target_label: kubernetes_namespace
       {{- if not .Values.standalone }}
         - source_labels: ['kubernetes_namespace']
@@ -224,7 +224,7 @@
 
       metric_relabel_configs:
         - source_labels: ['namespace']
-          regex: (.*)
+          regex: (.+)
           target_label: kubernetes_namespace
       {{- if not .Values.standalone }}
         - source_labels: ['kubernetes_namespace']
@@ -290,7 +290,7 @@
 
       metric_relabel_configs:
         - source_labels: ['namespace']
-          regex: (.*)
+          regex: (.+)
           target_label: kubernetes_namespace
       {{- if not .Values.standalone }}
         - source_labels: ['kubernetes_namespace']

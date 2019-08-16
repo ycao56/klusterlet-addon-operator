@@ -133,6 +133,8 @@ livenessProbe:
             default_type application/octet-stream;
             sendfile on;
             keepalive_timeout 65;
+            server_tokens off;
+            more_set_headers "Server: ";
 
             # Without this, cosocket-based code in worker
             # initialization cannot resolve localhost.
@@ -162,6 +164,10 @@ livenessProbe:
                   proxy_set_header Host $http_host;
                   proxy_pass http://metrics/;
                 }
+
+                location /index.html {
+                    return 404;
+                }                
             }
 
           {{- if eq $parmLenth 5 }}

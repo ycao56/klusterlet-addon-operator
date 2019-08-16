@@ -114,7 +114,7 @@ spec:
       imagePullPolicy: {{ .Values.imagePullPolicy }}
       resources:
 {{ toYaml .Values.router.resources | indent 8 }}
-      command: ["/bin/sh", "-c", "cp /opt/ibm/router/entry/entrypoint.sh /opt/ibm/router/; chmod 744 /opt/ibm/router/entrypoint.sh; /opt/ibm/router/entrypoint.sh"]
+      command: ["/bin/sh", "-c", "cp /opt/ibm/router/entry/entrypoint.sh /opt/ibm/router/; chmod 744 /opt/ibm/router/entrypoint.sh;exec /opt/ibm/router/entrypoint.sh"]
     {{- if and (eq .Values.mode "managed") .Values.prometheus.probe.enabled }}
 {{ include "router.probes" (list .Values.clusterDomain) | indent 6 }}
     {{- end }}

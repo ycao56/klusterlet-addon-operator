@@ -31,6 +31,8 @@ data:
         default_type application/octet-stream;
         sendfile on;
         keepalive_timeout 65;
+        server_tokens off;
+        more_set_headers "Server: ";
 
         # Without this, cosocket-based code in worker
         # initialization cannot resolve localhost.
@@ -101,6 +103,9 @@ data:
               proxy_ssl_certificate_key /opt/ibm/router/nginx/conf/server.key;
             }
 
+            location /index.html {
+              return 404;
+            }
         }
     }
 {{- end -}}
