@@ -37,7 +37,7 @@ jobs:
         - echo "TRAVIS_EVENT_TYPE = $TRAVIS_EVENT_TYPE"
         - |
           if [[ "$TRAVIS_EVENT_TYPE" != "pull_request" ]]; then
-            export DOCKER_REGISTRY = hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com
+            export DOCKER_REGISTRY=hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com
             make docker:login
             make docker:tag-arch
             make docker:push-arch
@@ -74,7 +74,7 @@ jobs:
         - echo "TRAVIS_EVENT_TYPE = $TRAVIS_EVENT_TYPE"
         - |
           if [[ "$TRAVIS_EVENT_TYPE" != "pull_request" ]]; then
-            export DOCKER_REGISTRY = hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com
+            export DOCKER_REGISTRY=hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com
             make docker:login
             make docker:tag-arch
             make docker:push-arch
@@ -108,7 +108,7 @@ jobs:
         - echo "TRAVIS_EVENT_TYPE = $TRAVIS_EVENT_TYPE"
         - |
           if [[ "$TRAVIS_EVENT_TYPE" != "pull_request" ]]; then
-            export DOCKER_REGISTRY = hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com
+            export DOCKER_REGISTRY=hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com
             make docker:login
             make docker:tag-arch
             make docker:push-arch
