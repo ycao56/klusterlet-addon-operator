@@ -30,5 +30,7 @@ tolerations:
   effect: "NoSchedule"
 
 imagePullSecret: null
-
 logLevel: 5
+
+postDeleteJobServiceAccount: null
+

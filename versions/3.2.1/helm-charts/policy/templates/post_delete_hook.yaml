@@ -31,6 +31,7 @@ spec:
         chart: {{ template "policy.chart" . }}
     spec:
       restartPolicy: Never
+      serviceAccountName: "{{ .Values.postDeleteJobServiceAccount }}"
       containers:
       - name: post-delete-job
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
