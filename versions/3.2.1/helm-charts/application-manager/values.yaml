@@ -26,6 +26,25 @@ subscription:
     tag: 3.2.1
     pullPolicy: IfNotPresent
 
+helmcrd:
+  image:
+    repository: ibmcom/helm-crd-controller
+    tag: 4.1.0
+    pullPolicy: IfNotPresent
+  hostname: mycluster.icp
+  ip: 0.0.0.0
+  tillerIntegration:
+    user: admin
+    certIssuer: icp-ca-issuer
+    autoGenSecret: true
+
+helmcrd_admission_controller:
+  image:
+    repository: ibmcom/helm-crd-admission-controller
+    tag: 1.0.0
+    pullPolicy: IfNotPresent
+  ca_bundle: null
+
 nodeSelector: {}
 
 affinity: {}
@@ -47,4 +66,3 @@ resources: {}
   # requests:
   #  cpu: 100m
   #  memory: 128Mi
-

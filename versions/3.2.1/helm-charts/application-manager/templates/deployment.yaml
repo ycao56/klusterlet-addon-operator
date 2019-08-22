@@ -37,11 +37,27 @@ spec:
         productID: "c18240a57c1c41969d5e81b39435da6c"
         productVersion: "3.2.1"
     spec:
+      hostAliases:
+      - hostnames:
+        - {{ .Values.helmcrd.hostname }}
+        ip: {{ .Values.helmcrd.ip }}
       serviceAccountName: {{ template "application-manager.fullname" . }}
       containers:
       - name: deployable-controller
         image: "{{ .Values.deployable.image.repository }}:{{ .Values.deployable.image.tag }}"
         imagePullPolicy: "{{ .Values.deployable.image.pullPolicy }}"
+        livenessProbe:
+          exec:
+            command:
+            - ls
+          initialDelaySeconds: 15
+          periodSeconds: 15
+        readinessProbe:
+          exec:
+            command:
+            - ls
+          initialDelaySeconds: 15
+          periodSeconds: 15
         securityContext:
           privileged: false
           readOnlyRootFilesystem: false
@@ -75,6 +91,18 @@ spec:
       - name: subscription-controller
         image: "{{ .Values.subscription.image.repository }}:{{ .Values.subscription.image.tag }}"
         imagePullPolicy: "{{ .Values.subscription.image.pullPolicy }}"
+        livenessProbe:
+          exec:
+            command:
+            - ls
+          initialDelaySeconds: 15
+          periodSeconds: 15
+        readinessProbe:
+          exec:
+            command:
+            - ls
+          initialDelaySeconds: 15
+          periodSeconds: 15
         securityContext:
           privileged: false
           readOnlyRootFilesystem: false
@@ -105,10 +133,101 @@ spec:
         volumeMounts:
           - name: klusterlet-config
             mountPath: /var/run/klusterlet
+      - name: helm-crd-controller
+        image: "{{ .Values.helmcrd.image.repository }}:{{ .Values.helmcrd.image.tag }}"
+        imagePullPolicy: "{{ .Values.helmcrd.image.pullPolicy }}"
+        securityContext:
+          procMount: Default
+          privileged: false
+          readOnlyRootFilesystem: false
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          capabilities:
+            drop:
+            - ALL
+        command:
+          - /controller
+        args:
+          - --home=/helm
+          - --host=tiller-deploy.kube-system:44134
+        livenessProbe:
+          exec:
+            command:
+            - ls
+          initialDelaySeconds: 15
+          periodSeconds: 15
+        readinessProbe:
+          exec:
+            command:
+            - ls
+          initialDelaySeconds: 15
+          periodSeconds: 15
+        volumeMounts:
+          - name: home
+            mountPath: /helm
+          - name: helm-crd-controller-tiller-client-certs
+            mountPath: /helmcerts
+        env:
+          - name: HELM_TLS_CA_CERT
+            value: "/helmcerts/ca.crt"
+          - name: HELM_TLS_CERT
+            value: "/helmcerts/tls.crt"
+          - name: HELM_TLS_KEY
+            value: "/helmcerts/tls.key"
+          - name: HELM_TLS_VERIFY
+            value: "1"
+          - name: HELM_TLS_ENABLE
+            value: "1"
+          - name: TMPDIR
+            value: "/helm"
+      - name: helm-crd-admission-controller
+        image: "{{ .Values.helmcrd_admission_controller.image.repository }}:{{ .Values.helmcrd_admission_controller.image.tag }}"
+        imagePullPolicy: "{{ .Values.helmcrd_admission_controller.image.pullPolicy }}"
+        args:
+          - -tlsCertFile=/webhookcerts/tls.crt
+          - -tlsKeyFile=/webhookcerts/tls.key
+          - -alsologtostderr
+          - -v=4
+          - 2>&1
+        livenessProbe:
+          exec:
+            command:
+            - ls
+          initialDelaySeconds: 15
+          periodSeconds: 15
+        readinessProbe:
+          exec:
+            command:
+            - ls
+          initialDelaySeconds: 15
+          periodSeconds: 15
+        volumeMounts:
+          - name: helm-crd-admission-controller-certs
+            mountPath: /webhookcerts
+            readOnly: true
+        env:
+          - name: SERVICE_ACCOUNT_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.serviceAccountName
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
       volumes:
         - name: klusterlet-config
           secret:
             secretName: {{ .Values.connectionManager }}-hub-kubeconfig
+        - name: helm-crd-controller-tiller-client-certs
+          secret:
+            secretName: {{ template "application-manager.fullname" . }}-tiller-client-certs
+            defaultMode: 420
+        - name: helm-crd-admission-controller-certs
+          secret:
+            secretName: helm-crd-admission-controller-certs
+        - name: home
+          emptyDir: {}
       {{- if .Values.imagePullSecret }}
       imagePullSecrets:
       - name: "{{ .Values.imagePullSecret }}"

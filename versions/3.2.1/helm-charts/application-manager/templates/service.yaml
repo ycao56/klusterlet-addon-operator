@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: helm-crd-admission-controller-svc
+  labels:
+    app: {{ template "application-manager.name" . }}
+    release: {{ .Release.Name }}
+spec:
+  ports:
+  - port: 443
+    targetPort: 443
+  selector:
+    app: {{ template "application-manager.name" . }}
+    release: {{ .Release.Name }}

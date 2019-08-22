@@ -31,6 +31,10 @@
   group: klusterlet.mcm.ibm.com
   kind: Tiller
   chart: /opt/helm/versions/3.2.0/helm-charts/tiller
+- version: v1alpha1
+  group: klusterlet.mcm.ibm.com
+  kind: HelmCRDController
+  chart: /opt/helm/helm-charts/helm-crd-controller
 - version: v1beta1
   group: multicloud.ibm.com
   kind: MongoDB
