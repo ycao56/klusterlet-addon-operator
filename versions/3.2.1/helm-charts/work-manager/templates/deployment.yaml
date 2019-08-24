@@ -48,7 +48,7 @@ spec:
           - "--controller-config-file=/var/run/klusterlet/kubeconfig"
           - "--cluster-name={{ .Values.clusterName }}"
           - "--cluster-namespace={{ .Values.clusterNamespace }}"
-          - "--cluster-labels={{ if .Values.clusterLabels.cloud}}cloud={{.Values.clusterLabels.cloud}}{{ end }},{{ if .Values.clusterLabels.vendor}}vendor={{.Values.clusterLabels.vendor}}{{ end }},{{ if .Values.clusterLabels.environment}}environment={{.Values.clusterLabels.environment}}{{ end }},{{ if .Values.clusterLabels.region}}region={{.Values.clusterLabels.region}}{{ end }},{{ if .Values.clusterLabels.datacenter}}datacenter={{.Values.clusterLabels.datacenter}}{{ end }},{{ if .Values.clusterLabels.owner}}owner={{.Values.clusterLabels.owner}}{{ end }}"
+          - "--cluster-labels={{ template "cluster-label.string" . }}"
         {{- if .Values.tillerIntegration.enabled }}
         {{- if .Values.tillerIntegration.endpoint }}
           - "--tiller-endpoint={{ .Values.tillerIntegration.endpoint }}"
@@ -134,4 +134,3 @@ spec:
 {{ toYaml . | indent 8 }}
       {{- end }}
 {{- end }}
-

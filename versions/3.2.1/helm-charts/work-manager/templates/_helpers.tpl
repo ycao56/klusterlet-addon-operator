@@ -30,3 +30,13 @@ Create chart name and version as used by the chart label.
 {{- define "work-manager.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Create cluster label string base on values
+*/}}
+{{- define "cluster-label.string" -}}
+{{- range $key, $value := .Values.clusterLabels -}}
+{{- printf "%s=%s," $key $value -}}
+{{- end -}}
+{{- end -}}
+

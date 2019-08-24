@@ -14,13 +14,7 @@ connectionManager: null
 clusterName: null
 clusterNamespace: null
 
-clusterLabels:
-  cloud: "IBM"
-  vendor: "ICP"
-  environment: "Dev"
-  region: "US"
-  datacenter: "toronto"
-  owner: "marketing"
+clusterLabels: {}
 
 deployedOnHub: false
 
