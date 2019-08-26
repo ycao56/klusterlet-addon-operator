@@ -2,7 +2,7 @@ apiVersion: v1
 name: ibm-cert-manager
 version: 0.7.0
 tillerVersion: ">=2.7.0"
-kubeVersion: ">=1.9.0"
+kubeVersion: ">=1.9.0-0"
 appVersion: 0.7.0
 description: Service for issuing and managing certificates on IBM Cloud Private.
 keywords:
