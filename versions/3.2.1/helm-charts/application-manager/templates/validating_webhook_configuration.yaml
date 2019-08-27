@@ -1,3 +1,4 @@
+{{- if .Values.tillerIntegration.enabled }}
 apiVersion: admissionregistration.k8s.io/v1beta1
 kind: ValidatingWebhookConfiguration
 metadata:
@@ -11,7 +12,7 @@ webhooks:
         namespace: "{{ .Release.Namespace }}"
         name: helm-crd-admission-controller-svc
         path: "/validate"
-      caBundle: "{{ .Values.helmcrd_admission_controller.ca_bundle }}"
+      caBundle: "{{ .Values.helmCRDAdmissionController.caBundle }}"
     failurePolicy: Fail
     rules:
       - operations: [ "*" ]
@@ -19,3 +20,4 @@ webhooks:
         apiVersions: ["*"]
         resources: ["helmreleases"]
         scope: "*"
+{{- end }}

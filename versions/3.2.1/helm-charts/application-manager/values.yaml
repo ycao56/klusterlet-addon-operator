@@ -29,7 +29,7 @@ subscription:
 helmcrd:
   image:
     repository: ibmcom/helm-crd-controller
-    tag: 4.1.0
+    tag: 3.2.1
     pullPolicy: IfNotPresent
   hostname: mycluster.icp
   ip: 0.0.0.0
@@ -41,12 +41,12 @@ tillerIntegration:
   enabled: true
   endpoint: tiller-deploy
 
-helmcrd_admission_controller:
+helmCRDAdmissionController:
   image:
     repository: ibmcom/helm-crd-admission-controller
-    tag: 1.0.0
+    tag: 3.2.1
     pullPolicy: IfNotPresent
-  ca_bundle: null
+  caBundle: null
 
 nodeSelector: {}
 

@@ -133,6 +133,7 @@ spec:
         volumeMounts:
           - name: klusterlet-config
             mountPath: /var/run/klusterlet
+      {{- if .Values.tillerIntegration.enabled }}
       - name: helm-crd-controller
         image: "{{ .Values.helmcrd.image.repository }}:{{ .Values.helmcrd.image.tag }}"
         imagePullPolicy: "{{ .Values.helmcrd.image.pullPolicy }}"
@@ -182,8 +183,8 @@ spec:
           - name: TMPDIR
             value: "/helm"
       - name: helm-crd-admission-controller
-        image: "{{ .Values.helmcrd_admission_controller.image.repository }}:{{ .Values.helmcrd_admission_controller.image.tag }}"
-        imagePullPolicy: "{{ .Values.helmcrd_admission_controller.image.pullPolicy }}"
+        image: "{{ .Values.helmCRDAdmissionController.image.repository }}:{{ .Values.helmCRDAdmissionController.image.tag }}"
+        imagePullPolicy: "{{ .Values.helmCRDAdmissionController.image.pullPolicy }}"
         args:
           - -tlsCertFile=/webhookcerts/tls.crt
           - -tlsKeyFile=/webhookcerts/tls.key
@@ -215,10 +216,12 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
+      {{- end }}
       volumes:
         - name: klusterlet-config
           secret:
             secretName: {{ .Values.connectionManager }}-hub-kubeconfig
+        {{- if .Values.tillerIntegration.enabled }}
         - name: helm-crd-controller-tiller-client-certs
           secret:
             secretName: {{ template "application-manager.fullname" . }}-tiller-client-certs
@@ -226,6 +229,7 @@ spec:
         - name: helm-crd-admission-controller-certs
           secret:
             secretName: helm-crd-admission-controller-certs
+        {{- end }}
         - name: home
           emptyDir: {}
       {{- if .Values.imagePullSecret }}
