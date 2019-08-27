@@ -76,6 +76,10 @@ test:
 operator\:tools:
 	./build/install-operator-sdk.sh
 
+.PHONY: operator\:build\:helm
+operator\:build\:helm:
+	./build/build-helm-operator-image.sh
+
 .PHONY: operator\:build
 operator\:build:
 	$(info Building operator)
