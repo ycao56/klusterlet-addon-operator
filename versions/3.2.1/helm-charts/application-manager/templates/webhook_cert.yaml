@@ -22,5 +22,5 @@ spec:
     - "helm-crd-admission-controller-svc.{{ .Release.Namespace }}.svc"
   issuerRef:
     kind: ClusterIssuer
-    name: icp-ca-issuer
+    name: {{ .Values.tillerIntegration.certIssuer }}
   secretName: helm-crd-admission-controller-certs

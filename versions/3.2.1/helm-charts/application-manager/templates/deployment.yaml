@@ -150,7 +150,7 @@ spec:
           - /controller
         args:
           - --home=/helm
-          - --host=tiller-deploy.kube-system:44134
+          - "--host={{ .Values.tillerIntegration.endpoint }}"
         livenessProbe:
           exec:
             command:

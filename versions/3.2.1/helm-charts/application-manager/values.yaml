@@ -33,10 +33,13 @@ helmcrd:
     pullPolicy: IfNotPresent
   hostname: mycluster.icp
   ip: 0.0.0.0
-  tillerIntegration:
-    user: admin
-    certIssuer: icp-ca-issuer
-    autoGenSecret: true
+
+tillerIntegration:
+  user: admin
+  certIssuer: icp-ca-issuer
+  autoGenSecret: true
+  enabled: true
+  endpoint: tiller-deploy
 
 helmcrd_admission_controller:
   image:
