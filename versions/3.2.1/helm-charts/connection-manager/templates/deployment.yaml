@@ -39,6 +39,8 @@ spec:
       - name: operator
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
         args:
           - "/klusterlet-operator"
           - "--operator-configmap={{ .Release.Namespace }}/{{ template "connection-manager.fullname" . }}"

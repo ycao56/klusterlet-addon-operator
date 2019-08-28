@@ -34,6 +34,8 @@ spec:
       - name: mcm-service-registry
         image: "{{ .Values.serviceRegistry.image.repository }}:{{ .Values.serviceRegistry.image.tag }}"
         imagePullPolicy: {{ .Values.serviceRegistry.image.pullPolicy }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}  
         livenessProbe: null
         command: ["/mcm-service-registry-plugin"]
         args:

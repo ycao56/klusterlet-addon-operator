@@ -43,6 +43,8 @@ spec:
       - name: work-manager
         image: "{{ .Values.workManager.image.repository }}:{{ .Values.workManager.image.tag }}"
         imagePullPolicy: {{ .Values.workManager.image.pullPolicy }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
         args:
           - "/klusterlet"
           - "--controller-config-file=/var/run/klusterlet/kubeconfig"

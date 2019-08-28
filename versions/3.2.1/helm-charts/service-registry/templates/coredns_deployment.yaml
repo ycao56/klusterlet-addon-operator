@@ -33,6 +33,8 @@ spec:
       - name: mcm-svc-registry-dns
         image: "{{ .Values.coredns.image.repository }}:{{ .Values.coredns.image.tag }}"
         imagePullPolicy: {{ .Values.coredns.image.pullPolicy }}
+        resources:
+          {{- toYaml .Values.coredns.resources | nindent 10 }}
         args: [ "-conf", "/etc/coredns/Corefile" ]
         volumeMounts:
         - name: config-volume

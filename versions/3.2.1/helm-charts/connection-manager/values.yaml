@@ -7,7 +7,7 @@ enabled: true
 replicas: 1
 globalView:
   enabled: false
-  collectorLabels: ""
+  collectorLabels: "mcm.ibm.com/globalview=true"
 clusterName: null
 clusterNamespace: null
 
@@ -30,5 +30,13 @@ tolerations:
   effect: "NoSchedule"
 
 imagePullSecret: null
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 256Mi
 
 logLevel: 5
