@@ -61,14 +61,13 @@ spec:
         {{- end }}
         {{- end }}
           - "--helm-release-prefix={{ .Values.tillerIntegration.helmReleasePrefix }}"
+
         {{- if .Values.deployedOnHub }}
           - "--klusterlet-address={{ template "work-manager.fullname" . }}.{{ .Release.Namespace }}.svc"
         {{- else if eq .Values.service.type "LoadBalancer" }}
           - "--klusterlet-service={{ .Release.Namespace }}/{{ template "work-manager.fullname" . }}"
         {{- else if eq .Values.ingress.type "Ingress" }}
           - "--klusterlet-ingress={{ .Release.Namespace }}/{{ template "work-manager.fullname" . }}"
-        {{- else if eq .Values.ingress.type "Route" }}
-          - "--klusterlet-route={{ .Release.Namespace }}/{{ template "work-manager.fullname" . }}"
         {{- if .Values.ingress.host }}
           - "--klusterlet-address={{ .Values.ingress.host }}"
         {{- else }}
@@ -78,6 +77,7 @@ spec:
           - "--klusterlet-port={{ .Values.ingress.port }}"
         {{- end }}
         {{- else if eq .Values.ingress.type "Route" }}
+          - "--klusterlet-route={{ .Release.Namespace }}/{{ template "work-manager.fullname" . }}"
         {{- if .Values.ingress.host }}
           - "--klusterlet-address={{ .Values.ingress.host }}"
         {{- end }}
