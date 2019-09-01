@@ -1,14 +1,20 @@
+# Licensed Materials - Property of IBM
+# 5737-E67
+# (C) Copyright IBM Corporation 2019 All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+{{- if .Values.tillerIntegration.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
   name: helm-crd-admission-controller-svc
   labels:
-    app: {{ template "application-manager.name" . }}
+    app: {{ template "helm-crd.name" . }}
     release: {{ .Release.Name }}
 spec:
   ports:
   - port: 443
     targetPort: 443
   selector:
-    app: {{ template "application-manager.name" . }}
+    app: {{ template "helm-crd.name" . }}
     release: {{ .Release.Name }}
+{{- end }}

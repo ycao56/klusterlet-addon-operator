@@ -30,3 +30,23 @@ Create chart name and version as used by the chart label.
 {{- define "application-manager.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{- define "helm-crd.name" -}}
+{{- if .Values.nameOverride -}}
+{{- printf "%s-%s" .Values.nameOverride "helm-crd" | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- printf "%s-%s" .Chart.Name "helm-crd" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "helm-crd.fullname" -}}
+{{- if .Values.fullnameOverride -}}
+{{- printf "%s-%s" .Values.fullnameOverride "helm-crd" | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- if .Values.nameOverride -}}
+{{- printf "%s-%s" .Values.nameOverride "helm-crd" -}}
+{{- else -}}
+{{- printf "%s-%s" .Chart.Name "helm-crd" -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}

@@ -12,7 +12,7 @@ webhooks:
         namespace: "{{ .Release.Namespace }}"
         name: helm-crd-admission-controller-svc
         path: "/validate"
-      caBundle: "{{ .Values.helmCRDAdmissionController.caBundle }}"
+      caBundle: {{ .Values.helmCRDAdmissionController.caBundle }}
     failurePolicy: Fail
     rules:
       - operations: [ "*" ]

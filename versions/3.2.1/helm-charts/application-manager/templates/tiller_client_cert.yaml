@@ -2,9 +2,7 @@
 # 5737-E67
 # (C) Copyright IBM Corporation 2019 All Rights Reserved
 # US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
-
 {{- if .Values.tillerIntegration.enabled }}
-{{- if .Values.tillerIntegration.autoGenSecret}}
 apiVersion: certmanager.k8s.io/v1alpha1
 kind: Certificate
 metadata:
@@ -23,5 +21,4 @@ spec:
     kind: ClusterIssuer
     name: {{ .Values.tillerIntegration.certIssuer }}
   secretName: {{ template "application-manager.fullname" . }}-tiller-client-certs
-{{- end }}
 {{- end }}
