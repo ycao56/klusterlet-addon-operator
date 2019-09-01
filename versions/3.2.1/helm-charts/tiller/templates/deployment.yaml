@@ -36,7 +36,6 @@ spec:
         # release: {{ .Release.Name }}
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
-        seccomp.security.alpha.kubernetes.io/pod: docker/default
     spec:
       volumes:
       - name: tiller-certs
