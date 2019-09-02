@@ -21,7 +21,7 @@ serviceRegistry:
 coredns:
   image:
     repository: ibmcom/coredns
-    tag: 1.2.6
+    tag: 1.2.6.1
     pullPolicy: IfNotPresent
   resources:
     requests:
