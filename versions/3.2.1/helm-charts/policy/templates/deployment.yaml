@@ -58,7 +58,7 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: "{{ .Values.image.pullPolicy }}"
         resources:
-          {{- toYaml .Values.coredns.resources | nindent 10 }}
+          {{- toYaml .Values.resources | nindent 10 }}
         command: ["sync-controller"]
         args:
           - "--remote-kubeconfig=/var/run/klusterlet/kubeconfig"
