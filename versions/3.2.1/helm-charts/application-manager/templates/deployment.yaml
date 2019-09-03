@@ -42,6 +42,8 @@ spec:
       - name: deployable-controller
         image: "{{ .Values.deployable.image.repository }}:{{ .Values.deployable.image.tag }}"
         imagePullPolicy: "{{ .Values.deployable.image.pullPolicy }}"
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
         livenessProbe:
           exec:
             command:
@@ -87,6 +89,8 @@ spec:
       - name: subscription-controller
         image: "{{ .Values.subscription.image.repository }}:{{ .Values.subscription.image.tag }}"
         imagePullPolicy: "{{ .Values.subscription.image.pullPolicy }}"
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
         livenessProbe:
           exec:
             command:
