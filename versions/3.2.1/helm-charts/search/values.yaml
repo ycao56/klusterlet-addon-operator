@@ -9,7 +9,7 @@ clusterNamespace: null
 
 image:
   repository: ibmcom/search-collector
-  tag: 3.2.0
+  tag: 3.2.1
   pullPolicy: IfNotPresent
 
 tillerIntegration:
@@ -25,7 +25,7 @@ resources:
     memory: 128Mi
     cpu: 25m
   limits:
-    memory: 256Mi
+    memory: 512Mi
     cpu: 250m
 
 nodeSelector: {}
