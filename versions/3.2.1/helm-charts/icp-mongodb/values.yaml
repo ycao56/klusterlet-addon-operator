@@ -36,10 +36,16 @@ curl:
 podAnnotations: {}
 
 resources:
-  limits:
-    memory: 8Gi
   requests:
-    memory: 4Gi
+    memory: 512Mi
+  limits:
+    memory: 1Gi
+
+# With WiredTiger, MongoDB utilizes both the WiredTiger internal cache and the filesystem cache.
+# Recommand to change this to ~40% of your memory limit for container
+# This parameter takes a float number
+wiredTigerCacheSizeGb: 0.5
+
 
 ## Node selector
 ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector

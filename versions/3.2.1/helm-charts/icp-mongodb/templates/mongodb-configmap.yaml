@@ -11,6 +11,9 @@ data:
   mongod.conf: |
     storage:
       dbPath: /data/db
+      wiredTiger:
+        engineConfig:
+          cacheSizeGB: {{ .Values.wiredTigerCacheSizeGb }}
     net:
 {{- if eq  .Values.network_ip_version "ipv6" }}
       ipv6: true
