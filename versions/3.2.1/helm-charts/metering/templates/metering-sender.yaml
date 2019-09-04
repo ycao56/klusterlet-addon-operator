@@ -154,6 +154,8 @@ spec:
               value: "false"
             - name: HC_DM_MCM_RECEIVER_ENABLED
               value: "false"
+            - name: HC_DM_MCMREADER_ENABLED
+              value: "false"
             - name: HC_DM_MCM_SENDER_ENABLED
               value: "true"
             - name: HC_DM_IS_ICP
