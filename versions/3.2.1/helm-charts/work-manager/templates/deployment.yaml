@@ -61,7 +61,6 @@ spec:
         {{- end }}
         {{- end }}
           - "--helm-release-prefix={{ .Values.tillerIntegration.helmReleasePrefix }}"
-
         {{- if .Values.deployedOnHub }}
           - "--klusterlet-address={{ template "work-manager.fullname" . }}.{{ .Release.Namespace }}.svc"
         {{- else if eq .Values.service.type "LoadBalancer" }}
@@ -86,6 +85,9 @@ spec:
         {{- end }}
         {{- end }}
         {{- if .Values.prometheusIntegration.enabled }}
+        {{- if .Values.prometheusIntegration.scrapeTarget }}
+          - "--prometheus-scrape-target={{ .Values.prometheusIntegration.scrapeTarget }}"
+        {{- end }}
         {{- if .Values.prometheusIntegration.service }}
           - "--prometheus-service={{ .Values.prometheusIntegration.service }}"
         {{- end }}
