@@ -29,6 +29,12 @@ spec:
         controller: "operator"
         release: {{ .Release.Name }}
     spec:
+      hostNetwork: false
+      hostPID: false
+      hostIPC: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
       serviceAccountName: {{ template "service-registry.fullname" . }}
       containers:
       - name: mcm-service-registry
@@ -53,6 +59,15 @@ spec:
         {{- if .Values.istioServiceEntryRegistryNamespace }}
           - "--istio-serviceentry-registry-namespace={{ .Values.istioServiceEntryRegistryNamespace }}"
         {{- end}}
+        securityContext:
+          privileged: false
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1000
+          capabilities:
+            drop:
+              - ALL
         volumeMounts:
           - name: klusterlet-config
             mountPath: /var/run/hub-kubeconfig

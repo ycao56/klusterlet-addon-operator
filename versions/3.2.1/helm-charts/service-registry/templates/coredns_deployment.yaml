@@ -28,6 +28,9 @@ spec:
         release: {{ .Release.Name }}
         component: mcm-svc-registry-dns
     spec:
+      hostNetwork: false
+      hostPID: false
+      hostIPC: false
       serviceAccountName: {{ template "service-registry.fullname" . }}
       containers:
       - name: mcm-svc-registry-dns
@@ -36,6 +39,15 @@ spec:
         resources:
           {{- toYaml .Values.coredns.resources | nindent 10 }}
         args: [ "-conf", "/etc/coredns/Corefile" ]
+        securityContext:
+          privileged: false
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            add:
+              - NET_BIND_SERVICE
+            drop:
+              - ALL
         volumeMounts:
         - name: config-volume
           mountPath: /etc/coredns
