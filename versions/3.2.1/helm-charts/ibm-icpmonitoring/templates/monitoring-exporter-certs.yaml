@@ -1,9 +1,8 @@
+{{- if and (not .Values.tls.exporter.existingSecretName) .Values.tls.enabled -}}
 # Licensed Materials - Property of IBM
 # 5737-E67
 # (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
 # US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
-
-{{- if and (not .Values.tls.exporter.existingSecretName) .Values.tls.enabled -}}
 
 apiVersion: certmanager.k8s.io/v1alpha1
 kind: Certificate
