@@ -1,3 +1,8 @@
+# Licensed Materials - Property of IBM
+# 5737-E67
+# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
 #
 # The metering-reader DaemonSet deploys a pod on every node in a K8s cluster to collect information
 # and send it to the metering service.
