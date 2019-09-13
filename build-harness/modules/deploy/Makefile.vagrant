@@ -1,0 +1,28 @@
+VAGRANT_GITHUB_USER ?= $(GITHUB_USER)
+VAGRANT_GITHUB_TOKEN ?= $(GITHUB_TOKEN)
+VAGRANT_GIT_TF_DEPLOY_PROJECT := "https://$(VAGRANT_GITHUB_USER):$(VAGRANT_GITHUB_TOKEN)@github.ibm.com/ICP-DevOps/tf_icp_lxd.git"
+VAGRANT_GIT_TF_DEPLOY_BRANCH ?= master
+VAGRANT_DEPLOY_DIR ?= .vagrant.deploy/
+VAGRANT_TERRAFORM_VARS_FILE ?= .vagrant.tfvars
+
+.PHONY: deploy\:vagrant
+## Deploy ICP localy using vagrant
+deploy\:vagrant:
+	@$(SELF) vagrant:up
+	@$(GIT) clone -b $(VAGRANT_GIT_TF_DEPLOY_BRANCH) $(VAGRANT_GIT_TF_DEPLOY_PROJECT) $(VAGRANT_DEPLOY_DIR)
+	ln -s $(VAGRANT_DEPLOY_DIR)/terraform.d .
+	@$(SELF) terraform:apply TERRAFORM_VARS_FILE=$(VAGRANT_TERRAFORM_VARS_FILE) TERRAFORM_DIR=$(VAGRANT_DEPLOY_DIR)
+
+.PHONY: deploy\:vagrant\:destroy
+## Destroy local ICP vagrant deployment
+deploy\:vagrant\:destroy:
+	@$(SELF) terraform:destroy TERRAFORM_VARS_FILE=$(VAGRANT_TERRAFORM_VARS_FILE) TERRAFORM_DIR=$(VAGRANT_DEPLOY_DIR)
+	@$(SELF) vagrant:destroy
+
+.PHONY: deploy\:vagrant\:clean
+## Clean up all vagrant deployment resources
+deploy\:vagrant\:clean: %clean:
+	@$(SELF) vagrant:destroy
+ifeq ($(shell test -d $(VAGRANT_DEPLOY_DIR) && echo -n yes),yes)
+	@rm -rf .config .vagrant $(VAGRANT_DEPLOY_DIR)
+endif

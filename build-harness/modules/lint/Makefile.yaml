@@ -1,0 +1,17 @@
+YAML_LINT_VERSION ?= 1.15.0
+YAML_LINT_DIR ?= .
+YAML_LINT_RULES_FILE ?= $(BUILD_HARNESS_PATH)/modules/lint/rules/yaml-lint-default-rules.yaml
+YAML_LINT := yamllint
+
+.PHONY: lint\:yaml\:install
+## Install yamllint cli
+lint\:yaml\:install: %install:
+	@sudo pip install yamllint==$(YAML_LINT_VERSION)
+	@$(SELF) -s jq:install
+	@$(YAML_LINT) --version
+
+.PHONY: lint\:yaml
+## Run yamllint against LINT_DIR
+lint\:yaml:
+	@$(SELF) -s lint:yaml:install
+	@$(YAML_LINT) -c $(YAML_LINT_RULES_FILE) $(YAML_LINT_DIR)

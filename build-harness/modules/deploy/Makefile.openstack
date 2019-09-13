@@ -1,0 +1,25 @@
+OPENSTACK_GITHUB_USER ?= $(GITHUB_USER)
+OPENSTACK_GITHUB_TOKEN ?= $(GITHUB_TOKEN)
+OPENSTACK_GIT_TF_DEPLOY_PROJECT ?= "https://$(OPENSTACK_GITHUB_USER):$(OPENSTACK_GITHUB_TOKEN)@github.ibm.com/ICP-DevOps/tf_icp_os.git"
+OPENSTACK_GIT_TF_DEPLOY_BRANCH ?= master
+OPENSTACK_DEPLOY_DIR ?= .openstack.deploy/
+OPENSTACK_TERRAFORM_VARS_FILE ?= .openstack.tfvars
+
+.PHONY: deploy\:openstack
+## Deploy on openstack
+deploy\:openstack:
+	@$(GIT) clone -b $(OPENSTACK_GIT_TF_DEPLOY_BRANCH) $(OPENSTACK_GIT_TF_DEPLOY_PROJECT) $(OPENSTACK_DEPLOY_DIR)
+	@$(SELF) deploy:openstack-kp OPENSTACK_KP_TERRAFORM_VARS_FILE=$(OPENSTACK_TERRAFORM_VARS_FILE)
+	@$(SELF) terraform:apply TERRAFORM_VARS_FILE=$(OPENSTACK_TERRAFORM_VARS_FILE) TERRAFORM_DIR=$(OPENSTACK_DEPLOY_DIR)
+
+.PHONY: deploy\:openstack\:destroy
+## Destroy openstack deployment resources
+deploy\:openstack\:destroy: %destroy:
+	@$(SELF) terraform:destroy TERRAFORM_VARS_FILE=$(OPENSTACK_TERRAFORM_VARS_FILE) TERRAFORM_DIR=$(OPENSTACK_DEPLOY_DIR)
+
+.PHONY: deploy\:openstack\:clean
+## Clean up all openstack deployment resources
+deploy\:openstack\:clean: %clean: %destroy
+ifeq ($(shell test -d $(OPENSTACK_DEPLOY_DIR) && echo -n yes),yes)
+	@rm -rf $(OPENSTACK_DEPLOY_DIR)
+endif

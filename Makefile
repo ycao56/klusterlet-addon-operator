@@ -108,7 +108,7 @@ utils\:charts\:versions:
 utils\:charts\:version:
 	ln -sfn versions/$$version/watches.yaml watches.yaml
 	ln -sfn versions/$$version/helm-charts helm-charts
-	
+
 .PHONY: utils\:link\:setup
 utils\:link\:setup:
 	sudo ln -sfn $$PWD/versions /opt
