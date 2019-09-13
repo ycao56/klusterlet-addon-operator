@@ -37,12 +37,6 @@ spec:
         productID: "c18240a57c1c41969d5e81b39435da6c"
         productVersion: "3.2.0"
     spec:
-      hostNetwork: false
-      hostPID: false
-      hostIPC: false
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
       serviceAccountName: {{ template "work-manager.fullname" . }}
       containers:
       {{- if .Values.workManager.enabled }}
@@ -106,15 +100,6 @@ spec:
         {{- end }}
         livenessProbe: null
         readinessProbe: null
-        securityContext:
-          privileged: false
-          readOnlyRootFilesystem: true
-          allowPrivilegeEscalation: false
-          runAsNonRoot: true
-          runAsUser: 1000
-          capabilities:
-            drop:
-              - ALL
         volumeMounts:
           - name: tmp
             mountPath: /tmp
