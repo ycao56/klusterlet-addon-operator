@@ -51,14 +51,7 @@ jobs:
           fi
 
       after_script:
-        - echo "TRAVIS_PULL_REQUEST = $TRAVIS_PULL_REQUEST"
-        - echo "TRAVIS_TEST_RESULT  = $TRAVIS_TEST_RESULT"
-        - |
-          if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_TEST_RESULT" == "1" ]]; then
-            ./build/slack-notification.sh
-          else
-            echo "Slack notification not sent"
-          fi
+        - test "$TRAVIS_PULL_REQUEST" = "false" && test "$TRAVIS_TEST_RESULT" = "1" && ./build/slack-notification.sh || echo "Slack notification not sent"
 
     - os: linux-ppc64le
 
@@ -87,14 +80,7 @@ jobs:
           fi
 
       after_script:
-        - echo "TRAVIS_PULL_REQUEST = $TRAVIS_PULL_REQUEST"
-        - echo "TRAVIS_TEST_RESULT  = $TRAVIS_TEST_RESULT"
-        - |
-          if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_TEST_RESULT" == "1" ]]; then
-            ./build/slack-notification.sh
-          else
-            echo "Slack notification not sent"
-          fi
+        - test "$TRAVIS_PULL_REQUEST" = "false" && test "$TRAVIS_TEST_RESULT" = "1" && ./build/slack-notification.sh || echo "Slack notification not sent"
 
     - os: linux-s390
 
@@ -123,14 +109,7 @@ jobs:
           fi
 
       after_script:
-        - echo "TRAVIS_PULL_REQUEST = $TRAVIS_PULL_REQUEST"
-        - echo "TRAVIS_TEST_RESULT  = $TRAVIS_TEST_RESULT"
-        - |
-          if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_TEST_RESULT" == "1" ]]; then
-            ./build/slack-notification.sh
-          else
-            echo "Slack notification not sent"
-          fi
+        - test "$TRAVIS_PULL_REQUEST" = "false" && test "$TRAVIS_TEST_RESULT" = "1" && ./build/slack-notification.sh || echo "Slack notification not sent"
 
     - stage: "Build Multi-Arch Image"
 
@@ -152,11 +131,4 @@ jobs:
           fi
 
       after_script:
-        - echo "TRAVIS_PULL_REQUEST = $TRAVIS_PULL_REQUEST"
-        - echo "TRAVIS_TEST_RESULT  = $TRAVIS_TEST_RESULT"
-        - |
-          if [[ "$TRAVIS_PULL_REQUEST" == "false" && "$TRAVIS_TEST_RESULT" == "1" ]]; then
-            ./build/slack-notification.sh
-          else
-            echo "Slack notification not sent"
-          fi
+        - test "$TRAVIS_PULL_REQUEST" = "false" && test "$TRAVIS_TEST_RESULT" = "1" && ./build/slack-notification.sh || echo "Slack notification not sent"
