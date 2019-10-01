@@ -1,5 +1,0 @@
-junitparser>=1.2.0
-more-itertools
-pyyaml
-requests
-tap.py
