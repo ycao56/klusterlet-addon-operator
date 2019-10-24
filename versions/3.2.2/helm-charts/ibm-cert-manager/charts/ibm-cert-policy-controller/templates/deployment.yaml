@@ -1,0 +1,86 @@
+# Licensed Materials - Property of IBM
+# 5737-E67
+# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ include "controller.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: {{ include "controller.fullname" . }}
+    chart: {{ include "controller.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ include "controller.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        k8s-app: {{ include "controller.name" . }}
+        app: {{ include "controller.name" . }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+        chart: {{ include "controller.chart" . }}
+      annotations:
+        productID: "1293014934"
+        productName: {{ include "controller.name" . }}
+        productVersion: {{ .Chart.Version }}
+    spec:
+      securityContext:
+        runAsUser: {{ .Values.securityContext.pod.runAsUser }}
+        runAsNonRoot: {{ .Values.securityContext.pod.runAsNonRoot }}
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        args:
+        - --v={{ .Values.args.verbosity }}
+        {{- if .Values.args.frequency }}
+        - --update-frequency={{ .Values.args.frequency }}
+        {{- end }}
+        {{- if .Values.args.defaultDuration }}
+        - --default-duration={{ .Values.args.defaultDuration }}
+        {{- end }}
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - pgrep cert-policy -l
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          exec:
+            command: ["sh", "-c", "exec echo start certificate-policy-controller"]
+          initialDelaySeconds: 10
+          timeoutSeconds: 2
+        resources:
+          limits:
+            memory: "300Mi"
+            cpu: "200m"
+          requests:
+            memory: "150Mi"
+            cpu: "100m"
+        securityContext:
+          allowPrivilegeEscalation: {{ .Values.securityContext.container.allowPrivilegeEscalation }}
+          runAsUser: {{ .Values.securityContext.container.runAsUser }}
+          readOnlyRootFilesystem: {{ .Values.securityContext.container.readOnlyRootFilesystem }}
+          runAsNonRoot: {{ .Values.securityContext.container.runAsNonRoot }}
+      {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      hostNetwork: true
+{{- if .Values.podDnsPolicy }}
+      dnsPolicy: {{ .Values.podDnsPolicy }}
+{{- end }}

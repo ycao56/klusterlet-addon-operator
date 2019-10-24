@@ -1,0 +1,28 @@
+{{- if .Values.tillerIntegration.enabled }}
+# Licensed Materials - Property of IBM
+# 5737-E67
+# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: helm-crd-admission-controller-cfg
+  labels:
+    app: helm-crd-admission-controller
+webhooks:
+  - name: user-check.ibm.com
+    clientConfig:
+      service:
+        namespace: "{{ .Release.Namespace }}"
+        name: helm-crd-admission-controller-svc
+        path: "/validate"
+      caBundle: {{ .Values.helmCRDAdmissionController.caBundle }}
+    failurePolicy: Fail
+    rules:
+      - operations: [ "*" ]
+        apiGroups: ["*"]
+        apiVersions: ["*"]
+        resources: ["helmreleases"]
+        scope: "*"
+{{- end }}

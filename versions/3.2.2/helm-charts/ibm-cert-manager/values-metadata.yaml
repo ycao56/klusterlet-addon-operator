@@ -1,0 +1,266 @@
+# Licensed Materials - Property of IBM
+# 5737-E67
+# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
+global:
+  __metadata:
+    label: "Global Chart Settings"
+    description: "Global values for cert-manager chart"
+  imagePullSecrets:
+    __metadata:
+      label: "Image Pull Secrets"
+      description: "Any secrets required to pull cert-manager images."
+      type: "string"
+      required: false
+  priorityClassName:
+    __metadata:
+      label: "Priority Class Name"
+      description: "Optional priority class to be used for the cert-manager pods."
+      type: "string"
+      required: false
+  leaderElection:
+    namespace:
+      __metadata:
+        label: "The namespace for ConfigMap"
+        description: "Override the namespace used to store the ConfigMap for leader election"
+        type: "string"
+        required: false
+  rbac:
+    create:
+      __metadata:
+        label: "Rbac for certificate resources"
+        description: "If true, create and use RBAC resources"
+        type: "boolean"
+        required: true
+replicaCount:
+  __metadata:
+    label: "Replicas"
+    description: "Number of cert-manager replicas"
+    type: "number"
+    required: true
+strategy:
+  __metadata:
+    label: "Strategy"
+    description: "The type of update strategy to apply to cert-manager."
+    type: "string"
+    required: false
+image:
+  __metadata:
+    label: "Image"
+    description: "Image to be used for cert-manager deployment"
+  repository:
+    __metadata:
+      label: "Image Repository"
+      description: "Full repository and path to Certificate Manager image."
+      type: "string"
+      required: true
+  tag:
+    __metadata:
+      label: "Image Tag"
+      description: "The tag identifying which Certificate Manager image to deploy."
+      type: "string"
+      required: true
+  pullPolicy:
+    __metadata:
+      label: "Pull Policy"
+      description: "The policy used by Kubernetes for images."
+      type: "string"
+      required: true
+      options:
+      - label: "Never"
+        value: "Never"
+      - label: "IfNotPresent"
+        value: "IfNotPresent"
+      - label: "Always"
+        value: "Always"
+solver:
+  __metadata:
+    label: "ACME Solver"
+    description: "Configuration for ACME Solver"
+  repository:
+    __metadata:
+      label: "ACME Solver Repository"
+      description: "Full repository and path to Certificate Manager ACME Solver image."
+      type: "string"
+      required: true
+  tag:
+    __metadata:
+      label: "Image Tag"
+      description: "The tag identifying which Certificate Manager ACME Solver image to deploy."
+      type: "string"
+      required: true
+clusterResourceNamespace:
+  __metadata:
+    label: "Cluster Resource Namespace"
+    description: "The namespace used to store secrets for Issuers that are cluster-scoped."
+    type: "string"
+    required: false
+serviceAccount:
+  __metadata:
+    label: "Service Account"
+    description: "Creates a new service account."
+  create:
+    __metadata:
+      label: "Create"
+      description: "If true, create a new service account."
+      type: "boolean"
+      required: true
+  name:
+    __metadata:
+      label: "Service Account Name"
+      description: "Service account to be used. If not set and serviceAccount.create is true, a name is generated using the fullname template."
+      type: "string"
+      required: false
+extraArgs:
+  __metadata:
+    label: "Additional Arguments"
+    description: "Optional flags for cert-manager"
+    type: "string"
+    required: false
+extraEnv:
+  __metadata:
+    label: "Additional Environment Variables"
+    description: "List of additional environment variables and their values to be included in a cert-manager deployment."
+    type: "string"
+    required: false
+securityContext:
+  __metadata:
+    label: "Security Context"
+    description: "The security context cert-manager uses."
+  pod:
+    __metadata:
+      label: "Pod"
+      description: "The security context of cert-manager's pod."
+    enabled:
+      __metadata:
+        label: "Enabled" 
+        description: "If true, enables the security context where cert-manager is limited to a functional group and run as the user specified."
+        type: "boolean"
+    fsGroup:
+      __metadata:
+        label: "FS Group"
+        description: "Functional group name to run as."
+        required: false
+        type: "string"
+    runAsUser:
+      __metadata:
+        label: "Run As User"
+        description: "The user to run cert-manager as in all the containers within the cert-manager pod."
+        type: "string"
+  container:
+    __metadata:
+      label: "Container"
+      description: "The security context of cert-manager's container."
+    allowPrivilegeEscalation:
+      __metadata:
+        label: "Allow Privilege Escalation"
+        description: "If true, allows a user within the cert-manager container to escalate their privilege to root."
+        type: "boolean"
+    runAsUser:
+      __metadata:
+        label: "Run As User"
+        description: "The user to run cert-manager as in the container."
+        type: "string"
+    runAsNonRoot:
+      __metadata:
+        label: "Run As Non-Root"
+        description: "If true, prevents cert-manager container from being run as a root user."
+        type: "boolean"
+    readOnlyRootFilesystem:
+      __metadata:
+        label: "Read Only File System"
+        description: "If true, then only allows reads from the file system."
+        type: "boolean"        
+podAnnotations:
+  __metadata:
+    name: "podAnnotations"
+    label: "Pod Annotations"
+    description: "Annotations to add to the cert-manager pod"
+    immutable: false
+    required: false
+    type: "string"
+podLabels:
+  __metadata:
+    name: "podLabels"
+    label: "Pod Labels"
+    description: "Labels to add to the cert-manager pod"
+    type: "string"
+    immutable: false
+    required: false
+podDnsPolicy:
+  __metadata:
+    label: "Pod DNS Policy"
+    description: "The dns policy that cert manager uses."
+    type: "string"
+    immutable: false
+    required: false
+    options:
+    - label: Default
+      value: Default
+    - label: ClusterFirst
+      value: ClusterFirst
+    - label: ClusterFirstWithHostNet
+      value: ClusterFirstWithHostNet
+    - label: None
+      value: None
+nodeSelector:
+  __metadata:
+    name: "nodeSelector"
+    label: "Node selector"
+    description: "Node labels for pod assignment"
+    type: "string"
+    immutable: false
+    required: false
+ingressShim:
+  __metadata:
+    label: "Ingress Shim"
+    description: "Set default names for ingress resources."
+    type: "string"
+    hidden: true
+    required: false
+resources:
+  __metadata:
+    label: "Resources"
+    description: "Resource requests and limits for cpu and memory for cert-manager deployment"
+  requests:
+    __metadata:
+      label: "Requests"
+      description: "The amount of cpu/memory requested by cert-manager's deployment"
+    memory:
+      __metadata:
+        label: "Memory request"
+        description: "The amount of memory cert-manager requests"
+        required: false
+        type: "string"
+  limits:
+    __metadata:
+      label: "Limits"
+      description: "The amount of cpu/memory cert-manager deployment is limited to"
+    memory:
+      __metadata:
+        label: "Memory limit"
+        description: "The memory limit cert-manager has"
+        required: true
+        type: "string"
+podRestart:
+  __metadata:
+    label: "Restart Pods"
+    description: "Cert-Manager's ability to restart pods when the certificates the pod uses are refreshed."
+  enabled:
+    __metadata:
+      label: "Enabled"
+      description: "If true, allows cert-manager to restart pods that mount certificates when the certificates are refreshed."
+      required: false
+      type: "boolean"
+tolerations:
+  __metadata:
+    label: "Tolerations"
+    description: "When specified, tolerates any taint that matches the triple <key, value, effect>"
+    type: "string"
+    required: false
+affinity:
+  __metadata:
+    label: "Affinity"
+    description: "Pod's affinity"
+    hidden: true

@@ -1,0 +1,54 @@
+# Licensed Materials - Property of IBM
+# 5737-E67
+# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
+---
+- version: v1beta1
+  group: multicloud.ibm.com
+  kind: Metering
+  chart: /opt/helm/versions/3.2.2/helm-charts/metering
+- version: v1beta1
+  group: multicloud.ibm.com
+  kind: MongoDB
+  chart: /opt/helm/versions/3.2.2/helm-charts/icp-mongodb
+- version: v1beta1
+  group: multicloud.ibm.com
+  kind: CertManager
+  chart: /opt/helm/versions/3.2.2/helm-charts/ibm-cert-manager
+- version: v1beta1
+  group: multicloud.ibm.com
+  kind: ConnectionManager
+  chart: /opt/helm/versions/3.2.2/helm-charts/connection-manager
+- version: v1beta1
+  group: multicloud.ibm.com
+  kind: WorkManager
+  chart: /opt/helm/versions/3.2.2/helm-charts/work-manager
+- version: v1beta1
+  group: multicloud.ibm.com
+  kind: PolicyController
+  chart: /opt/helm/versions/3.2.2/helm-charts/policy
+- version: v1beta1
+  group: multicloud.ibm.com
+  kind: SearchCollector
+  chart: /opt/helm/versions/3.2.2/helm-charts/search
+- version: v1beta1
+  group: multicloud.ibm.com
+  kind: TopologyCollector
+  chart: /opt/helm/versions/3.2.2/helm-charts/topology
+- version: v1beta1
+  group: multicloud.ibm.com
+  kind: ServiceRegistry
+  chart: /opt/helm/versions/3.2.2/helm-charts/service-registry
+- version: v1beta1
+  group: multicloud.ibm.com
+  kind: Tiller
+  chart: /opt/helm/versions/3.2.2/helm-charts/tiller
+- version: v1beta1
+  group: multicloud.ibm.com
+  kind: ApplicationManager
+  chart: /opt/helm/versions/3.2.2/helm-charts/application-manager
+- version: v1beta1
+  group: multicloud.ibm.com
+  kind: Monitoring
+  chart: /opt/helm/versions/3.2.2/helm-charts/ibm-icpmonitoring

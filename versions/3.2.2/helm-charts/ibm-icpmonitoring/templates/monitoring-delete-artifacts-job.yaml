@@ -1,0 +1,102 @@
+{{- if .Values.tls.enabled -}}
+# Licensed Materials - Property of IBM
+# 5737-E67
+# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    app: {{ template "prometheus.fullname" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  name: {{ template "monitoring.fullname" . }}-cert-delete-job
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": post-delete
+    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-weight": "99"
+spec:
+  backoffLimit: 5
+  activeDeadlineSeconds: 300
+  template:
+    metadata:
+      labels:
+        app: {{ template "prometheus.fullname" . }}
+        chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+      name: cert
+    spec:
+{{ include "monitoring.affinity" . | indent 6 }}
+    {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets }}
+    {{- end }}
+      containers:
+      - name: cert-gen
+        image: {{ .Values.curl.image.repository }}:{{ .Values.curl.image.tag }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        command:
+        - delete_cert.sh
+        env:
+          - name: releaseNameSpace
+            value: {{ .Release.Namespace }}
+        volumeMounts:
+        - name: script
+          mountPath: /usr/local/bin/delete_cert.sh
+          subPath: delete_cert.sh
+      volumes:
+      - name: script
+        configMap:
+          name: {{ template "monitoring.fullname" . }}-cert-delete
+          items:
+          - key: delete_cert.sh
+            path: delete_cert.sh
+            mode: 0777
+      restartPolicy: Never
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: {{ template "prometheus.fullname" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  name: {{ template "monitoring.fullname" . }}-cert-delete
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": post-delete
+    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-weight": "98"
+data:
+  delete_cert.sh: |
+    #!/bin/bash
+    # Delete the secrets
+    delete_secret() {
+        curl -k -X DELETE -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" \
+          https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT_HTTPS/api/v1/namespaces/$releaseNameSpace/secrets/$1
+    }
+    delete_job() {
+        curl -k -X DELETE -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" \
+          https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT_HTTPS/apis/batch/v1/namespaces/$releaseNameSpace/jobs/$1
+    }
+  {{- if .Values.alertmanager.persistentVolume.enabled }}
+    delete_job {{ template "prometheus.fullname" . }}-alertmanager-job
+  {{- end }}
+  {{- if .Values.prometheus.persistentVolume.enabled }}
+    delete_job {{ template "prometheus.fullname" . }}-job
+  {{- end }}
+    echo "removing the secrets"
+    delete_secret {{ template "monitoring.fullname" . }}-ca-cert
+    delete_secret {{ template "monitoring.fullname" . }}-certs
+    delete_secret {{ template "monitoring.fullname" . }}-client-certs
+    delete_secret {{ template "monitoring.fullname" . }}-exporter-certs
+    delete_secret {{ template "monitoring.fullname" . }}-elasticsearch-exporter-client-certs
+    echo done
+{{- end -}}

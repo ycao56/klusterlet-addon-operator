@@ -1,7 +1,0 @@
-IBM cert-manager has been deployed successfully!
-
-In order to begin issuing certificates, you will need to set up a ClusterIssuer. An icp-ca-issuer is automatically created as a ClusterIssuer for each IBM Cloud Private installation. This Issuer contains the self-signed IBM Cloud Private cluster CA and is accessible from all namespaces. More Issuers (namespace-scoped) or ClusterIssuers (cluster-scoped) can be defined.
-
-More information on generating certificates can be found in our documentation:
-
-https://www.ibm.com/support/knowledgecenter/en/SSBS6K_3.1.0/manage_applications/create_cert.html

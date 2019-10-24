@@ -1,0 +1,120 @@
+# Licensed Materials - Property of IBM
+# 5737-E67
+# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
+replicas:
+  __metadata:
+    label: "Replicas"
+    description: "The number of controllers to create"
+    type: "number"
+    required: true
+image:
+  __metadata:
+    label: "Image Settings"
+    description: "Specify the image used to run in this deployment"
+  repository:
+    __metadata:
+      label: "Repository"
+      description: "Image repository"
+      type: "string"
+      required: true
+  tag:
+    __metadata:
+      label: "Tag"
+      description: "Image tag"
+      type: "string"
+      required: true
+  pullPolicy:
+    __metadata:
+      label: "Pull Policy"
+      description: "The policy used by Kubernetes to retrieve the image for this deployment."
+      type: "string"
+      required: true
+      options:
+      - label: "Never"
+        value: "Never"
+      - label: "IfNotPresent"
+        value: "IfNotPresent"
+      - label: "Always"
+        value: "Always"
+args:
+  __metadata:
+    label: "Command-line Arguments"
+    description: "The command line arguments for the controller program."
+  frequency:
+    __metadata:
+      label: "Update Frequency"
+      description: "How often (in seconds) the controller checks for and updates policies."
+      required: false
+      type: "number"
+  verbosity:
+    __metadata:
+      label: "Verbosity"
+      description: "The level of verbosity you want the logs of this deployment to be. The higher the level, the more verbose the logs will be."
+      required: true
+      type: "number"
+  defaultDuration:
+    __metadata:
+      label: "Default Duration"
+      description: "The default minimum duration that a certificate must be greater than to be compliant if a duration on a policy is not specified. Must be in golang's time format."
+      required: false
+      type: "string"
+securityContext:
+  __metadata:
+    label: "Security Context"
+    description: "The security context used for the certificate policy controller pod."
+  pod:
+    __metadata:
+      label: "Pod"
+      description: "Security context at the pod level"
+    runAsUser:
+      __metadata:
+        label: "Run As User"
+        description: "Specifies which user to run as within the container."
+        type: "string"
+        required: true
+    runAsNonRoot:
+      __metadata:
+        label: "Run As Non-Root"
+        description: "If true, then the user in the running container must be a non-root user."
+        type: "boolean"
+        required: true
+  container:
+    __metadata:
+      label: "Container"
+      description: "Security context at the container level, overrides the pod level securityContext"
+    allowPrivilegeEscalation:
+      __metadata:
+        label: "Allow Privilege Escalation"
+        description: "Allows the user running in the container to gain root privileges if set to true."
+        type: "boolean"
+        required: true
+    runAsUser:
+      __metadata:
+        label: "Run As User"
+        description: "Specifies which user to run as within the container."
+        type: "string"
+        required: true
+    readOnlyRootFilesystem:
+      __metadata:
+        label: "Read Only Root Filesystem"
+        description: "If true, only allows reading from the root directory (no writes or executions)."
+        type: "boolean"
+        required: true
+    runAsNonRoot:
+      __metadata:
+        label: "Run As Non-Root"
+        description: "If true, then the user in the running container must be a non-root user."
+        type: "boolean"
+        required: true
+nodeSelector:
+  __metadata:
+    label: "Node Selector"
+    description: "The node this controller will run on."
+tolerations:
+  __metadata:
+    label: "Tolerations"
+    description: "When specified, tolerates any taint that matches the triple <key, value, effect>."
+    type: "string"
+    required: false

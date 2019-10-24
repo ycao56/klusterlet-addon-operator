@@ -1,0 +1,140 @@
+{{- if .Values.crdCreation -}}
+# Licensed Materials - Property of IBM
+# 5737-E67
+# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    kubernetes.io/bootstrapping: rbac-defaults
+    rbac.icp.com/aggregate-to-icp-view: "true"
+  name: monitoring-view-aggregate
+rules:
+  -
+    apiGroups:
+      - "monitoringcontroller.cloud.ibm.com"
+    resources:
+      - alertrules
+    verbs:
+      - get
+      - list
+      - watch
+  -
+    apiGroups:
+      - "monitoringcontroller.cloud.ibm.com"
+    resources:
+      - monitoringdashboards
+    verbs:
+      - get
+      - list
+      - watch
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    kubernetes.io/bootstrapping: rbac-defaults
+    rbac.icp.com/aggregate-to-icp-admin: "true"
+  name: monitoring-admin-aggregate
+rules:
+  -
+    apiGroups:
+      - "monitoringcontroller.cloud.ibm.com"
+    resources:
+      - alertrules
+    verbs:
+      - create
+      - delete
+      - deletecollection
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  -
+    apiGroups:
+      - "monitoringcontroller.cloud.ibm.com"
+    resources:
+      - monitoringdashboards
+    verbs:
+      - create
+      - delete
+      - deletecollection
+      - get
+      - list
+      - patch
+      - update
+      - watch
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    kubernetes.io/bootstrapping: rbac-defaults
+    rbac.icp.com/aggregate-to-icp-edit: "true"
+  name: monitoring-edit-aggregate
+rules:
+  -
+    apiGroups:
+      - "monitoringcontroller.cloud.ibm.com"
+    resources:
+      - alertrules
+    verbs:
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  -
+    apiGroups:
+      - "monitoringcontroller.cloud.ibm.com"
+    resources:
+      - monitoringdashboards
+    verbs:
+      - get
+      - list
+      - patch
+      - update
+      - watch
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    kubernetes.io/bootstrapping: rbac-defaults
+    rbac.icp.com/aggregate-to-icp-operate: "true"
+  name: monitoring-operate-aggregate
+rules:
+  -
+    apiGroups:
+      - "monitoringcontroller.cloud.ibm.com"
+    resources:
+      - alertrules
+    verbs:
+      - create
+      - get
+      - list
+      - patch
+      - update
+      - watch
+  -
+    apiGroups:
+      - "monitoringcontroller.cloud.ibm.com"
+    resources:
+      - monitoringdashboards
+    verbs:
+      - create
+      - get
+      - list
+      - patch
+      - update
+      - watch
+{{- end -}}

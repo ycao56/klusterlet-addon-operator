@@ -1,0 +1,424 @@
+{{- if and .Values.prometheus.persistentVolume.enabled (eq .Chart.Version "1.6.0") }}
+# Licensed Materials - Property of IBM
+# 5737-E67
+# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    app: {{ template "prometheus.fullname" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  name: {{ template "monitoring.fullname" . }}-prometheus-upgrade-job
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": post-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-weight": "2"
+spec:
+  backoffLimit: 5
+  activeDeadlineSeconds: 300
+  template:
+    metadata:
+      labels:
+        app: {{ template "prometheus.fullname" . }}
+        chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+      name: {{ template "monitoring.fullname" . }}-prometheus-upgrade-job
+    spec:
+{{ include "monitoring.affinity" . | indent 6 }}
+      containers:
+      - name: clear-pvc
+        image: {{ .Values.curl.image.repository }}:{{ .Values.curl.image.tag }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        command:
+        - clear_pvc.sh
+        env:
+          - name: GF_SECURITY_ADMIN_USER
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "grafana.fullname" . }}-secret
+                key: username
+          - name: GF_SECURITY_ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "grafana.fullname" . }}-secret
+                key: password
+        volumeMounts:
+        - name: script
+          mountPath: /usr/local/bin/clear_pvc.sh
+          subPath: clear_pvc.sh
+      volumes:
+      - name: script
+        configMap:
+          name: {{ template "monitoring.fullname" . }}-prometheus-upgrade-job-script
+          items:
+          - key: clear_pvc.sh
+            path: clear_pvc.sh
+            mode: 0777
+      restartPolicy: Never
+
+---
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    app: {{ template "prometheus.fullname" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  name: {{ template "monitoring.fullname" . }}-prometheus-check-job
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-weight": "2"
+spec:
+  backoffLimit: 5
+  activeDeadlineSeconds: 300
+  template:
+    metadata:
+      labels:
+        app: {{ template "prometheus.fullname" . }}
+        chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+      name: {{ template "monitoring.fullname" . }}-prometheus-check-job
+    spec:
+{{ include "monitoring.affinity" . | indent 6 }}
+      containers:
+      - name: check-data
+        image: {{ .Values.init.image.repository }}:{{ .Values.init.image.tag }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        command:
+        - /usr/local/bin/check_data.sh
+        volumeMounts:
+        - name: script
+          mountPath: /usr/local/bin/check_data.sh
+          subPath: check_data.sh
+        - name: job
+          mountPath: /tmp/copy_job.json
+          subPath: copy_job.json
+      volumes:
+      - name: script
+        configMap:
+          name: {{ template "monitoring.fullname" . }}-prometheus-check-job-script
+          items:
+          - key: check_data.sh
+            path: check_data.sh
+            mode: 0777
+      - name: job
+        configMap:
+          name: {{ template "monitoring.fullname" . }}-prometheus-copy-job-json
+          items:
+          - key: copy_job.json
+            path: copy_job.json
+            mode: 0777
+      restartPolicy: Never
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: {{ template "prometheus.fullname" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  name: {{ template "monitoring.fullname" . }}-prometheus-copy-job-json
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-weight": "0"
+data:
+  copy_job.json: |
+    {
+      "apiVersion": "batch/v1",
+      "kind": "Job",
+      "metadata": {
+          "labels": {
+            "app": "{{ template "prometheus.fullname" . }}",
+            "chart": "{{ .Chart.Name }}-{{ .Chart.Version }}",
+            "release": "{{ .Release.Name }}",
+            "heritage": "{{ .Release.Service }}"
+          },
+          "name": "{{ template "monitoring.fullname" . }}-prometheus-copy-job",
+          "namespace": "{{ .Release.Namespace }}"
+      },
+      "spec": {
+          "backoffLimit": 5,
+          "activeDeadlineSeconds": 60,
+          "template": {
+            "metadata": {
+                "labels": {
+                  "app": "{{ template "prometheus.fullname" . }}",
+                  "chart": "{{ .Chart.Name }}-{{ .Chart.Version }}",
+                  "release": "{{ .Release.Name }}",
+                  "heritage": "{{ .Release.Service }}"
+                },
+                "name": "name"
+            },
+            "spec": {
+                 "tolerations": [
+                      {
+                        "key": "dedicated",
+                        "operator": "Exists",
+                        "effect": "NoSchedule"
+                      }
+                  ],
+                  "affinity": {
+                      "nodeAffinity": {
+                        "requiredDuringSchedulingIgnoredDuringExecution": {
+                            "nodeSelectorTerms": [
+                              {
+                                  "matchExpressions": [
+                                    {
+                                        "key": "management",
+                                        "operator": "In",
+                                        "values": [
+                                          "true"
+                                        ]
+                                    }
+                                  ]
+                              }
+                            ]
+                        }
+                      }
+                  },
+                "containers": [
+                  {
+                      "name": "copy-data",
+                      "image": "{{ .Values.init.image.repository }}:{{ .Values.init.image.tag }}",
+                      "imagePullPolicy": "{{ .Values.imagePullPolicy }}",
+                      "command": [
+                        "copy_data.sh"
+                      ],
+                      "volumeMounts": [
+                        {
+                            "name": "script",
+                            "mountPath": "/usr/local/bin/copy_data.sh",
+                            "subPath": "copy_data.sh"
+                        },
+                        {
+                            "mountPath": "/prometheus",
+                            "name": "data"
+                        }
+                      ]
+                  }
+                ],
+                "volumes": [
+                  {
+                      "name": "script",
+                      "configMap": {
+                        "name": "{{ template "monitoring.fullname" . }}-prometheus-copy-job-script",
+                        "items": [
+                            {
+                              "key": "copy_data.sh",
+                              "path": "copy_data.sh",
+                              "mode": 511
+                            }
+                        ]
+                      }
+                  },
+                  {
+                      "name": "data",
+                      "persistentVolumeClaim": {
+        {{- if .Values.prometheus.persistentVolume.existingClaimName }}
+                        "claimName": "{{ .Values.prometheus.persistentVolume.existingClaimName }}"
+        {{- else }}
+                        "claimName": "{{ template "prometheus.fullname" . }}"
+        {{- end }}
+                      }
+                  }
+                ],
+                "restartPolicy": "OnFailure"
+            }
+          }
+      }
+    }
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: {{ template "prometheus.fullname" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  name: {{ template "monitoring.fullname" . }}-prometheus-upgrade-job-script
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": post-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-weight": "0"
+data:
+  clear_pvc.sh: |
+    #!/bin/bash
+    echo "Clear PhysicalVolume ClaimRef so new pod can bind to it."
+    # get the name of the PVC used for original version
+    {{- if .Values.prometheus.persistentVolume.existingClaimName }}
+    originalClaimName={{ .Values.prometheus.persistentVolume.existingClaimName }}
+    {{- else }}
+    originalClaimName={{ template "prometheus.fullname" . }}
+    {{- end }}
+    echo "originalClaimName=${originalClaimName}"
+    # does the PVC still exist
+    pvc=$(curl -k -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT_HTTPS/api/v1/namespaces/{{ .Release.Namespace }}/persistentvolumeclaims/${originalClaimName})
+    if [[ -n "${pvc}" ]]
+    then
+        # find the name of the PV
+        pvName=$(echo $pvc | jq -r '.spec.volumeName')
+        echo "pvName=${pvName}"
+        if [[ -n "${pvName}" ]]
+        then
+            echo "PV and PVC found. Removing claim and claimRef"
+            # must first delete the PVC, then clear its finalizer
+            deletePVC=$(curl -k -X DELETE -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" \
+                https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT_HTTPS/api/v1/namespaces/{{ .Release.Namespace }}/persistentvolumeclaims/${originalClaimName})
+            echo "rc=$?,deletePVC=${deletePVC}"
+            patchPVC=$(curl -k -X PATCH -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" \
+                -H "Accept: application/json" -H "Content-Type: application/json-patch+json" -d '[{"op": "remove", "path": "/metadata/finalizers"}]' \
+                https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT_HTTPS/api/v1/namespaces/{{ .Release.Namespace }}/persistentvolumeclaims/${originalClaimName})
+            echo "rc=$?,patchPVC=${patchPVC}"
+            # wait up to 1 minute for the PVC to be completely gone
+            cmdStatus=0
+            totWait=0
+            while [[ $totWait -lt 60 && $cmdStatus -eq 0 ]]
+            do
+              sleep 1
+              let totWait=totWait+1
+              getPVC=$(curl -i -k -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" \
+                  https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT_HTTPS/api/v1/namespaces/{{ .Release.Namespace }}/persistentvolumeclaims/${originalClaimName})
+              echo $getPVC | grep "HTTP/1.1 200 OK"
+              cmdStatus=$?
+              echo "rc=${cmdStatus},getPVC=${getPVC}"
+            done
+            echo "totWait=$totWait"
+            # now that PVC is gone, the PV's claimRef can be removed, making it Available
+            patchPV=$(curl -k -X PATCH -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" \
+                -H "Accept: application/json" -H "Content-Type: application/json-patch+json" -d '[{"op": "remove", "path": "/spec/claimRef"}]' \
+                https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT_HTTPS/api/v1/persistentvolumes/${pvName})
+            echo "rc=$?,patchPV=${patchPV}"
+        fi
+    fi
+    echo "Done"
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: {{ template "prometheus.fullname" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  name: {{ template "monitoring.fullname" . }}-prometheus-copy-job-script
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-weight": "0"
+data:
+  copy_data.sh: |
+    #!/bin/bash
+    echo "whoami"
+    whoami
+    echo "/prometheus/"
+    ls -ladtr /prometheus/
+    echo "/prometheus/*"
+    ls -ladtr /prometheus/*
+    echo "/prometheus/wal/"
+    ls -ladtr /prometheus/wal/
+    echo "/prometheus/wal/*"
+    ls -ladtr /prometheus/wal/*
+    echo "/prometheus/prometheus-db/"
+    ls -ladtr /prometheus/prometheus-db/
+    echo "If there is a wal directory, but no prometheus-db/wal directory"
+    if [[ -d /prometheus/wal/ ]]; 
+    then
+        echo "/prometheus/wal/ was found"
+        if [[ ! -d /prometheus/prometheus-db/ ]];
+        then
+            echo "/prometheus/prometheus-db/ was not found"
+            # copy the wal directory
+            mkdir /prometheus/prometheus-db/ 
+            echo "mkdir /prometheus/prometheus-db/ return $?"
+            chmod 777 /prometheus/prometheus-db/
+            cp -av /prometheus/wal/ /prometheus/prometheus-db/
+            echo "cp -a /prometheus/wal/ /prometheus/prometheus-db/ return $?"
+            diff -r /prometheus/wal/* /prometheus/prometheus-db/wal/*
+            echo "diff -r /prometheus/wal/* /prometheus/prometheus-db/wal/* return $?"
+            echo "/prometheus/prometheus-db/*"
+            ls -ladtr /prometheus/prometheus-db/*
+        fi
+    fi
+    echo "Done"
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: {{ template "prometheus.fullname" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  name: {{ template "monitoring.fullname" . }}-prometheus-check-job-script
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-weight": "0"
+data:
+  check_data.sh: |
+    #!/bin/bash
+    echo "Check if the original Physical Volume Claim still exists"
+    # get the name of the PVC used for original version
+    {{- if .Values.prometheus.persistentVolume.existingClaimName }}
+    originalClaimName={{ .Values.prometheus.persistentVolume.existingClaimName }}
+    {{- else }}
+    originalClaimName={{ template "prometheus.fullname" . }}
+    {{- end }}
+    echo "originalClaimName=${originalClaimName}"
+    # does the PVC still exist
+    getPVC=$(curl -i -k -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" \
+        https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT_HTTPS/api/v1/namespaces/{{ .Release.Namespace }}/persistentvolumeclaims/${originalClaimName})
+    echo $getPVC | grep "HTTP/1.1 200 OK"
+    cmdStatus=$?
+    echo "rc=${cmdStatus},getPVC=${getPVC}"
+    if [[ "${cmdStatus}" == 0 ]]
+    then
+        # if a job already exists
+        getJob=$(curl -i -k -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" \
+            -H "Accept: application/json" \
+            https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT_HTTPS/apis/batch/v1/namespaces/{{ .Release.Namespace }}/jobs/{{ template "monitoring.fullname" . }}-prometheus-copy-job)
+        echo $getJob | grep "HTTP/1.1 200 OK"
+        cmdStatus=$?
+        echo "rc=${cmdStatus},getJob=${getJob}"
+        if [[ "${cmdStatus}" == 0 ]]
+        then
+            # delete the old job
+            deleteJob=$(curl -i -k -X DELETE -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" \
+                https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT_HTTPS/apis/batch/v1/namespaces/{{ .Release.Namespace }}/jobs/{{ template "monitoring.fullname" . }}-prometheus-copy-job)
+            echo "rc=$?,deleteJob=${deleteJob}"
+        fi
+        # use the REST API command to run a job that mounts the PVC and copies the old wal data to the new prometheus-db directory
+        cat /tmp/copy_job.json
+        postJob=$(curl -i -k -X POST -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" \
+            -H "Accept: application/json" -H "Content-Type: application/json" -d @/tmp/copy_job.json \
+            https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT_HTTPS/apis/batch/v1/namespaces/{{ .Release.Namespace }}/jobs)
+        echo "rc=$?,postPVC=${postJob}"
+    fi
+    echo "Done"
+
+{{- end }}

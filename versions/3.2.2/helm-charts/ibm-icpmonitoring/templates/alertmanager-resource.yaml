@@ -1,0 +1,100 @@
+{{- if .Values.alertmanager.enabled -}}
+# Licensed Materials - Property of IBM
+# 5737-E67
+# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
+
+apiVersion: monitoring.coreos.com/v1
+kind: Alertmanager
+metadata:
+  labels:
+    app: {{ template "prometheus.fullname" . }}
+    chart: {{ .Chart.Name }}
+    component: alertmanager
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  name: {{ template "prometheus.fullname" . }}-alertmanager
+spec:
+  podMetadata:
+    labels:
+      app: {{ template "prometheus.fullname" . }}-alertmanager
+      chart: {{ .Chart.Name }}
+      component: alertmanager
+      release: {{ .Release.Name }}
+      heritage: {{ .Release.Service }}
+    annotations:
+      productName: alertmanager
+      productVersion: v0.15.0
+      productID: none
+      scheduler.alpha.kubernetes.io/critical-pod: ""
+      pvJob: "true"
+  baseImage: {{ .Values.alertmanager.image.repository }}
+  version: {{ .Values.alertmanager.image.tag }}
+  replicas: 1
+{{- if .Values.imagePullSecrets }}
+  imagePullSecrets:
+    - name: {{ .Values.imagePullSecrets }}
+{{- end }}
+{{- if eq .Values.mode "managed" }}
+  priorityClassName: system-cluster-critical
+{{ include "monitoring.affinity" . | indent 2 }}
+{{- end }}
+  resources:
+{{ toYaml .Values.alertmanager.resources | indent 4 }}
+{{- if .Values.tls.enabled }}
+  secrets:
+    - {{ .Values.tls.ca.secretName }}
+  {{- if .Values.tls.server.existingSecretName }}
+    - {{ .Values.tls.server.existingSecretName }}
+  {{- else }}
+    - {{ template "monitoring.fullname" . }}-certs
+  {{- end }}
+  {{- if .Values.tls.client.existingSecretName }}
+    - {{ .Values.tls.client.existingSecretName }}
+  {{- else }}
+    - {{ template "monitoring.fullname" . }}-client-certs
+  {{- end }}
+  configMaps:
+    - {{ template "prometheus.fullname" . }}-alertmanager-router-config
+    - {{ template "monitoring.fullname" . }}-router-entry-config
+{{- end }}
+  externalUrl: https://{{ .Values.clusterAddress }}:{{ .Values.clusterPort }}/alertmanager
+  routePrefix: /alertmanager
+{{- if .Values.tls.enabled }}
+  containers:
+    - name: router
+      image: {{ .Values.router.image.repository }}:{{ .Values.router.image.tag }}
+      imagePullPolicy: {{ .Values.imagePullPolicy }}
+      resources:
+{{ toYaml .Values.router.resources | indent 8 }}
+      command: ["/bin/sh", "-c", "cp /opt/ibm/router/entry/entrypoint.sh /opt/ibm/router/; chmod 744 /opt/ibm/router/entrypoint.sh; exec /opt/ibm/router/entrypoint.sh"]
+      ports:
+      - name: router
+        containerPort: 8080
+      volumeMounts:
+        - mountPath: "/opt/ibm/router/conf"
+          name: configmap-{{ template "prometheus.fullname" . }}-alertmanager-router-config
+        - mountPath: "/opt/ibm/router/caCerts"
+          name: secret-{{ .Values.tls.ca.secretName }}
+        - mountPath: "/opt/ibm/router/certs"
+          name: secret-{{ template "monitoring.fullname" . }}-certs
+        - mountPath: "/opt/ibm/router/entry"
+          name: configmap-{{ template "monitoring.fullname" . }}-router-entry-config
+{{- end }}
+{{- if .Values.alertmanager.persistentVolume.enabled }}
+  storage:
+    volumeClaimTemplate:
+      spec:
+        storageClassName: {{ default "" .Values.alertmanager.persistentVolume.storageClass | quote }}
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: {{ .Values.alertmanager.persistentVolume.size | quote }}
+      {{- if .Values.alertmanager.persistentVolume.selector.label }}
+        selector:
+          matchExpressions:
+            - {key: {{ .Values.alertmanager.persistentVolume.selector.label }}, operator: In, values: [{{ .Values.alertmanager.persistentVolume.selector.value }}]}
+      {{- end }}
+{{- end }}
+{{- end -}}

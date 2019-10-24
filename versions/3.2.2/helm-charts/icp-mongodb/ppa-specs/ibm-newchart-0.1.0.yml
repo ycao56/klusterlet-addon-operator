@@ -1,0 +1,15 @@
+charts:
+  - archive: file:repo/stable/ibm-newchart-0.1.0.tgz
+    repository-keys:
+      - image.repository
+ 
+images:
+- image: nginx:stable
+  references:
+  - repository : nginx:stable
+    pull-repository: hyc-icpcontent-docker-local.artifactory.swg-devops.com/nginx:1.13.7
+    pull-authorization:
+      username:
+        env: ARTIFACTORY_USERNAME
+      password:
+        env: ARTIFACTORY_PASSWORD

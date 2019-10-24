@@ -1,0 +1,26 @@
+{{- if and (.Values.prometheus.enabled) (.Values.prometheus.alerts.elasticsearchClusterHealth) -}}
+# Licensed Materials - Property of IBM
+# 5737-E67
+# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    app: {{ template "prometheus.fullname" . }}
+    chart: {{ .Chart.Name }}-{{.Chart.Version}}
+    component: icp-prometheus
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  name: elasticsearch-cluster-health
+spec:
+  groups:
+    - name: elasticsearchClusterHealth
+      rules:
+        - alert: elasticsearchClusterHealth
+          expr: elasticsearch_cluster_health_up != 1
+          for: 5m
+          annotations:
+            description: Elasticsearch cluster's health status is not green.
+            summary: Elasticsearch cluster not healthy
+{{- end -}}

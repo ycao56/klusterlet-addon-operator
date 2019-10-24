@@ -1,0 +1,17 @@
+# Licensed Materials - Property of IBM
+# 5737-E67
+# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: {{ template "mongodb-replicaset.name" . }}
+    chart: {{ template "mongodb-replicaset.chart" . }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "mongodb-replicaset.fullname" . }}-install
+data:
+  install.sh: |
+{{ .Files.Get "install/install.sh" | indent 4 }}
