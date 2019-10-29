@@ -8,47 +8,59 @@
   group: multicloud.ibm.com
   kind: Metering
   chart: /opt/helm/versions/3.2.1/helm-charts/metering
+  watchDependentResources: false
 - version: v1beta1
   group: multicloud.ibm.com
   kind: MongoDB
   chart: /opt/helm/versions/3.2.1/helm-charts/icp-mongodb
+  watchDependentResources: false
 - version: v1beta1
   group: multicloud.ibm.com
   kind: CertManager
   chart: /opt/helm/versions/3.2.1/helm-charts/ibm-cert-manager
+  watchDependentResources: false
 - version: v1beta1
   group: multicloud.ibm.com
   kind: ConnectionManager
   chart: /opt/helm/versions/3.2.1/helm-charts/connection-manager
+  watchDependentResources: false
 - version: v1beta1
   group: multicloud.ibm.com
   kind: WorkManager
   chart: /opt/helm/versions/3.2.1/helm-charts/work-manager
+  watchDependentResources: false
 - version: v1beta1
   group: multicloud.ibm.com
   kind: PolicyController
   chart: /opt/helm/versions/3.2.1/helm-charts/policy
+  watchDependentResources: false
 - version: v1beta1
   group: multicloud.ibm.com
   kind: SearchCollector
   chart: /opt/helm/versions/3.2.1/helm-charts/search
+  watchDependentResources: false
 - version: v1beta1
   group: multicloud.ibm.com
   kind: TopologyCollector
   chart: /opt/helm/versions/3.2.1/helm-charts/topology
+  watchDependentResources: false
 - version: v1beta1
   group: multicloud.ibm.com
   kind: ServiceRegistry
   chart: /opt/helm/versions/3.2.1/helm-charts/service-registry
+  watchDependentResources: false
 - version: v1beta1
   group: multicloud.ibm.com
   kind: Tiller
   chart: /opt/helm/versions/3.2.1/helm-charts/tiller
+  watchDependentResources: false
 - version: v1beta1
   group: multicloud.ibm.com
   kind: ApplicationManager
   chart: /opt/helm/versions/3.2.1/helm-charts/application-manager
+  watchDependentResources: false
 - version: v1beta1
   group: multicloud.ibm.com
   kind: Monitoring
   chart: /opt/helm/versions/3.2.1/helm-charts/ibm-icpmonitoring
+  watchDependentResources: false
