@@ -22,14 +22,11 @@ jobs:
   include:
     - stage: "Build Images"
       os: linux
-
       before_install:
         - git config --global url."git@github.ibm.com:".insteadOf "https://github.ibm.com"
         - go version
-        - source travis-env.sh
         - make init
         - make operator:tools
-
       script:
         - make check
         - make test
@@ -39,7 +36,7 @@ jobs:
         - |
           if [[ "$TRAVIS_EVENT_TYPE" != "pull_request" ]]; then
             export DOCKER_REGISTRY=hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com
-            export DOCKER_TAG=latest
+            export DOCKER_TAG=$(make semver:show-version)
             make docker:login
             make docker:tag-arch
             make docker:push-arch
@@ -49,19 +46,15 @@ jobs:
           else
             echo "Not pushing build on a pull request"
           fi
-
       after_script:
         - test "$TRAVIS_PULL_REQUEST" = "false" && test "$TRAVIS_TEST_RESULT" = "1" && ./build/slack-notification.sh || echo "Slack notification not sent"
 
     - os: linux-ppc64le
-
       before_install:
         - git config --global url."git@github.ibm.com:".insteadOf "https://github.ibm.com"
         - go version
-        - source travis-env.sh
         - make init
         - make operator:tools
-
       script:
         - make check
         - make test
@@ -71,26 +64,22 @@ jobs:
         - |
           if [[ "$TRAVIS_EVENT_TYPE" != "pull_request" ]]; then
             export DOCKER_REGISTRY=hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com
-            export DOCKER_TAG=latest
+            export DOCKER_TAG=$(make semver:show-version)
             make docker:login
             make docker:tag-arch
             make docker:push-arch
           else
             echo "Not pushing build on a pull request"
           fi
-
       after_script:
         - test "$TRAVIS_PULL_REQUEST" = "false" && test "$TRAVIS_TEST_RESULT" = "1" && ./build/slack-notification.sh || echo "Slack notification not sent"
 
     - os: linux-s390
-
       before_install:
         - git config --global url."git@github.ibm.com:".insteadOf "https://github.ibm.com"
         - go version
-        - source travis-env.sh
         - make init
         - make operator:tools
-
       script:
         - make check
         - make test
@@ -100,24 +89,20 @@ jobs:
         - |
           if [[ "$TRAVIS_EVENT_TYPE" != "pull_request" ]]; then
             export DOCKER_REGISTRY=hyc-cloud-private-integration-docker-local.artifactory.swg-devops.com
-            export DOCKER_TAG=latest
+            export DOCKER_TAG=$(make semver:show-version)
             make docker:login
             make docker:tag-arch
             make docker:push-arch
           else
             echo "Not pushing build on a pull request"
           fi
-
       after_script:
         - test "$TRAVIS_PULL_REQUEST" = "false" && test "$TRAVIS_TEST_RESULT" = "1" && ./build/slack-notification.sh || echo "Slack notification not sent"
 
     - stage: "Build Multi-Arch Image"
-
       before_install:
         - git config --global url."git@github.ibm.com:".insteadOf "https://github.ibm.com"
-        - source travis-env.sh
         - make init
-
       script:
         - test "$TRAVIS_EVENT_TYPE" != "pull_request" && make docker:manifest-tool docker:multi-arch || echo "Not building multi-arch image on a pull request"
         - echo "TRAVIS_EVENT_TYPE = $TRAVIS_EVENT_TYPE"
@@ -129,6 +114,5 @@ jobs:
           else
             echo "Not building multi-arch image on a pull request"
           fi
-
       after_script:
         - test "$TRAVIS_PULL_REQUEST" = "false" && test "$TRAVIS_TEST_RESULT" = "1" && ./build/slack-notification.sh || echo "Slack notification not sent"
