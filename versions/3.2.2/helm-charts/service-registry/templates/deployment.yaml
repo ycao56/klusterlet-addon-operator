@@ -71,7 +71,11 @@ spec:
         volumeMounts:
           - name: klusterlet-config
             mountPath: /var/run/hub-kubeconfig
+          - name: tmp-volume
+            mountPath: /tmp
       volumes:
+        - name: tmp-volume
+          emptyDir: {}
         - name: klusterlet-config
           secret:
             secretName: {{ .Values.connectionManager }}-hub-kubeconfig
