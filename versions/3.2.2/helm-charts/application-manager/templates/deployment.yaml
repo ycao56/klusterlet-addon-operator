@@ -39,56 +39,18 @@ spec:
     spec:
       serviceAccountName: {{ template "application-manager.fullname" . }}
       containers:
-      - name: deployable-controller
-        image: "{{ .Values.deployable.image.repository }}:{{ .Values.deployable.image.tag }}"
-        imagePullPolicy: "{{ .Values.deployable.image.pullPolicy }}"
-        resources:
-          {{- toYaml .Values.resources | nindent 10 }}
-        livenessProbe:
-          exec:
-            command:
-            - ls
-          initialDelaySeconds: 15
-          periodSeconds: 15
-        readinessProbe:
-          exec:
-            command:
-            - ls
-          initialDelaySeconds: 15
-          periodSeconds: 15
-        securityContext:
-          privileged: false
-          readOnlyRootFilesystem: false
-          allowPrivilegeEscalation: false
-          runAsNonRoot: true
-          runAsUser: 1000
-          capabilities:
-            drop:
-            - ALL
-        command: ["./manager"]
-        args:
-          - "--alsologtostderr"
-          - "--managed-cluster-name={{ .Values.clusterName }}"
-          - "--managed-cluster-namespace={{ .Values.clusterNamespace }}"
-          - "--remote-cluster-configfile=/var/run/klusterlet/kubeconfig"
-        livenessProbe:
-          exec:
-            command:
-            - ls
-          initialDelaySeconds: 15
-          periodSeconds: 15
-        readinessProbe:
-          exec:
-            command:
-            - ls
-          initialDelaySeconds: 15
-          periodSeconds: 15
-        volumeMounts:
-          - name: klusterlet-config
-            mountPath: /var/run/klusterlet
       - name: subscription-controller
         image: "{{ .Values.subscription.image.repository }}:{{ .Values.subscription.image.tag }}"
         imagePullPolicy: "{{ .Values.subscription.image.pullPolicy }}"
+        env:
+          - name: WATCH_NAMESPACE
+            value: ""
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: OPERATOR_NAME
+            value: "subscription-controller"
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
         livenessProbe:
@@ -112,12 +74,12 @@ spec:
           capabilities:
             drop:
             - ALL
-        command: ["./manager"]
+        command: ["/usr/local/bin/multicloud-operators-subscription"]
         args:
           - "--alsologtostderr"
-          - "--managed-cluster-name={{ .Values.clusterName }}"
-          - "--managed-cluster-namespace={{ .Values.clusterNamespace }}"
-          - "--remote-cluster-configfile=/var/run/klusterlet/kubeconfig"
+          - "--cluster-name={{ .Values.clusterName }}"
+          - "--cluster-namespace={{ .Values.clusterNamespace }}"
+          - "--hub-cluster-configfile=/var/run/klusterlet/kubeconfig"
         livenessProbe:
           exec:
             command:
