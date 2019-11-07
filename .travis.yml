@@ -100,14 +100,12 @@ jobs:
         - test "$TRAVIS_PULL_REQUEST" = "false" && test "$TRAVIS_TEST_RESULT" = "1" && ./build/slack-notification.sh || echo "Slack notification not sent"
 
     - stage: "Build Multi-Arch Image"
-      before_install:
-        - git config --global url."git@github.ibm.com:".insteadOf "https://github.ibm.com"
-        - make init
+      os: linux
       script:
-        - test "$TRAVIS_EVENT_TYPE" != "pull_request" && make docker:manifest-tool docker:multi-arch || echo "Not building multi-arch image on a pull request"
-        - echo "TRAVIS_EVENT_TYPE = $TRAVIS_EVENT_TYPE"
         - |
           if [[ "$TRAVIS_EVENT_TYPE" != "pull_request" ]]; then
+            make init
+            export DOCKER_TAG=$(make semver:show-version)
             make docker:login
             make docker:manifest-tool
             make docker:multi-arch
