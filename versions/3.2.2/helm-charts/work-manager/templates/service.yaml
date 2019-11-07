@@ -21,7 +21,7 @@ spec:
     - name: app
       port: 443
       protocol: TCP
-      targetPort: 443
+      targetPort: 4443
   selector:
     app: {{ template "work-manager.name" . }}
     chart: {{ template "work-manager.chart" . }}

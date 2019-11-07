@@ -55,6 +55,7 @@ spec:
           {{- toYaml .Values.resources | nindent 10 }}
         args:
           - "/klusterlet"
+          - "--port=4443"
           - "--controller-config-file=/var/run/klusterlet/kubeconfig"
           - "--cluster-name={{ .Values.clusterName }}"
           - "--cluster-namespace={{ .Values.clusterNamespace }}"
