@@ -18,6 +18,8 @@ clusterLabels: {}
 
 deployedOnHub: false
 
+userImpersonation: false
+
 workManager:
   enabled: true
   image:
