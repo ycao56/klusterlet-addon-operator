@@ -107,6 +107,12 @@ spec:
           - "--prometheus-use-bearer-token={{ .Values.prometheusIntegration.useBearerToken }}"
         {{- end }}
         {{- end }}
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
         livenessProbe: null
         readinessProbe: null
         volumeMounts:
