@@ -63,9 +63,9 @@ ifndef GITHUB_TOKEN
 endif
 
 .PHONY: check
-# check: go\:copyright\:check lint\:yaml
-check:
-	$(info TODO Skipping checks initially)
+check: cv\:copyright\:check
+# check:
+# 	$(info TODO Skipping checks initially)
 
 .PHONY: test
 test:
