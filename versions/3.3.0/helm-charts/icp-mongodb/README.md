@@ -1,8 +1,16 @@
 # MongoDB Helm Chart
 
+## Introduction
+MongoDB helm chart specific for ICP and MCM deployments
+
 ## Prerequisites Details
 * Kubernetes 1.6+ with Beta APIs enabled.
 * PV support on the underlying infrastructure.
+
+## Resources Required
+* PV support on the underlying infrastructure.
+
+## Limitations
 
 ## StatefulSet Details
 * https://kubernetes.io/docs/concepts/abstractions/controllers/statefulsets/
@@ -160,6 +168,9 @@ mongodb with your `mongo.pem` certificate:
 ```console
 $ mongo --ssl --sslCAFile=ca.crt --sslPEMKeyFile=mongo.pem --eval "db.adminCommand('ping')"
 ```
+
+## PodSecurityPolicy Requirements
+The Pod Security Policy to run this chart is ibm-privileged-psp https://ibm.biz/cpkspec-psp
 
 ## Deep dive
 

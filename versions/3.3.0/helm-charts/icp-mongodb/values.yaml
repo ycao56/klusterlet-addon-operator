@@ -1,36 +1,36 @@
-# Licensed Materials - Property of IBM
-# IBM Confidential
-# OCO Source Materials
-# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
-# The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
-
 fullnameOverride: icp-mongodb
 nameOverride: icp-mongodb
 
+#Need to change name, but need to be able to update too
+metadata:
+  label:
+    component: database
+    partOf: common-services-cloud-pak
+    managedBy: helm
+
 replicaSet: rs0
 replicas: 3
-minAvailable: 1
 port: 27017
 serviceName: mongodb
-configDir: /data/configdb
+#productID:
 #clusterDomain: cluster.local
 
 # Specs for the Docker image for the init container that establishes the replica set
 installImage:
-  repository: ibmcom/icp-mongodb-install
-  tag: latest
+  repository: ibmcom/ibm-mongodb-install
+  tag: 3.3.0
   pullPolicy: IfNotPresent
 
 # Specs for the MongoDB image
 image:
-  repository: ibmcom/icp-mongodb
-  tag: 4.0.6-f1
+  repository: ibmcom/ibm-mongodb
+  tag: 4.0.12-build.1
   pullPolicy: IfNotPresent
 
 curl:
   image:
     repository: ibmcom/curl
-    tag: 4.2.0-f4
+    tag: 4.2.0-build.1
     pullPolicy: IfNotPresent
 
 
@@ -42,16 +42,10 @@ curl:
 podAnnotations: {}
 
 resources:
-  requests:
-    memory: 512Mi
   limits:
-    memory: 1Gi
-
-# With WiredTiger, MongoDB utilizes both the WiredTiger internal cache and the filesystem cache.
-# Recommand to change this to ~40% of your memory limit for container
-# This parameter takes a float number
-wiredTigerCacheSizeGb: 0.5
-
+    memory: 8Gi
+  requests:
+    memory: 4Gi
 
 ## Node selector
 ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
@@ -126,6 +120,11 @@ securityContext:
     fsGroup: 999
     runAsNonRoot: true
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    privileged: false
+    capabilities:
+      drop:
+      - ALL
 
 auth:
   enabled: true
@@ -143,6 +142,7 @@ tls:
   casecret: cluster-ca-cert
   issuer: icp-ca-issuer
   issuerKind: ClusterIssuer
+# clientsecret:
 
 # network ip version default is ipv4
 network_ip_version: ipv4
@@ -159,8 +159,8 @@ network_ip_version: ipv4
 metrics:
   enabled: true
   image:
-    repository: ibmcom/icp-mongodb-exporter
-    tag: latest
+    repository: ibmcom/ibm-mongodb-exporter
+    tag: 3.3.0
     pullPolicy: IfNotPresent
   metricsUser: metrics
   metricsPassword: icpmetrics

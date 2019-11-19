@@ -1,9 +1,3 @@
-# Licensed Materials - Property of IBM
-# IBM Confidential
-# OCO Source Materials
-# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
-# The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
-
 apiVersion: apps/v1beta2
 kind: StatefulSet
 metadata:
@@ -48,6 +42,9 @@ spec:
       {{- end}}
     {{- end }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      hostNetwork: false
+      hostPID: false
+      hostIPC: false
       initContainers:
         - name: install
           image: "{{ .Values.installImage.repository }}:{{ .Values.installImage.tag }}"
@@ -55,8 +52,10 @@ spec:
             - /install/install.sh
           args:
             - --work-dir=/work-dir
-            - --config-dir=data/configdb
+            - --config-dir=/data/configdb
           imagePullPolicy: "{{ .Values.installImage.pullPolicy }}"
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
           volumeMounts:
             - name: mongodbdir
               subPath: workdir
@@ -78,6 +77,21 @@ spec:
             - name: mongodbdir
               subPath: datadir
               mountPath: /data/db
+            - name: tmp-mongodb
+              mountPath: /tmp
+        - name: install-metrics
+          image: "{{ .Values.installImage.repository }}:{{ .Values.installImage.tag }}"
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - chmod -R 777 /tmp
+          imagePullPolicy: "{{ .Values.installImage.pullPolicy }}"
+          resources:
+{{ toYaml .Values.metrics.resources | indent 12 }}
+          volumeMounts:
+            - name: tmp-metrics
+              mountPath: /tmp
         - name: bootstrap
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           command:
@@ -89,6 +103,8 @@ spec:
             - -domain={{ .Values.clusterDomain }}
           {{- end }}
           imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
         {{- if .Values.securityContext.enabled }}
           securityContext:
 {{ toYaml .Values.securityContext.values | indent 12 }}
@@ -144,6 +160,8 @@ spec:
             - name: mongodbdir
               subPath: datadir
               mountPath: /data/db
+            - name: tmp-mongodb
+              mountPath: /tmp
       containers:
         - name: {{ template "mongodb-replicaset.name" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -216,6 +234,8 @@ spec:
             - name: mongodbdir
               subPath: workdir
               mountPath: /work-dir
+            - name: tmp-mongodb
+              mountPath: /tmp
     {{ if .Values.metrics.enabled }}
         - name: metrics
           image: "{{ .Values.metrics.image.repository }}:{{ .Values.metrics.image.tag }}"
@@ -249,6 +269,8 @@ spec:
             - name: mongodbdir
               subPath: workdir
               mountPath: /work-dir
+            - name: tmp-metrics
+              mountPath: /tmp
           env:
           {{- if .Values.auth.enabled }}
             - name: METRICS_USER
@@ -328,6 +350,10 @@ spec:
             secretName: {{ template "mongodb-replicaset.keySecret" . }}
         {{- end }}
         - name: configdir
+          emptyDir: {}
+        - name: tmp-mongodb
+          emptyDir: {}
+        - name: tmp-metrics
           emptyDir: {}
 
 {{- if .Values.persistentVolume.enabled }}

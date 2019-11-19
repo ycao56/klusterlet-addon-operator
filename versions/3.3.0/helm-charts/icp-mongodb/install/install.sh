@@ -1,9 +1,4 @@
 #!/bin/bash
-# Licensed Materials - Property of IBM
-# IBM Confidential
-# OCO Source Materials
-# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
-# The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
 
 # Copyright 2016 The Kubernetes Authors. All rights reserved.
 #
@@ -53,3 +48,6 @@ cp /ca-readonly/tls.crt "${CONFIGDIR_VOLUME}"/tls.crt
 chmod 600 "${CONFIGDIR_VOLUME}"/key.txt
 chown -R 999:999 /work-dir
 chown -R 999:999 /data
+
+# Root file system is readonly but still need write and execute access to tmp
+chmod -R 777 /tmp
