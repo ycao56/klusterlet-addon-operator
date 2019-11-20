@@ -17,7 +17,6 @@ spec:
   commonName: {{ template "tiller.fullname" . }}
   organization:
   - system:masters
-  dnsNames: null
   issuerRef:
     kind: ClusterIssuer
     name: {{ template "tiller.fullname" . }}

@@ -22,5 +22,4 @@ spec:
   commonName: weavescope-client-cert
   organization:
   - IBM
-  dnsNames: null
 {{- end }}

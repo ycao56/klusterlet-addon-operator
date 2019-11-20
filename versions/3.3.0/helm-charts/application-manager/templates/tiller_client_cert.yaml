@@ -18,7 +18,6 @@ spec:
   commonName: {{ .Values.tillerIntegration.user }}
   organization:
   - system:masters
-  dnsNames: null
   issuerRef:
     kind: ClusterIssuer
     name: {{ .Values.tillerIntegration.certIssuer }}

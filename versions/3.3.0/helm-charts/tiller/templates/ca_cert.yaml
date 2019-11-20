@@ -22,4 +22,3 @@ spec:
   isCA: true
   organization:
   - IBM
-  dnsNames: null
