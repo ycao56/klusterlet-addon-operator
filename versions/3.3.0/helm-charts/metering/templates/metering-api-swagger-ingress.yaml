@@ -1,0 +1,34 @@
+# Licensed Materials - Property of IBM
+# (C) Copyright IBM Corporation 2019. All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by
+# GSA ADP Schedule Contract with IBM Corp.
+#
+{{- if .Values.api.enabled }}
+
+# The swagger API can be called without passing an Authentication header.
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: metering-api-swagger
+  labels:
+    app.kubernetes.io/name: metering-api-swagger
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    release: "{{ .Release.Name }}"
+  annotations:
+    kubernetes.io/ingress.class: "ibm-icp-management"
+    icp.management.ibm.com/location-modifier: "="
+    icp.management.ibm.com/upstream-uri: "/api/swagger"
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  rules:
+  - host: {{ .Values.ingress.host }}
+    http:
+      paths:
+      - path: /meteringapi/api/swagger
+        backend:
+          serviceName: metering-server
+          servicePort: 4000
+
+{{- end }}

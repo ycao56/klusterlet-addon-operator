@@ -1,10 +1,25 @@
+##########################################################################################
 # Licensed Materials - Property of IBM
-# IBM Confidential
-# OCO Source Materials
-# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
-# The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
+# (C) Copyright IBM Corporation 2018,2019. All Rights Reserved.
+# US Government Users Restricted Rights -
+# Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+##########################################################################################
 
 ---
+runAsUser:
+  __metadata:
+    name: "runAsUser"
+    label: "Run As User"
+    description: "The user that containers should run as."
+    hidden: true
+
+clusterRoleEnabled:
+  __metadata:
+    name: "clusterRoleEnabled"
+    label: "Cluster role enabled"
+    description: "Enables the creation of a metering cluster role."
+    hidden: true
+
 external:
   __metadata:
     name: "external"
@@ -34,6 +49,12 @@ external:
       type: "string"
       immutable: false
       required: true
+  cfcRouterUrl:
+    __metadata:
+      name: "external.cfcRouterUrl"
+      label: "Cfc router url"
+      description: "management ingress path"
+      hidden: true
 
 arch:
   __metadata:
@@ -50,6 +71,13 @@ arch:
         value: "ppc64le"
       - label: "s390x"
         value: "s390x"
+
+serviceAccountNameEnabled:
+  __metadata:
+    name: "serviceAccountNameEnabled"
+    label: "Service account name enabled"
+    description: "Service account creation enablement."
+    hidden: true
 
 mongo:
   __metadata:
@@ -136,6 +164,19 @@ api:
       description: "Controls enablement of metering API"
       hidden: true
 
+internalApi:
+  __metadata:
+    name: "internalApi"
+    label: "Metering Internal API"
+    description: "Metering Internal API enablement"
+    hidden: true
+  enabled:
+    __metadata:
+      name: "internalApi.enabled"
+      label: "Internal API enabled"
+      description: "Controls enablement of metering internal API"
+      hidden: true
+
 dm:
   __metadata:
     name: "dm"
@@ -146,6 +187,18 @@ dm:
       name: "dm.enabled"
       label: "Data manager enabled"
       description: "Controls enablement of the data manager component"
+      hidden: true
+  nodeSelectorEnabled:
+    __metadata:
+      name: "dm.nodeSelectorEnabled"
+      label: "Node selector enabled"
+      description: "Controls enablement of the node selector for the data manager component"
+      hidden: true
+  priorityClassNameEnabled:
+    __metadata:
+      name: "dm.priorityClassNameEnabled"
+      label: "Priority class name enabled"
+      description: "Controls enablement of the priority class name for the data manager component"
       hidden: true
   image:
     repository:
@@ -222,7 +275,7 @@ dm:
         cpu:
           __metadata:
             name: "dm.init.resources.requests.cpu"
-            label: "Requested CPU"
+            label: "Init container requested CPU"
             description: "Init container requested CPU amount"
             type: "string"
             immutable: false
@@ -230,7 +283,7 @@ dm:
         memory:
           __metadata:
             name: "dm.init.resources.requests.memory"
-            label: "Requested memory"
+            label: "Init container requested memory"
             description: "Init container requested memory amount"
             type: "string"
             immutable: false
@@ -239,16 +292,16 @@ dm:
         cpu:
           __metadata:
             name: "dm.init.resources.limits.cpu"
-            label: "CPU limit"
-            description: "Init container CPU limit for reader"
+            label: "Init container CPU limit"
+            description: "CPU limit for init container"
             type: "string"
             immutable: false
             required: false      
         memory:
           __metadata:
             name: "dm.init.resources.limits.memory"
-            label: "Memory limit"
-            description: "Init container memory limit for reader"
+            label: "Init container memory limit"
+            description: "Memory limit for init container"
             type: "string"
             immutable: false
             required: false
@@ -319,7 +372,7 @@ ui:
       __metadata:
         name: "ui.nodeSelector.management"
         label: "Node selector for management node"
-        description: "Determines if the component should be scheduled on the managemant node"
+        description: "Determines if the component should be scheduled on the management node"
         type: "string"
         immutable: true
         required: true
@@ -372,7 +425,7 @@ ui:
         cpu:
           __metadata:
             name: "ui.init.resources.requests.cpu"
-            label: "Requested CPU"
+            label: "Init container requested CPU"
             description: "Init container requested CPU amount"
             type: "string"
             immutable: false
@@ -380,7 +433,7 @@ ui:
         memory:
           __metadata:
             name: "ui.init.resources.requests.memory"
-            label: "Requested memory"
+            label: "Init container requested memory"
             description: "Init container requested memory amount"
             type: "string"
             immutable: false
@@ -389,16 +442,16 @@ ui:
         cpu:
           __metadata:
             name: "ui.init.resources.limits.cpu"
-            label: "CPU limit"
-            description: "Init container CPU limit for reader"
+            label: "Init container CPU limit"
+            description: "CPU limit for init container"
             type: "string"
             immutable: false
             required: false      
         memory:
           __metadata:
             name: "ui.init.resources.limits.memory"
-            label: "Memory limit"
-            description: "Init container memory limit for reader"
+            label: "Init container memory limit"
+            description: "Memory limit for init container"
             type: "string"
             immutable: false
             required: false
@@ -407,7 +460,7 @@ ui:
 mcmui:
   __metadata:
     name: "mcmui"
-    label: "Multcloud Console"
+    label: "Multicloud Console"
     description: "Metering multicloud console component"
   enabled:
     __metadata:
@@ -454,7 +507,7 @@ mcmui:
       __metadata:
         name: "mcmui.nodeSelector.management"
         label: "Node selector for management node"
-        description: "Determines if the component should be scheduled on the managemant node"
+        description: "Determines if the component should be scheduled on the management node"
         type: "string"
         immutable: true
         required: true
@@ -508,7 +561,7 @@ mcmui:
         cpu:
           __metadata:
             name: "mcmui.init.resources.requests.cpu"
-            label: "Requested CPU"
+            label: "Init container requested CPU"
             description: "Init container requested CPU amount"
             type: "string"
             immutable: false
@@ -516,7 +569,7 @@ mcmui:
         memory:
           __metadata:
             name: "mcmui.init.resources.requests.memory"
-            label: "Requested memory"
+            label: "Init container requested memory"
             description: "Init container requested memory amount"
             type: "string"
             immutable: false
@@ -525,16 +578,16 @@ mcmui:
         cpu:
           __metadata:
             name: "mcmui.init.resources.limits.cpu"
-            label: "CPU limit"
-            description: "Init container CPU limit for reader"
+            label: "Init container CPU limit"
+            description: "CPU limit for init container"
             type: "string"
             immutable: false
             required: false      
         memory:
           __metadata:
             name: "mcmui.init.resources.limits.memory"
-            label: "Memory limit"
-            description: "Init container memory limit for reader"
+            label: "Init container memory limit"
+            description: "Memory limit for init container"
             type: "string"
             immutable: false
             required: false
@@ -544,6 +597,12 @@ reader:
     name: "reader"
     label: "Reader"
     description: "Metering reader component"
+  enabled:
+    __metadata:
+      name: "reader.enabled"
+      label: "Reader enabled"
+      description: "Controls enablement of the reader component"
+      hidden: true
   image:
     repository:
       __metadata:
@@ -618,7 +677,7 @@ reader:
         cpu:
           __metadata:
             name: "reader.init.resources.requests.cpu"
-            label: "Requested CPU"
+            label: "Init container requested CPU"
             description: "Init container requested CPU amount"
             type: "string"
             immutable: false
@@ -626,7 +685,7 @@ reader:
         memory:
           __metadata:
             name: "reader.init.resources.requests.memory"
-            label: "Requested memory"
+            label: "Init container requested memory"
             description: "Init container requested memory amount"
             type: "string"
             immutable: false
@@ -635,16 +694,16 @@ reader:
         cpu:
           __metadata:
             name: "reader.init.resources.limits.cpu"
-            label: "CPU limit"
-            description: "Init container CPU limit for reader"
+            label: "Init container CPU limit"
+            description: "CPU limit for init container"
             type: "string"
             immutable: false
             required: false      
         memory:
           __metadata:
             name: "reader.init.resources.limits.memory"
-            label: "Memory limit"
-            description: "Init container memory limit for reader"
+            label: "Init container memory limit"
+            description: "Memory limit for init container"
             type: "string"
             immutable: false
             required: false
@@ -655,12 +714,11 @@ reader:
       label: "Reader tolerations"
       description: "Reader tolerations settings"
       hidden: true
-
-  tolerations:
+  clusterIssuer:
     __metadata:
-      name: "reader.tolerations"
-      label: "Reader tolerations"
-      description: "Reader tolerations settings"
+      name: "reader.clusterIssuer"
+      label: "Reader cluster issuer"
+      description: "Cluster issuer for certificates generated for the reader"
       hidden: true
 
 sender:
@@ -769,6 +827,50 @@ sender:
           required: false      
           hidden: true
 
+  init:
+    resources:
+      requests:
+        cpu:
+          __metadata:
+            name: "sender.init.resources.requests.cpu"
+            label: "Init container requested CPU"
+            description: "Init container requested CPU amount"
+            type: "string"
+            immutable: false
+            required: false      
+        memory:
+          __metadata:
+            name: "sender.init.resources.requests.memory"
+            label: "Init container requested memory"
+            description: "Init container requested memory amount"
+            type: "string"
+            immutable: false
+            required: false  
+      limits:
+        cpu:
+          __metadata:
+            name: "sender.init.resources.limits.cpu"
+            label: "Init container CPU limit"
+            description: "CPU limit for init container"
+            type: "string"
+            immutable: false
+            required: false      
+        memory:
+          __metadata:
+            name: "sender.init.resources.limits.memory"
+            label: "Init container memory limit"
+            description: "Memory limit for init container"
+            type: "string"
+            immutable: false
+            required: false
+
+
+  nodeSelectorEnabled:
+    __metadata:
+      name: "sender.nodeSelectorEnabled"
+      label: "Node selector enabled"
+      description: "Controls enablement of the node selector for the data sender component"
+      hidden: true
   nodeSelector:
     management:
       __metadata:

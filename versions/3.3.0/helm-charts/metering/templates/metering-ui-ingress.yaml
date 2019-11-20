@@ -1,0 +1,32 @@
+# Licensed Materials - Property of IBM
+# (C) Copyright IBM Corporation 2019. All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by
+# GSA ADP Schedule Contract with IBM Corp.
+#
+{{- if .Values.ui.enabled }}
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: metering-ui
+  labels:
+    app.kubernetes.io/name: metering-ui
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    release: "{{ .Release.Name }}"
+  annotations:
+    kubernetes.io/ingress.class: "ibm-icp-management"
+    icp.management.ibm.com/auth-type: "id-token"
+    icp.management.ibm.com/rewrite-target: "/"
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  rules:
+  - host: {{ .Values.ingress.host }}
+    http:
+      paths:
+      - path: /metering/
+        backend:
+          serviceName: metering-ui
+          servicePort: 3130
+{{- end }}

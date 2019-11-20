@@ -1,10 +1,9 @@
-{{- if .Values.sender.enabled }}
 # Licensed Materials - Property of IBM
-# IBM Confidential
-# OCO Source Materials
-# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
-# The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
----
+# (C) Copyright IBM Corporation 2019. All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by
+# GSA ADP Schedule Contract with IBM Corp.
+#
+{{- if .Values.sender.enabled }}
 #
 # The metering-sender deployment sends aggregated cluster metering data to the multi cluster hub.
 #
@@ -16,11 +15,14 @@ metadata:
   labels:
     app: metering-sender
     component: meteringsvc
+    app.kubernetes.io/name: metering-sender
+    app.kubernetes.io/component: meteringsvc
+    app.kubernetes.io/managed-by: "{{ .Release.Service }}"
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    app.kubernetes.io/instance: "{{ .Release.Name }}"
+    release: "{{ .Release.Name }}"
 spec:
-  updateStrategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 1
+  replicas: 1
   selector:
     matchLabels:
       app: metering-sender
@@ -30,13 +32,32 @@ spec:
       labels:
         app: metering-sender
         component: meteringsvc
+        app.kubernetes.io/name: metering-dm
+        app.kubernetes.io/component: meteringsvc
+        helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/managed-by: "{{ .Release.Service }}"
+        release: "{{ .Release.Name }}"
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ""
         seccomp.security.alpha.kubernetes.io/pod: docker/default
-        productName: "IBM Multicloud Manager - Server"
-        productID: "c18240a57c1c41969d5e81b39435da6c"
-        productVersion: "3.2.0"
     spec:
+      hostNetwork: false
+      hostPID: false
+      hostIPC: false
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: beta.kubernetes.io/arch
+                  operator: In
+                  values:
+                  {{- if .Values.arch }}
+                  - {{ .Values.arch }}
+                  {{- else }}
+                  - {{ template "metering.arch" . }}
+                  {{- end }}
       terminationGracePeriodSeconds: 60
 {{- if .Values.sender.nodeSelectorEnabled }}
     {{- with .Values.sender.nodeSelector }}
@@ -55,8 +76,18 @@ spec:
           image: "{{ .Values.sender.image.repository }}:{{ .Values.sender.image.tag }}"
           imagePullPolicy: "{{ .Values.sender.image.pullPolicy }}"
           securityContext:
+            runAsNonRoot: true
+{{- if not (.Capabilities.APIVersions.Has "security.openshift.io/v1") }}
+            runAsUser: {{ .Values.runAsUser }}
+{{- end }}
+            privileged: false
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+              - ALL
+          resources:
+{{ toYaml .Values.sender.init.resources | indent 12 }}  
           env:
             - name: SECRET_LIST
               value: "{{ .Values.mongo.username.secret }}       {{ .Values.mongo.password.secret }} {{ .Values.mongo.clustercertssecret }} {{ .Values.mongo.clientcertssecret }}"
@@ -65,6 +96,8 @@ spec:
             - name: HC_HUB_CONFIG
               value: {{ .Values.sender.hubKubeConfigSecret }}
           volumeMounts:
+            - name: loglevel
+              mountPath: /etc/config
             - name: muser-{{ .Values.mongo.username.secret }}
               mountPath: /sec/muser-{{ .Values.mongo.username.secret }}
             - name: mpass-{{ .Values.mongo.password.secret }}
@@ -81,8 +114,18 @@ spec:
           image: "{{ .Values.sender.image.repository }}:{{ .Values.sender.image.tag }}"
           imagePullPolicy: "{{ .Values.sender.image.pullPolicy }}"
           securityContext:
+            runAsNonRoot: true
+{{- if not (.Capabilities.APIVersions.Has "security.openshift.io/v1") }}
+            runAsUser: {{ .Values.runAsUser }}
+{{- end }}
+            privileged: false
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+              - ALL
+          resources:
+{{ toYaml .Values.sender.init.resources | indent 12 }}  
           env:
             - name: NODE_TLS_REJECT_UNAUTHORIZED
               value: "0"
@@ -132,8 +175,16 @@ spec:
           image: "{{ .Values.sender.image.repository }}:{{ .Values.sender.image.tag }}"
           imagePullPolicy: "{{ .Values.sender.image.pullPolicy }}"
           securityContext:
+            runAsNonRoot: true
+{{- if not (.Capabilities.APIVersions.Has "security.openshift.io/v1") }}
+            runAsUser: {{ .Values.runAsUser }}
+{{- end }}
+            privileged: false
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+              - ALL
           resources:
 {{ toYaml .Values.sender.resources | indent 12 }}
           env:
@@ -234,5 +285,12 @@ spec:
           secret:
             defaultMode: 0644
             secretName: {{ .Values.mongo.password.secret }}
+            optional: true
+        - name: loglevel
+          configMap:
+            name: metering-sender-logging-configuration
+            items:
+            - key: metering-sender-loglevel.json
+              path: loglevel.json
             optional: true
 {{- end }}

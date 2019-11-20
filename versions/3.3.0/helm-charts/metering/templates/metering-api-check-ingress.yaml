@@ -1,0 +1,35 @@
+# Licensed Materials - Property of IBM
+# (C) Copyright IBM Corporation 2019. All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by
+# GSA ADP Schedule Contract with IBM Corp.
+#
+{{- if .Values.api.enabled }}
+
+# /meteringapi/api/v1 enables a user to check if the API is available.
+# It returns status code 204. It can be called without passing an Authentication header.
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: metering-api-check
+  labels:
+    app.kubernetes.io/name: metering-api-check
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    release: "{{ .Release.Name }}"
+  annotations:
+    kubernetes.io/ingress.class: "ibm-icp-management"
+    icp.management.ibm.com/location-modifier: "="
+    icp.management.ibm.com/upstream-uri: /api/v1
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  rules:
+  - host: {{ .Values.ingress.host }}
+    http:
+      paths:
+      - path: /meteringapi/api/v1
+        backend:
+          serviceName: metering-server
+          servicePort: 4000
+
+{{- end }}

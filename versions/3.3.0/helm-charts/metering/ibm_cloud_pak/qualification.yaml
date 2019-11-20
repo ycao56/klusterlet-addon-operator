@@ -1,13 +1,22 @@
-# Licensed Materials - Property of IBM
-# IBM Confidential
-# OCO Source Materials
-# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
-# The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
-
 qualification:
-  levelName: ""
-  levelDescription: ""
-  issueDate: ""
-  duration: ""
-  terms: ""
+  levelName: "certified-ibm-cloud-pak"
+  levelDescription: "IBM Certified Container"
+  issueDate: "11/2019"
+  duration: "12M"
+  terms: "Valid from date of issue. Security vulnerability management and enhancements are delivered on the latest version of the chart and images."
 prereqs:
+  security:
+    kubernetes:
+      podSecurityPolicy:
+        name: "ibm-restricted-psp"
+    openshift:
+      securityContextConstraints:
+        name: "ibm-restricted-scc"    
+    ibmCloudPrivate:
+      installerRole:
+        name: "ClusterAdministrator"
+  k8sDistros:
+    kubernetes:
+      semver: ">=1.11.0"
+    openshift:
+      semver: ">=1.11.0"

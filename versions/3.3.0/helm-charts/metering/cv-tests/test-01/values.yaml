@@ -58,7 +58,7 @@ dm:
   nodeSelectorEnabled: true
   nodeSelector:
     management: "true"
-
+  
   priorityClassNameEnabled: true
 
   tolerations:
@@ -84,7 +84,7 @@ dm:
       limits:
         cpu: 100m
         memory: 100Mi
-
+    
 ui:
   enabled: true
   image:
@@ -155,7 +155,6 @@ mcmui:
 
 reader:
   enabled: true
-  clusterIssuer: icp-ca-issuer
   image:
     repository: ibmcom/metering-data-manager
     tag: 3.3.0
@@ -175,7 +174,7 @@ reader:
     limits:
       cpu: 500m
       memory: 512Mi
-
+  
   init:
     resources:
       requests:
@@ -186,10 +185,10 @@ reader:
         memory: 100Mi
 
 sender:
-  enabled: false
+  enabled: true
   clusterName: null
   clusterNamespace: null
-  hubKubeConfigSecret: null
+  hubKubeConfigSecret: null  
   image:
     repository: ibmcom/metering-data-manager
     tag: 3.3.0
@@ -214,15 +213,6 @@ sender:
     limits:
       cpu: 500m
       memory: 512Mi
-
-  init:
-    resources:
-      requests:
-        cpu: 100m
-        memory: 100Mi
-      limits:
-        cpu: 100m
-        memory: 100Mi
 
 
 ## Optionally specify an array of imagePullSecrets.

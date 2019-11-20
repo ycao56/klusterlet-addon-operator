@@ -1,9 +1,8 @@
 # Licensed Materials - Property of IBM
-# IBM Confidential
-# OCO Source Materials
-# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
-# The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
-
+# (C) Copyright IBM Corporation 2018,2019. All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by
+# GSA ADP Schedule Contract with IBM Corp.
+#
 # Source: metering/templates/ui-deployment.yaml
 #
 # The meteringui pod deploys the Product Insights UI server as a container
@@ -46,10 +45,10 @@ spec:
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ""
         seccomp.security.alpha.kubernetes.io/pod: docker/default
-        productName: IBM Cloud Private
-        productID: 01t50000004X1PWAA0
-        productVersion: v4.1.0
     spec:
+      hostNetwork: false
+      hostPID: false
+      hostIPC: false
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -61,7 +60,7 @@ spec:
                   {{- if .Values.arch }}
                   - {{ .Values.arch }}
                   {{- else }}
-                  - {{ template "arch" . }}
+                  - {{ template "metering.arch" . }}
                   {{- end }}
       terminationGracePeriodSeconds: 60
     {{- with .Values.ui.nodeSelector }}
@@ -75,6 +74,11 @@ spec:
           image: "{{ .Values.dm.image.repository }}:{{ .Values.dm.image.tag }}"
           imagePullPolicy: "{{ .Values.dm.image.pullPolicy }}"
           securityContext:
+            runAsNonRoot: true
+{{- if not (.Capabilities.APIVersions.Has "security.openshift.io/v1") }}
+            runAsUser: {{ .Values.runAsUser }}
+{{- end }}
+            privileged: false
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
             capabilities:
@@ -106,6 +110,11 @@ spec:
           image: "{{ .Values.dm.image.repository }}:{{ .Values.dm.image.tag }}"
           imagePullPolicy: "{{ .Values.dm.image.pullPolicy }}"
           securityContext:
+            runAsNonRoot: true
+{{- if not (.Capabilities.APIVersions.Has "security.openshift.io/v1") }}
+            runAsUser: {{ .Values.runAsUser }}
+{{- end }}
+            privileged: false
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
             capabilities:
@@ -164,6 +173,11 @@ spec:
           image: "{{ .Values.ui.image.repository }}:{{ .Values.ui.image.tag }}"
           imagePullPolicy: "{{ .Values.ui.image.pullPolicy }}"
           securityContext:
+            runAsNonRoot: true
+{{- if not (.Capabilities.APIVersions.Has "security.openshift.io/v1") }}
+            runAsUser: {{ .Values.runAsUser }}
+{{- end }}
+            privileged: false
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
             capabilities:
@@ -257,6 +271,8 @@ spec:
               mountPath: /certs/mongodb-ca
             - name: mongodb-client-cert
               mountPath: /certs/mongodb-client
+            - name: loglevel
+              mountPath: /etc/config              
           readinessProbe:
             httpGet:
               path: "/unsecure/c2c/status/readinessProbe"
@@ -303,5 +319,12 @@ spec:
           secret:
             defaultMode: 0644
             secretName: platform-oidc-credentials
+            optional: true
+        - name: loglevel
+          configMap:
+            name: metering-logging-configuration
+            items:
+            - key: metering-ui-loglevel.json
+              path: loglevel.json
             optional: true
 {{- end }}
