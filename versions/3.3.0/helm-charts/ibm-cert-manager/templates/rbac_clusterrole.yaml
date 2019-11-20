@@ -1,0 +1,54 @@
+{{- if .Values.global.rbac.create -}}
+
+# Certificates controller role
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ template "cert-manager.fullname" . }}
+  labels:
+    app: {{ template "cert-manager.name" . }}
+    chart: {{ template "cert-manager.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+rules:
+  - apiGroups: ["certmanager.k8s.io"]
+    resources: ["certificates", "certificaterequests", "orders", "challenges", "clusterissuers", "issuers"]
+    verbs: ["*"]
+  - apiGroups: ["certmanager.k8s.io"]
+    resources: ["certificates/status", "certificaterequests/status", "challenges/status", "clusterissuers/status", "issuers/status", "orders/status"]
+    verbs: ["update"]
+  # We require these rules to support users with the OwnerReferencesPermissionEnforcement
+  # admission controller enabled:
+  # https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#ownerreferencespermissionenforcement
+  - apiGroups: ["certmanager.k8s.io"]
+    resources: ["certificates/finalizers", "challenges/finalizers", "ingresses/finalizers", "orders/finalizers"]
+    verbs: ["update"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch", "create", "update", "delete"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "patch"]
+  # HTTP01 rules
+  - apiGroups: [""]
+    resources: ["pods", "services"]
+    verbs: ["get", "list", "watch", "create", "delete"]
+  - apiGroups: ["extensions"]
+    resources: ["ingresses"]
+    verbs: ["get", "list", "watch", "create", "delete", "update"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "statefulsets", "daemonsets"]
+    verbs: ["*"]
+{{- if .Values.global.isOpenshift }}
+  # We require the ability to specify a custom hostname when we are creating
+  # new ingress resources.
+  # See: https://github.com/openshift/origin/blob/21f191775636f9acadb44fa42beeb4f75b255532/pkg/route/apiserver/admission/ingress_admission.go#L84-L148
+  - apiGroups: ["route.openshift.io"]
+    resources: ["routes/custom-host"]
+    verbs: ["create"]
+{{- end }}
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "create", "update", "patch"]
+
+{{- end }}

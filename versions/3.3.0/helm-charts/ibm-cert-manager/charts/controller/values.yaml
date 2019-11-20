@@ -1,18 +1,12 @@
-# Licensed Materials - Property of IBM
-# IBM Confidential
-# OCO Source Materials
-# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
-# The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
-
 replicas: 1
 
 image: 
   repository: ibmcom/icp-cert-policy-controller
-  tag: 4.1.0
+  tag: 3.3.0
   pullPolicy: IfNotPresent
 
 args:
-  frequency:
+  frequency: 60
   verbosity: 0
   defaultDuration:
 
@@ -23,8 +17,9 @@ securityContext:
   container:
     allowPrivilegeEscalation: false
     runAsUser: 10000
-    readOnlyRootFilesystem: false
+    readOnlyRootFilesystem: true
     runAsNonRoot: true
+    privileged: false
 
 nodeSelector: {}
 
@@ -39,3 +34,7 @@ tolerations:
     operator: Exists
 
 podDnsPolicy: "ClusterFirstWithHostNet"
+
+serviceAccount:
+  create: false
+  name: "default"

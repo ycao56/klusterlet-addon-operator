@@ -1,11 +1,5 @@
-# Licensed Materials - Property of IBM
-# IBM Confidential
-# OCO Source Materials
-# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
-# The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
-
 apiVersion: v1
-appVersion: 0.7.0.1
+appVersion: 0.10.0
 description: Service for issuing and managing certificates on IBM Cloud Private.
 keywords:
 - amd64
@@ -24,4 +18,4 @@ keywords:
 kubeVersion: '>=1.9.0-0'
 name: ibm-cert-manager
 tillerVersion: '>=2.7.0'
-version: 0.7.1
+version: 3.4.0

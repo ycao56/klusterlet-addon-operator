@@ -1,9 +1,3 @@
-# Licensed Materials - Property of IBM
-# IBM Confidential
-# OCO Source Materials
-# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
-# The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
-
 # Default values for cert-manager.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
@@ -12,12 +6,15 @@ global:
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
   ##
   imagePullSecrets: []
+  isOpenshift: false
   # - name: "image-pull-secret"
 
   # Optional priority class to be used for the cert-manager pods
   priorityClassName: ""
   rbac:
     create: true
+
+  logLevel: 2
 
   leaderElection:
     # Override the namespace used to store the ConfigMap for leader election
@@ -33,12 +30,12 @@ strategy: {}
 
 image:
   repository: ibmcom/icp-cert-manager-controller
-  tag: 0.7.0.1
+  tag: 0.10.0
   pullPolicy: IfNotPresent
 
 solver:
   repository: ibmcom/icp-cert-manager-acmesolver
-  tag: 0.7.0.1
+  tag: 0.10.0
 
 # Override the namespace used to store DNS provider credentials etc. for ClusterIssuer
 # resources. By default, the same namespace as cert-manager is deployed within is
@@ -57,6 +54,8 @@ extraArgs: []
   # Use this flag to set a namespace that cert-manager will use to store
   # supporting resources required for each ClusterIssuer (default is kube-system)
   # - --cluster-resource-namespace=kube-system
+  # When this flag is enabled, secrets will be automatically removed when the certificate resource is deleted
+  # - --enable-certificate-owner-ref=true
 
 extraEnv: []
 # - name: SOME_VAR
@@ -69,9 +68,6 @@ resources:
   limits:
     memory: "300Mi"
     cpu: "300m"
-  # requests:
-  #   cpu: 10m
-  #   memory: 32Mi
 
 # Pod Security Context
 # ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/
@@ -79,12 +75,14 @@ securityContext:
   pod:
     enabled: false
     fsGroup: 1001
+    runAsNonRoot: true
     runAsUser: 10000
   container:
     runAsNonRoot: true
     runAsUser: 10000
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: true
+    privileged: false    
 
 podAnnotations: {}
 
@@ -108,7 +106,18 @@ ingressShim: {}
   # defaultACMEChallengeType: ""
   # defaultACMEDNS01ChallengeProvider: ""
 
-policy-controller:
+prometheus:
+  enabled: false
+  servicemonitor:
+    enabled: false
+    prometheusInstance: default
+    targetPort: 9402
+    path: /metrics
+    interval: 60s
+    scrapeTimeout: 30s
+    labels: {}
+
+policyController:
   enabled: true
 
 # Use these variables to configure the HTTP_PROXY environment variables

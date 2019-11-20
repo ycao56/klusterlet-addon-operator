@@ -1,9 +1,3 @@
-# Licensed Materials - Property of IBM
-# IBM Confidential
-# OCO Source Materials
-# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
-# The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
-
 global:
   __metadata:
     label: "Global Chart Settings"
@@ -14,6 +8,12 @@ global:
       description: "Any secrets required to pull cert-manager images."
       type: "string"
       required: false
+  isOpenshift:
+    __metadata:
+      label: "Openshift"
+      description: "If true, means this is deployed on openshift and will give cert-manager extra permissions."
+      type: "boolean"
+      required: true
   priorityClassName:
     __metadata:
       label: "Priority Class Name"
@@ -34,6 +34,9 @@ global:
         description: "If true, create and use RBAC resources"
         type: "boolean"
         required: true
+  logLevel:
+    __metadata:
+      hidden: true
 replicaCount:
   __metadata:
     label: "Replicas"
@@ -130,9 +133,6 @@ securityContext:
     label: "Security Context"
     description: "The security context cert-manager uses."
   pod:
-    __metadata:
-      label: "Pod"
-      description: "The security context of cert-manager's pod."
     enabled:
       __metadata:
         label: "Enabled" 
@@ -144,15 +144,17 @@ securityContext:
         description: "Functional group name to run as."
         required: false
         type: "string"
+    runAsNonRoot:
+      __metadata:
+        label: "Run As Non-Root"
+        description: "If true, prevents cert-manager containers from being run as a root user."
+        type: "boolean"
     runAsUser:
       __metadata:
         label: "Run As User"
         description: "The user to run cert-manager as in all the containers within the cert-manager pod."
         type: "string"
   container:
-    __metadata:
-      label: "Container"
-      description: "The security context of cert-manager's container."
     allowPrivilegeEscalation:
       __metadata:
         label: "Allow Privilege Escalation"
@@ -172,7 +174,12 @@ securityContext:
       __metadata:
         label: "Read Only File System"
         description: "If true, then only allows reads from the file system."
-        type: "boolean"        
+        type: "boolean"
+    privileged:
+      __metadata:
+        label: "Privileged"
+        description: "If true, allows container to run with privileged access."
+        type: "boolean"
 podAnnotations:
   __metadata:
     name: "podAnnotations"
@@ -220,28 +227,97 @@ ingressShim:
     type: "string"
     hidden: true
     required: false
+prometheus:
+  __metadata:
+    label: "Prometheus"
+    description: "Settings for prometheus (a monitoring service)."
+  enabled:
+    __metadata:
+      label: "Enable"
+      description: "If true, enables prometheus monitoring on cert-manager."
+      required: true
+      type: "boolean"
+  servicemonitor:
+    enabled:
+      __metadata:
+        label: "Enable"
+        description: "If true, will enable service monitoring on cert-manager."
+        required: true
+        type: "boolean"
+    prometheusInstance:
+      __metadata:
+        label: "Prometheus Instance"
+        description: "Name of the prometheus instance if service monitoring is enabled."
+        type: "string"
+        required: false
+    targetPort:
+      __metadata:
+        label: "Target Port"
+        description: "Port exposed by cert-manager for service monitoring to prometheus if prometheus is enabled."
+        type: "string"
+        required: false
+    path:
+      __metadata:
+        label: "Metrics Path"
+        description: "The path prometheus can collect data from cert-manager."
+        required: false
+        type: "string"
+    interval:
+      __metadata:
+        label: "Colleciton Interval"
+        description: "How often you want prometheus to pull metrics from cert-manager."
+        type: "string"
+        required: false
+    scrapeTimeout:
+      __metadata:
+        label: "Timeout"
+        description: "The timeout for every collection."
+        required: false
+        type: "string"
+    labels:
+      __metadata:
+        label: "Labels"
+        description: "Any labels you want to apply to cert-manager's collections."
+        required: false
+        type: "string"
+policyController:
+  __metadata:
+    label: "Certificate Policy Controller"
+    description: "Controls whether or not the certificate policy controller is deployed with the certificate management chart."
+  enabled:
+    __metadata:
+      label: "Enabled"
+      description: "Deploys the certificate policy controller if set to true, otherwise it does not deploy it."
+      type: "boolean"
+      required: true
 resources:
   __metadata:
     label: "Resources"
     description: "Resource requests and limits for cpu and memory for cert-manager deployment"
   requests:
-    __metadata:
-      label: "Requests"
-      description: "The amount of cpu/memory requested by cert-manager's deployment"
     memory:
       __metadata:
         label: "Memory request"
         description: "The amount of memory cert-manager requests"
         required: false
         type: "string"
+    cpu:
+      __metadata:
+        label: "CPU request"
+        description: "The amount of cpu cert-manager requests to have."
+        required: false
+        type: "string"
   limits:
-    __metadata:
-      label: "Limits"
-      description: "The amount of cpu/memory cert-manager deployment is limited to"
     memory:
       __metadata:
         label: "Memory limit"
         description: "The memory limit cert-manager has"
+        required: true
+        type: "string"
+    cpu:
+      __metadata:
+        label: "CPU Limit"
+        description: "The maximum cpu cert-manager can have."
         required: true
         type: "string"
 podRestart:
