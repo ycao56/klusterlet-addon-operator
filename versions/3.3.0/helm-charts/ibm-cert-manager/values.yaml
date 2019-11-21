@@ -61,7 +61,7 @@ extraEnv: []
 # - name: SOME_VAR
 #   value: 'some value'
 
-resources: 
+resources:
   requests:
     memory: "150Mi"
     cpu: "100m"
@@ -82,7 +82,7 @@ securityContext:
     runAsUser: 10000
     allowPrivilegeEscalation: false
     readOnlyRootFilesystem: true
-    privileged: false    
+    privileged: false
 
 podAnnotations: {}
 
@@ -120,6 +120,8 @@ prometheus:
 policyController:
   enabled: true
 
+installCRD:
+  enabled: false
 # Use these variables to configure the HTTP_PROXY environment variables
 # http_proxy: "http://proxy:8080"
 # http_proxy: "http://proxy:8080"
@@ -152,5 +154,5 @@ tolerations:
 - key: CriticalAddonsOnly
   operator: Exists
 
-podRestart: 
+podRestart:
   enabled: true
