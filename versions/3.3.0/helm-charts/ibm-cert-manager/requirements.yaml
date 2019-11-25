@@ -3,7 +3,7 @@ dependencies:
 - name: ibm-cert-manager-crd
   version: "3.4.0"
   repository: "file://ibm-cert-manager-crd"
-  condition: installCRD.enabled
+  condition: crd.enabled
   alias: crd
 - name: controller
   version: "3.2.2"

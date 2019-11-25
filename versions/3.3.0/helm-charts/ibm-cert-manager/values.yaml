@@ -118,9 +118,9 @@ prometheus:
     labels: {}
 
 policyController:
-  enabled: true
+  enabled: false
 
-installCRD:
+crd:
   enabled: false
 # Use these variables to configure the HTTP_PROXY environment variables
 # http_proxy: "http://proxy:8080"
