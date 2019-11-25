@@ -1,11 +1,9 @@
 {{- if .Values.kubeStateMetrics.enabled -}}
 # Licensed Materials - Property of IBM
-# IBM Confidential
-# OCO Source Materials
-# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
-# The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
+# @ Copyright IBM Corporation 2016, 2019. All Rights Reserved.
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
 
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
@@ -17,6 +15,11 @@ metadata:
   name: {{ template "prometheus.fullname" . }}-kubestatemetrics
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "prometheus.fullname" . }}
+      component: kubestatemetrics
+      release: {{ .Release.Name }}
   template:
     metadata:
       labels:
@@ -25,20 +28,20 @@ spec:
         component: kubestatemetrics
         release: {{ .Release.Name }}
         heritage: {{ .Release.Service }}
+      name: {{ template "prometheus.fullname" . }}-kubestatemetrics
       annotations:
-        productName: kube-state-metrics
-        productVersion: v1.3.0
-        productID: none
         scheduler.alpha.kubernetes.io/critical-pod: ""
     spec:
 {{- if eq .Values.mode "managed" }}
       priorityClassName: system-cluster-critical
 {{- end }}
-{{ include "monitoring.affinity" . | indent 6 }}
     {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
         - name: {{ .Values.imagePullSecrets }}
     {{- end }}
+      hostPID: false
+      hostIPC: false
+      hostNetwork: false
       containers:
         - name: kubestatemetrics
           image: {{ .Values.kubeStateMetrics.image.repository }}:{{ .Values.kubeStateMetrics.image.tag }}
@@ -48,6 +51,12 @@ spec:
           securityContext:
             runAsUser: 65534
             allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            privileged: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+              - ALL
         {{- if .Values.kubeStateMetrics.probe.enabled }}
           readinessProbe:
             httpGet:
@@ -68,6 +77,14 @@ spec:
         - name: router
           image: {{ .Values.router.image.repository }}:{{ .Values.router.image.tag }}
           imagePullPolicy: {{ .Values.imagePullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+              - ALL
+              add: [CHOWN, NET_ADMIN, NET_RAW, LEASE, SETGID, SETUID]
           resources:
 {{ toYaml .Values.router.resources | indent 12 }}
           command: ["/opt/ibm/router/entry/entrypoint.sh"]

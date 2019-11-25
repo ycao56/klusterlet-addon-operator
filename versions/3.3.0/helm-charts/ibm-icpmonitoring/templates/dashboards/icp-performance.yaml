@@ -1,9 +1,7 @@
 {{- if and (eq .Values.mode "managed") .Values.grafana.enabled -}}
 # Licensed Materials - Property of IBM
-# IBM Confidential
-# OCO Source Materials
-# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
-# The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
+# @ Copyright IBM Corporation 2016, 2019. All Rights Reserved.
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
 
 # origin: https://github.com/ibm-cloud-architecture/CSMO-ICP/tree/master/grafana/csmodashboards
 apiVersion: monitoringcontroller.cloud.ibm.com/v1
@@ -71,7 +69,7 @@ spec:
       "annotations": {
         "list": []
       },
-      "description": "Monitors ICP cluster using Prometheus. Shows overall Metrics Summary (High Level KPIs , Container, Pod CPU and Memory.",
+      "description": "Monitors Common Service cluster using Prometheus. Shows overall Metrics Summary (High Level KPIs , Container, Pod CPU and Memory.",
       "editable": true,
       "gnetId": 315,
       "graphTooltip": 0,
@@ -494,7 +492,7 @@ spec:
                 }
               ],
               "thresholds": "75,90",
-              "title": "ICP Total CPU 15 Minute Average",
+              "title": "Common Service Total CPU 15 Minute Average",
               "type": "singlestat",
               "valueFontSize": "80%",
               "valueMaps": [
@@ -591,12 +589,12 @@ spec:
               "valueName": "current"
             },
             {
-              "content": "#####   Visit the CSMO-ICP  Git Hub Page.      ",
+              "content": "#####   Visit the CSMO  Git Hub Page.      ",
               "id": 43,
               "links": [
                 {
                   "targetBlank": true,
-                  "title": "CSMO-ICP",
+                  "title": "CSMO",
                   "type": "absolute",
                   "url": "https://ibm.biz/BdjCrN"
                 }
@@ -612,7 +610,7 @@ spec:
           "repeatIteration": null,
           "repeatRowId": null,
           "showTitle": false,
-          "title": "ICP Usage Summary One",
+          "title": "Common Service Usage Summary One",
           "titleSize": "h6"
         },
         {
@@ -1191,7 +1189,7 @@ spec:
                 }
               ],
               "thresholds": "",
-              "title": "ICP Node Count",
+              "title": "Common Service Node Count",
               "type": "singlestat",
               "valueFontSize": "50%",
               "valueMaps": [
@@ -1208,7 +1206,7 @@ spec:
           "repeatIteration": null,
           "repeatRowId": null,
           "showTitle": false,
-          "title": "ICP Usage Summary Two",
+          "title": "Common Service Usage Summary Two",
           "titleSize": "h6"
         },
         {
@@ -2161,7 +2159,7 @@ spec:
         ]
       },
       "timezone": "browser",
-      "title": "ICP Performance IBM Provided 2.5",
+      "title": "Common Service Performance IBM Provided 2.5",
       "version": 6
     }
 {{- end }}

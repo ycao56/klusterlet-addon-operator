@@ -1,9 +1,8 @@
 {{- if and .Values.prometheus.persistentVolume.enabled (eq .Chart.Version "1.6.0") }}
 # Licensed Materials - Property of IBM
-# IBM Confidential
-# OCO Source Materials
-# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
-# The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
+# @ Copyright IBM Corporation 2016, 2019. All Rights Reserved.
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -30,7 +29,10 @@ spec:
         heritage: {{ .Release.Service }}
       name: {{ template "monitoring.fullname" . }}-prometheus-upgrade-job
     spec:
-{{ include "monitoring.affinity" . | indent 6 }}
+    {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets }}
+    {{- end }}
       containers:
       - name: clear-pvc
         image: {{ .Values.curl.image.repository }}:{{ .Values.curl.image.tag }}
@@ -90,7 +92,10 @@ spec:
         heritage: {{ .Release.Service }}
       name: {{ template "monitoring.fullname" . }}-prometheus-check-job
     spec:
-{{ include "monitoring.affinity" . | indent 6 }}
+    {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets }}
+    {{- end }}
       containers:
       - name: check-data
         image: {{ .Values.init.image.repository }}:{{ .Values.init.image.tag }}
@@ -192,6 +197,13 @@ data:
                         }
                       }
                   },
+              {{- if .Values.imagePullSecrets }}
+                "imagePullSecrets": [
+                  {
+                      "name": "{{ .Values.imagePullSecrets }}"
+                  }
+                ],
+              {{- end }}
                 "containers": [
                   {
                       "name": "copy-data",
@@ -343,25 +355,20 @@ data:
     ls -ladtr /prometheus/wal/*
     echo "/prometheus/prometheus-db/"
     ls -ladtr /prometheus/prometheus-db/
-    echo "If there is a wal directory, but no prometheus-db/wal directory"
-    if [[ -d /prometheus/wal/ ]]; 
-    then
-        echo "/prometheus/wal/ was found"
-        if [[ ! -d /prometheus/prometheus-db/ ]];
-        then
-            echo "/prometheus/prometheus-db/ was not found"
-            # copy the wal directory
-            mkdir /prometheus/prometheus-db/ 
-            echo "mkdir /prometheus/prometheus-db/ return $?"
-            chmod 777 /prometheus/prometheus-db/
-            cp -av /prometheus/wal/ /prometheus/prometheus-db/
-            echo "cp -a /prometheus/wal/ /prometheus/prometheus-db/ return $?"
-            diff -r /prometheus/wal/* /prometheus/prometheus-db/wal/*
-            echo "diff -r /prometheus/wal/* /prometheus/prometheus-db/wal/* return $?"
-            echo "/prometheus/prometheus-db/*"
-            ls -ladtr /prometheus/prometheus-db/*
-        fi
-    fi
+
+    rm -fr /prometheus/prometheus-db
+    mkdir -p /tmp/prometheus-db/ 
+    chmod 777 /tmp/prometheus-db/
+
+    cp -avr /prometheus/* /tmp/prometheus-db/
+    rm -f /tmp/prometheus-db/lock
+    mv /tmp/prometheus-db /prometheus/
+
+    echo "diff -r /prometheus/* /prometheus/prometheus-db/* return $?"
+    diff -r /prometheus/* /prometheus/prometheus-db/*
+    echo "/prometheus/prometheus-db/*"
+    ls -ladtr /prometheus/prometheus-db/*
+
     echo "Done"
 
 ---

@@ -1,10 +1,9 @@
 {{- if .Values.nodeExporter.enabled -}}
 # Licensed Materials - Property of IBM
-# IBM Confidential
-# OCO Source Materials
-# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
-# The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
-apiVersion: extensions/v1beta1
+# @ Copyright IBM Corporation 2016, 2019. All Rights Reserved.
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
+apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   labels:
@@ -19,6 +18,11 @@ spec:
   updateStrategy:
     type: RollingUpdate
   minReadySeconds: 5
+  selector:
+    matchLabels:
+      app: {{ template "prometheus.fullname" . }}
+      component: nodeexporter
+      release: {{ .Release.Name }}
   template:
     metadata:
       labels:
@@ -28,23 +32,20 @@ spec:
         release: {{ .Release.Name }}
         heritage: {{ .Release.Service }}
         role: "nodeexporter"
+      name: {{ template "prometheus.fullname" . }}-nodeexporter
       annotations:
-        productName: node-exporter
-        productVersion: v0.16.0
-        productID: none
         scheduler.alpha.kubernetes.io/critical-pod: ""
     spec:
 {{- if eq .Values.mode "managed" }}
       priorityClassName: system-cluster-critical
 {{- end }}
-      tolerations:
-      - key: "dedicated"
-        operator: "Exists"
-        effect: "NoSchedule"
     {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
         - name: {{ .Values.imagePullSecrets }}
     {{- end }}
+      hostPID: false
+      hostIPC: false
+      hostNetwork: false
       containers:
         - name: nodeexporter
           image: {{ .Values.nodeExporter.image.repository }}:{{ .Values.nodeExporter.image.tag }}
@@ -52,6 +53,12 @@ spec:
           securityContext:
             runAsUser: 65534
             allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            privileged: false            
+            capabilities:
+              drop:
+              - ALL
           args:
             - --path.procfs=/host/proc
             - --path.sysfs=/host/sys
@@ -69,6 +76,14 @@ spec:
         - name: router
           image: {{ .Values.router.image.repository }}:{{ .Values.router.image.tag }}
           imagePullPolicy: {{ .Values.imagePullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+              - ALL
+              add: [CHOWN, NET_ADMIN, NET_RAW, LEASE, SETGID, SETUID]
           resources:
 {{ toYaml .Values.router.resources | indent 12 }}
           command: ["/opt/ibm/router/entry/entrypoint.sh"]

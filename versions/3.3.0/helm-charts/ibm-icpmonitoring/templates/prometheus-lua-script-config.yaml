@@ -1,10 +1,8 @@
 {{- if .Values.prometheus.enabled -}}
 
 # Licensed Materials - Property of IBM
-# IBM Confidential
-# OCO Source Materials
 # @ Copyright IBM Corporation 2016, 2019. All Rights Reserved.
-# The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
 
 apiVersion: v1
 kind: ConfigMap
@@ -66,7 +64,7 @@ data:
         --- remove 4 exceptions: 1. by (A_B_C) 2. {A_B_C=""} 3. [A_B_C] 4. A_B_C() 5. "A_B_C"
         local metrics_str = query:gsub("by %([^%(%)]+%)", "---")
         metrics_str = metrics_str:gsub("by%([^%(%)]+%)", "---")
-        metrics_str = metrics_str:gsub("{[^%}]+}", "---")
+        metrics_str = metrics_str:gsub("%b{}", "---")
         metrics_str = metrics_str:gsub("%[[^%]]+%]", "---")
         metrics_str = metrics_str:gsub("([_%w]+_[_%w]+)%(", "---")
         metrics_str = metrics_str:gsub('%"([_%w]+_[_%w]+)%"', "---")
@@ -101,7 +99,7 @@ data:
 
     local function get_releases(token, time)
         local httpc = http.new()
-        local res, err = httpc:request_uri("http://helm-api.kube-system.svc.{{ .Values.clusterDomain }}:3000/api/v1/releases", {
+        local res, err = httpc:request_uri("http://helm-api.kube-system.svc.{{ .Values.clusterDomain }}:3000/api/v2/releases", {
             method = "GET",
             headers = {
               ["Content-Type"] = "application/json",
@@ -142,7 +140,7 @@ data:
             return no_pods_str
         end
         local httpc = http.new()
-        local res, err = httpc:request_uri("http://helm-api.kube-system.svc.{{ .Values.clusterDomain }}:3000/api/v1/releases/"..release_name, {
+        local res, err = httpc:request_uri("http://helm-api.kube-system.svc.{{ .Values.clusterDomain }}:3000/api/v2/releases/"..release_name, {
             method = "GET",
             headers = {
               ["Content-Type"] = "application/json",
@@ -215,6 +213,87 @@ data:
         end
     end
 
+    local function write_cluster_datasource_response()
+        local token, err = util.get_auth_token()
+        if err ~= nil then
+            err()
+        else
+            local servicemonitor_items, err = util.get_servicemonitor()
+            if err ~= nil then
+                err()
+            else
+                local response = {}
+                response.status = "success"
+                response.data = {}
+                response.data.resultType = "matrix"
+                if not next(servicemonitor_items) then
+                    response.data.result = {}
+                else
+                    local token, err = util.get_auth_token()
+                    if err ~= nil then
+                        err()
+                    end
+                    if token ~= nil then
+                        local uid, err = util.get_user_id(token)
+                        if err ~= nil then
+                            err()
+                        end
+                        local role_id, err = util.get_user_role(token, uid)
+                        if err ~= nil then
+                            err()
+                        end
+                        local unauth_clusters = {}
+                        if (role_id ~= '"ClusterAdministrator"' ) then
+                            local clusters, err = util.get_clusters()
+                            if err ~= nil then
+                                err()
+                            end
+                            local namespaces, err = util.get_user_namespaces(token, uid)
+                            if err ~= nil then
+                                err()
+                            end
+                            namespaces_map = {}
+                            for i, ns in ipairs(namespaces) do
+                                namespaces_map[ns.namespaceId] = ns
+                            end
+                            for i, cluster in ipairs(clusters) do
+                                if namespaces_map[cluster.metadata.namespace] == nil then
+                                    unauth_clusters[cluster.metadata.name] = true
+                                end
+                            end
+                        end
+
+                        local result = {}
+                        for i, sm in ipairs(servicemonitor_items) do
+                            local cluster = sm.spec.endpoints[1].relabelings[1].replacement
+                            if not unauth_clusters[cluster] then
+                                local sm_attrs = {}
+                                sm_attrs.cluster = cluster
+                                sm_attrs.datasource = sm.metadata.labels.prometheus
+                                if sm_attrs.datasource == nil then
+                                    sm_attrs.datasource = "prometheus"
+                                end
+                                local metric = {}
+                                local values = {}
+                                table.insert(values, {ngx.var.arg_time, "1.0"})
+                                metric["metric"] = sm_attrs
+                                metric["values"] = values
+                                table.insert(result, metric)
+                            end
+                        end
+                        response.data.result = result
+                    end
+                end
+
+                local response_str = cjson.encode(response)
+                ngx.log(ngx.DEBUG, "resp is ", response_str)
+                ngx.header["Content-type"] = "application/json"
+                ngx.say(response_str)
+                ngx.exit(200)
+            end
+        end
+    end
+
     local function rewrite_query()
         local args = ngx.req.get_uri_args()
         local query_key = nil
@@ -278,6 +357,7 @@ data:
     _M.rewrite_query = rewrite_query
     _M.write_release_response = write_release_response
     _M.filter_alertmanager_url = filter_alertmanager_url
+    _M.write_cluster_datasource_response = write_cluster_datasource_response
 
     return _M
 {{- end -}}

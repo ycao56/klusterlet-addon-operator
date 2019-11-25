@@ -1,9 +1,7 @@
 {{/*
   Licensed Materials - Property of IBM
-   IBM Confidential
-   OCO Source Materials
-   (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
-   The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
+  @ Copyright IBM Corporation 2016, 2019. All Rights Reserved.
+  US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
 */}}
 
 {{- define "MCMClustersDashboard" }}
@@ -30,6 +28,64 @@
     "links": [],
     "panels": [
     {
+        "collapsed": false,
+        "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+        },
+        "id": 41,
+        "panels": [],
+        "title": "Datasource for Managed Cluster",
+        "type": "row"
+    },
+    {
+        "type": "table",
+        "title": "Datasource for Managed Clusters",
+        "gridPos": {
+            "x": 0,
+            "y": 0,
+            "w": 13,
+            "h": 9
+        },
+        "id": 42,
+        "datasource": "prometheus",
+        "targets": [
+            {
+            "refId": "A",
+            "expr": "cluster_datasource_info",
+            "intervalFactor": 1,
+            "format": "table",
+            "hide": false,
+            "instant": true
+            }
+        ],
+        "styles": [
+            {
+            "type": "hidden",
+            "pattern": "Time"
+            },
+            {
+            "type": "hidden",
+            "pattern": "Value"
+            }
+        ],
+        "transform": "table",
+        "pageSize": null,
+        "showHeader": true,
+        "columns": [],
+        "scroll": true,
+        "fontSize": "100%",
+        "sort": {
+            "col": 0,
+            "desc": false
+        },
+        "links": [],
+        "hideTimeOverride": false,
+        "transparent": false
+    },
+    {
         "collapsed": true,
         "gridPos": {
         "h": 1,
@@ -44,7 +100,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": "prometheus",
+            "datasource": "$datasource",
             "decimals": 2,
             "editable": true,
             "error": false,
@@ -87,7 +143,7 @@
             "steppedLine": false,
             "targets": [
             {
-                "expr": "sum (rate (container_network_receive_bytes_total{cluster_name=~\"^$cluster$\"}[5m]))",
+                "expr": "sum (rate (container_network_receive_bytes_total{cluster_name=~\"^$cluster$\",cluster_name=~\".+\"}[5m]))",
                 "interval": "10s",
                 "intervalFactor": 1,
                 "legendFormat": "Received",
@@ -96,7 +152,7 @@
                 "step": 10
             },
             {
-                "expr": "- sum (rate (container_network_transmit_bytes_total{cluster_name=~\"^$cluster$\"}[5m]))",
+                "expr": "- sum (rate (container_network_transmit_bytes_total{cluster_name=~\"^$cluster$\",cluster_name=~\".+\"}[5m]))",
                 "interval": "10s",
                 "intervalFactor": 1,
                 "legendFormat": "Sent",
@@ -170,7 +226,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(245, 54, 54, 0.9)"
             ],
-            "datasource": "prometheus",
+            "datasource": "$datasource",
             "editable": true,
             "error": false,
             "format": "percent",
@@ -226,7 +282,7 @@
             "tableColumn": "",
             "targets": [
             {
-                "expr": "sum (container_memory_working_set_bytes{id=\"/\",cluster_name=~\"^$cluster$\"}) / sum (machine_memory_bytes{cluster_name=~\"^$cluster$\"}) * 100",
+                "expr": "sum (container_memory_working_set_bytes{id=\"/\",cluster_name=~\"^$cluster$\",cluster_name=~\".+\"}) / sum (machine_memory_bytes{cluster_name=~\"^$cluster$\",cluster_name=~\".+\"}) * 100",
                 "interval": "10s",
                 "intervalFactor": 1,
                 "refId": "A",
@@ -256,7 +312,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(245, 54, 54, 0.9)"
             ],
-            "datasource": "prometheus",
+            "datasource": "$datasource",
             "decimals": 2,
             "editable": true,
             "error": false,
@@ -313,7 +369,7 @@
             "tableColumn": "",
             "targets": [
             {
-                "expr": "sum (rate (container_cpu_usage_seconds_total{id=\"/\",cluster_name=~\"^$cluster$\"}[5m])) / sum (machine_cpu_cores{cluster_name=~\"^$cluster$\"}) * 100",
+                "expr": "sum (rate (container_cpu_usage_seconds_total{id=\"/\",cluster_name=~\"^$cluster$\",cluster_name=~\".+\"}[5m])) / sum (machine_cpu_cores{cluster_name=~\"^$cluster$\",cluster_name=~\".+\"}) * 100",
                 "interval": "10s",
                 "intervalFactor": 1,
                 "refId": "A",
@@ -342,7 +398,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(245, 54, 54, 0.9)"
             ],
-            "datasource": "prometheus",
+            "datasource": "$datasource",
             "decimals": 2,
             "editable": true,
             "error": false,
@@ -399,7 +455,7 @@
             "tableColumn": "",
             "targets": [
             {
-                "expr": "sum (container_fs_usage_bytes{device=~\"^/dev/mapper/.+$\",id=\"/\",cluster_name=~\"^$cluster$\"}) / sum (container_fs_limit_bytes{device=~\"^/dev/mapper/.+$\",id=\"/\",cluster_name=~\"^$cluster$\"}) * 100",
+                "expr": "sum (container_fs_usage_bytes{device=~\"^/dev/mapper/.+$\",id=\"/\",cluster_name=~\"^$cluster$\",cluster_name=~\".+\"}) / sum (container_fs_limit_bytes{device=~\"^/dev/mapper/.+$\",id=\"/\",cluster_name=~\"^$cluster$\",cluster_name=~\".+\"}) * 100",
                 "interval": "10s",
                 "intervalFactor": 1,
                 "legendFormat": "",
@@ -430,7 +486,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(245, 54, 54, 0.9)"
             ],
-            "datasource": "prometheus",
+            "datasource": "$datasource",
             "decimals": 2,
             "editable": true,
             "error": false,
@@ -487,7 +543,7 @@
             "tableColumn": "",
             "targets": [
             {
-                "expr": "sum (container_memory_working_set_bytes{id=\"/\",cluster_name=~\"^$cluster$\"})",
+                "expr": "sum (container_memory_working_set_bytes{id=\"/\",cluster_name=~\"^$cluster$\",cluster_name=~\".+\"})",
                 "interval": "10s",
                 "intervalFactor": 1,
                 "refId": "A",
@@ -516,7 +572,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(245, 54, 54, 0.9)"
             ],
-            "datasource": "prometheus",
+            "datasource": "$datasource",
             "decimals": 2,
             "editable": true,
             "error": false,
@@ -573,7 +629,7 @@
             "tableColumn": "",
             "targets": [
             {
-                "expr": "sum (machine_memory_bytes{cluster_name=~\"^$cluster$\"})",
+                "expr": "sum (machine_memory_bytes{cluster_name=~\"^$cluster$\",cluster_name=~\".+\"})",
                 "interval": "10s",
                 "intervalFactor": 1,
                 "refId": "A",
@@ -602,7 +658,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(245, 54, 54, 0.9)"
             ],
-            "datasource": "prometheus",
+            "datasource": "$datasource",
             "decimals": 2,
             "editable": true,
             "error": false,
@@ -659,7 +715,7 @@
             "tableColumn": "",
             "targets": [
             {
-                "expr": "sum (rate (container_cpu_usage_seconds_total{id=\"/\",cluster_name=~\"^$cluster$\"}[5m]))",
+                "expr": "sum (rate (container_cpu_usage_seconds_total{id=\"/\",cluster_name=~\"^$cluster$\",cluster_name=~\".+\"}[5m]))",
                 "interval": "10s",
                 "intervalFactor": 1,
                 "refId": "A",
@@ -688,7 +744,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(245, 54, 54, 0.9)"
             ],
-            "datasource": "prometheus",
+            "datasource": "$datasource",
             "decimals": 2,
             "editable": true,
             "error": false,
@@ -745,7 +801,7 @@
             "tableColumn": "",
             "targets": [
             {
-                "expr": "sum (machine_cpu_cores{cluster_name=~\"^$cluster$\"})",
+                "expr": "sum (machine_cpu_cores{cluster_name=~\"^$cluster$\",cluster_name=~\".+\"})",
                 "interval": "10s",
                 "intervalFactor": 1,
                 "refId": "A",
@@ -774,7 +830,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(245, 54, 54, 0.9)"
             ],
-            "datasource": "prometheus",
+            "datasource": "$datasource",
             "decimals": 2,
             "editable": true,
             "error": false,
@@ -831,7 +887,7 @@
             "tableColumn": "",
             "targets": [
             {
-                "expr": "sum (container_fs_usage_bytes{device=~\"^/dev/mapper/.+$\",id=\"/\",cluster_name=~\"^$cluster$\"})",
+                "expr": "sum (container_fs_usage_bytes{device=~\"^/dev/mapper/.+$\",id=\"/\",cluster_name=~\"^$cluster$\",cluster_name=~\".+\"})",
                 "interval": "10s",
                 "intervalFactor": 1,
                 "refId": "A",
@@ -860,7 +916,7 @@
             "rgba(237, 129, 40, 0.89)",
             "rgba(245, 54, 54, 0.9)"
             ],
-            "datasource": "prometheus",
+            "datasource": "$datasource",
             "decimals": 2,
             "editable": true,
             "error": false,
@@ -917,7 +973,7 @@
             "tableColumn": "",
             "targets": [
             {
-                "expr": "sum (container_fs_limit_bytes{device=~\"^/dev/mapper/.+$\",id=\"/\",cluster_name=~\"^$cluster$\"})",
+                "expr": "sum (container_fs_limit_bytes{device=~\"^/dev/mapper/.+$\",id=\"/\",cluster_name=~\"^$cluster$\",cluster_name=~\".+\"})",
                 "interval": "10s",
                 "intervalFactor": 1,
                 "refId": "A",
@@ -954,7 +1010,7 @@
         {
             "aliasColors": {},
             "bars": false,
-            "datasource": "prometheus",
+            "datasource": "$datasource",
             "decimals": 3,
             "editable": true,
             "error": false,
@@ -998,7 +1054,7 @@
             "steppedLine": true,
             "targets": [
             {
-                "expr": "sum (rate (container_cpu_usage_seconds_total{image!=\"\",name=~\"^k8s_.*\",container_name!=\"POD\",cluster_name=~\"^$cluster$\"}[5m])) by (container_name, pod_name)",
+                "expr": "sum (rate (container_cpu_usage_seconds_total{image!=\"\",name=~\"^k8s_.*\",container_name!=\"POD\",cluster_name=~\"^$cluster$\",cluster_name=~\".+\"}[5m])) by (container_name, pod_name)",
                 "hide": false,
                 "interval": "10s",
                 "intervalFactor": 1,
@@ -1008,7 +1064,7 @@
                 "step": 10
             },
             {
-                "expr": "sum (rate (container_cpu_usage_seconds_total{image!=\"\",name!~\"^k8s_.*\",cluster_name=~\"^$cluster$\"}[5m])) by (cluster_name, name, image)",
+                "expr": "sum (rate (container_cpu_usage_seconds_total{image!=\"\",name!~\"^k8s_.*\",cluster_name=~\"^$cluster$\",cluster_name=~\".+\"}[5m])) by (cluster_name, name, image)",
                 "hide": false,
                 "interval": "10s",
                 "intervalFactor": 1,
@@ -1018,7 +1074,7 @@
                 "step": 10
             },
             {
-                "expr": "sum (rate (container_cpu_usage_seconds_total{rkt_container_name!=\"\",cluster_name=~\"^$cluster$\"}[5m])) by (cluster_name, rkt_container_name)",
+                "expr": "sum (rate (container_cpu_usage_seconds_total{rkt_container_name!=\"\",cluster_name=~\"^$cluster$\",cluster_name=~\".+\"}[5m])) by (cluster_name, rkt_container_name)",
                 "interval": "10s",
                 "intervalFactor": 1,
                 "legendFormat": "rkt: {{ "{{" }} cluster_name {{ "}}" }} | {{ "{{" }} rkt_container_name {{ "}}" }}",
@@ -1077,7 +1133,7 @@
         {
             "aliasColors": {},
             "bars": false,
-            "datasource": "prometheus",
+            "datasource": "$datasource",
             "decimals": 3,
             "editable": true,
             "error": false,
@@ -1117,7 +1173,7 @@
             "steppedLine": true,
             "targets": [
             {
-                "expr": "sum (rate (container_cpu_usage_seconds_total{id!=\"/\",cluster_name=~\"^$cluster$\"}[5m])) by (id)",
+                "expr": "sum (rate (container_cpu_usage_seconds_total{id!=\"/\",cluster_name=~\"^$cluster$\",cluster_name=~\".+\"}[5m])) by (id)",
                 "hide": false,
                 "interval": "10s",
                 "intervalFactor": 1,
@@ -1180,7 +1236,7 @@
             "bars": false,
             "dashLength": 10,
             "dashes": false,
-            "datasource": "prometheus",
+            "datasource": "$datasource",
             "decimals": 2,
             "editable": true,
             "error": false,
@@ -1222,7 +1278,7 @@
             "steppedLine": true,
             "targets": [
             {
-                "expr": "sum (container_memory_working_set_bytes{image!=\"\",name=~\"^k8s_.*\",container_name!=\"POD\",cluster_name=~\"^$cluster$\"}) by (container_name, pod_name)",
+                "expr": "sum (container_memory_working_set_bytes{image!=\"\",name=~\"^k8s_.*\",container_name!=\"POD\",cluster_name=~\"^$cluster$\",cluster_name=~\".+\"}) by (container_name, pod_name)",
                 "interval": "10s",
                 "intervalFactor": 1,
                 "legendFormat": "pod: {{ "{{" }} pod_name {{ "}}" }} | {{ "{{" }} container_name {{ "}}" }}",
@@ -1231,7 +1287,7 @@
                 "step": 10
             },
             {
-                "expr": "sum (container_memory_working_set_bytes{image!=\"\",name!~\"^k8s_.*\",cluster_name=~\"^$cluster$\"}) by (cluster_name, name, image)",
+                "expr": "sum (container_memory_working_set_bytes{image!=\"\",name!~\"^k8s_.*\",cluster_name=~\"^$cluster$\",cluster_name=~\".+\"}) by (cluster_name, name, image)",
                 "interval": "10s",
                 "intervalFactor": 1,
                 "legendFormat": "docker: {{ "{{" }} cluster_name {{ "}}" }} | {{ "{{" }} image {{ "}}" }} ({{ "{{" }} name {{ "}}" }})",
@@ -1240,7 +1296,7 @@
                 "step": 10
             },
             {
-                "expr": "sum (container_memory_working_set_bytes{rkt_container_name!=\"\",cluster_name=~\"^$cluster$\"}) by (cluster_name, rkt_container_name)",
+                "expr": "sum (container_memory_working_set_bytes{rkt_container_name!=\"\",cluster_name=~\"^$cluster$\",cluster_name=~\".+\"}) by (cluster_name, rkt_container_name)",
                 "interval": "10s",
                 "intervalFactor": 1,
                 "legendFormat": "rkt: {{ "{{" }} cluster_name {{ "}}" }} | {{ "{{" }} rkt_container_name {{ "}}" }}",
@@ -1307,7 +1363,7 @@
         {
             "aliasColors": {},
             "bars": false,
-            "datasource": "prometheus",
+            "datasource": "$datasource",
             "decimals": 2,
             "editable": true,
             "error": false,
@@ -1348,7 +1404,7 @@
             "steppedLine": true,
             "targets": [
             {
-                "expr": "sum (container_memory_working_set_bytes{id!=\"/\",cluster_name=~\"^$cluster$\"}) by (id)",
+                "expr": "sum (container_memory_working_set_bytes{id!=\"/\",cluster_name=~\"^$cluster$\",cluster_name=~\".+\"}) by (id)",
                 "interval": "10s",
                 "intervalFactor": 1,
                 "legendFormat": "{{ "{{" }} id {{ "}}" }}",
@@ -1407,7 +1463,7 @@
         {
             "aliasColors": {},
             "bars": false,
-            "datasource": "prometheus",
+            "datasource": "$datasource",
             "decimals": 2,
             "editable": true,
             "error": false,
@@ -1448,7 +1504,7 @@
             "steppedLine": false,
             "targets": [
             {
-                "expr": "sum (rate (container_network_receive_bytes_total{image!=\"\",name=~\"^k8s_.*\",cluster_name=~\"^$cluster$\"}[5m])) by (container_name, pod_name)",
+                "expr": "sum (rate (container_network_receive_bytes_total{image!=\"\",name=~\"^k8s_.*\",cluster_name=~\"^$cluster$\",cluster_name=~\".+\"}[5m])) by (container_name, pod_name)",
                 "hide": false,
                 "interval": "10s",
                 "intervalFactor": 1,
@@ -1458,7 +1514,7 @@
                 "step": 10
             },
             {
-                "expr": "- sum (rate (container_network_transmit_bytes_total{image!=\"\",name=~\"^k8s_.*\",cluster_name=~\"^$cluster$\"}[5m])) by (container_name, pod_name)",
+                "expr": "- sum (rate (container_network_transmit_bytes_total{image!=\"\",name=~\"^k8s_.*\",cluster_name=~\"^$cluster$\",cluster_name=~\".+\"}[5m])) by (container_name, pod_name)",
                 "hide": false,
                 "interval": "10s",
                 "intervalFactor": 1,
@@ -1468,7 +1524,7 @@
                 "step": 10
             },
             {
-                "expr": "sum (rate (container_network_receive_bytes_total{image!=\"\",name!~\"^k8s_.*\",cluster_name=~\"^$cluster$\"}[5m])) by (cluster_name, name, image)",
+                "expr": "sum (rate (container_network_receive_bytes_total{image!=\"\",name!~\"^k8s_.*\",cluster_name=~\"^$cluster$\",cluster_name=~\".+\"}[5m])) by (cluster_name, name, image)",
                 "hide": false,
                 "interval": "10s",
                 "intervalFactor": 1,
@@ -1478,7 +1534,7 @@
                 "step": 10
             },
             {
-                "expr": "- sum (rate (container_network_transmit_bytes_total{image!=\"\",name!~\"^k8s_.*\",cluster_name=~\"^$cluster$\"}[5m])) by (cluster_name, name, image)",
+                "expr": "- sum (rate (container_network_transmit_bytes_total{image!=\"\",name!~\"^k8s_.*\",cluster_name=~\"^$cluster$\",cluster_name=~\".+\"}[5m])) by (cluster_name, name, image)",
                 "hide": false,
                 "interval": "10s",
                 "intervalFactor": 1,
@@ -1488,7 +1544,7 @@
                 "step": 10
             },
             {
-                "expr": "sum (rate (container_network_transmit_bytes_total{rkt_container_name!=\"\",cluster_name=~\"^$cluster$\"}[5m])) by (cluster_name, rkt_container_name)",
+                "expr": "sum (rate (container_network_transmit_bytes_total{rkt_container_name!=\"\",cluster_name=~\"^$cluster$\",cluster_name=~\".+\"}[5m])) by (cluster_name, rkt_container_name)",
                 "hide": false,
                 "interval": "10s",
                 "intervalFactor": 1,
@@ -1498,7 +1554,7 @@
                 "step": 10
             },
             {
-                "expr": "- sum (rate (container_network_transmit_bytes_total{rkt_container_name!=\"\",cluster_name=~\"^$cluster$\"}[5m])) by (cluster_name, rkt_container_name)",
+                "expr": "- sum (rate (container_network_transmit_bytes_total{rkt_container_name!=\"\",cluster_name=~\"^$cluster$\",cluster_name=~\".+\"}[5m])) by (cluster_name, rkt_container_name)",
                 "hide": false,
                 "interval": "10s",
                 "intervalFactor": 1,
@@ -1558,7 +1614,7 @@
         {
             "aliasColors": {},
             "bars": false,
-            "datasource": "prometheus",
+            "datasource": "$datasource",
             "decimals": 2,
             "editable": true,
             "error": false,
@@ -1599,7 +1655,7 @@
             "steppedLine": false,
             "targets": [
             {
-                "expr": "sum (rate (container_network_receive_bytes_total{id!=\"/\",cluster_name=~\"^$cluster$\"}[5m])) by (id)",
+                "expr": "sum (rate (container_network_receive_bytes_total{id!=\"/\",cluster_name=~\"^$cluster$\",cluster_name=~\".+\"}[5m])) by (id)",
                 "interval": "10s",
                 "intervalFactor": 1,
                 "legendFormat": "-> {{ "{{" }} id {{ "}}" }}",
@@ -1608,7 +1664,7 @@
                 "step": 10
             },
             {
-                "expr": "- sum (rate (container_network_transmit_bytes_total{id!=\"/\",cluster_name=~\"^$cluster$\"}[5m])) by (id)",
+                "expr": "- sum (rate (container_network_transmit_bytes_total{id!=\"/\",cluster_name=~\"^$cluster$\",cluster_name=~\".+\"}[5m])) by (id)",
                 "interval": "10s",
                 "intervalFactor": 1,
                 "legendFormat": "<- {{ "{{" }} id {{ "}}" }}",
@@ -1664,9 +1720,24 @@
     "templating": {
     "list": [
         {
+            "current": {
+                "tags": [],
+                "text": "prometheus",
+                "value": "prometheus"
+            },
+            "hide": 0,
+            "label": "Datasource",
+            "name": "datasource",
+            "options": [],
+            "query": "prometheus",
+            "refresh": 1,
+            "regex": "/[^default]/",
+            "type": "datasource"
+        },
+        {
         "allValue": null,
         "current": {},
-        "datasource": "prometheus",
+        "datasource": "$datasource",
         "hide": 0,
         "includeAll": false,
         "label": null,
@@ -1716,6 +1787,6 @@
     },
     "timezone": "browser",
     "title": "MCM: Managed Cluster Monitoring",
-    "version": 1
+    "version": 2
 }
 {{- end }}

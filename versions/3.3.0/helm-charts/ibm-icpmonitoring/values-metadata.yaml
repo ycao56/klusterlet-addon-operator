@@ -1,8 +1,6 @@
 # Licensed Materials - Property of IBM
-# IBM Confidential
-# OCO Source Materials
-# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
-# The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
+# @ Copyright IBM Corporation 2016, 2019. All Rights Reserved.
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
 
 ## Metadata for <PRODUCNAME> configuration
 ## This metadata is used to augment the value.yaml to drive IPC UI for configuration of the Helm chart installation
@@ -47,6 +45,10 @@ mode:
       value: "managed"
 
 tls:
+  __metadata:
+    name: "tls"
+    label: "TLS"
+    description: "Options section for TLS"
   enabled:
     __metadata:
       name: "tls.enabled"
@@ -248,6 +250,18 @@ crdCreation:
     required: true
 
 prometheus:
+  __metadata:
+    name: "prometheus"
+    label: "Prometheus"
+    description: "Options section for Prometheus"
+  enabled:
+    __metadata:
+      name: "prometheus.enabled"
+      label: "Enable Prometheus"
+      description: "Specifices whether Prometheus is enabled."
+      type: "boolean"
+      immutable: false
+      required: true
   image:
     repository:
       __metadata:
@@ -297,28 +311,12 @@ prometheus:
       type: "string"
       immutable: false
       required: true
-  args:
-    __metadata:
-      name: "prometheus.args"
-      label: "Arguments"
-      description: "Arguments to prometheus"
-      type: "string"
-      immutable: false
-      required: false
   persistentVolume:
     enabled:
       __metadata:
         name: "prometheus.persistentVolume.enabled"
         label: "Persistent volume"
         description: "Specifices if the peristent volume for prometheus is enabled or not."
-        type: "boolean"
-        immutable: false
-        required: true
-    useDynamicProvisioning:
-      __metadata:
-        name: "prometheus.persistentVolume.useDynamicProvisioning"
-        label: "Use dynamic provisioning for persistent volume"
-        description: "If dynamic provisioning is available in the cluster this option will automatically provision the requested volume if set to true."
         type: "boolean"
         immutable: false
         required: true
@@ -335,14 +333,6 @@ prometheus:
         name: "prometheus.persistentVolume.storageClass"
         label: "Name of the storageClass for the persistentVolume"
         description: "The storage class name of the persistent volume.  Defaults to -"
-        type: "string"
-        immutable: false
-        required: false
-    existingClaimName:
-      __metadata:
-        name: "prometheus.persistentVolume.existingClaimName"
-        label: "Name of existing persistentVolumeClaim"
-        description: "By default a new persistent volume claim will be created. Specify an existing claim here if one is available."
         type: "string"
         immutable: false
         required: false
@@ -415,14 +405,6 @@ prometheus:
       type: "boolean"
       immutable: false
       required: true
-  configFiles:
-      __metadata:
-        name: "prometheus.configFiles."
-        label: "Config files"
-        description: "The config filename for prometheus"
-        type: "string"
-        immutable: false
-        required: false
   ingress:
     enabled:
       __metadata:
@@ -538,14 +520,6 @@ prometheus:
         type: "boolean"
         immutable: false
         required: false
-    elasticsearchClusterHealth:
-      __metadata:
-        name: "prometheus.alerts.elasticsearchClusterHealth"
-        label: "Elasticsearch cluster health alert"
-        description: "Should the elasticsearch cluster health alert be installed?  Defaults to true"
-        type: "boolean"
-        immutable: false
-        required: false
     podsTerminated:
       __metadata:
         name: "prometheus.alerts.podsTerminated"
@@ -563,7 +537,175 @@ prometheus:
         immutable: false
         required: false
 
+prometheusConfigReloader:
+  __metadata:
+    name: "prometheusConfigReloader"
+    label: "Prometheus Config Reloader"
+    description: "Options section for Prometheus Config Reloader"
+  image:
+    repository:
+      __metadata:
+        name: "prometheusConfigReloader.image.repository"
+        label: "Repository"
+        description: "Docker image location"
+        type: "string"
+        immutable: false
+        required: true
+    tag:
+      __metadata:
+        name: "prometheusConfigReloader.image.tag"
+        label: "Tag"
+        description: "Docker image tag"
+        type: "string"
+        immutable: false
+        required: true
+
+prometheusOperator:
+  __metadata:
+    name: "prometheusOperator"
+    label: "Prometheus Operator"
+    description: "Options section for Prometheus Operator"
+  image:
+    repository:
+      __metadata:
+        name: "prometheusOperator.image.repository"
+        label: "Repository"
+        description: "Docker image location"
+        type: "string"
+        immutable: false
+        required: true
+    tag:
+      __metadata:
+        name: "prometheusOperator.image.tag"
+        label: "Tag"
+        description: "Docker image tag"
+        type: "string"
+        immutable: false
+        required: true
+  targetNamespaces:
+    releaseNamespaceOnly:
+      __metadata:
+        name: "prometheusOperator.targetNamespaces.releaseNamespaceOnly"
+        label: "Release Namespace Only"
+        description: "Only detect the resources created in release namespace or not. Default to true."
+        type: "boolean"
+        immutable: false
+        required: true
+    namespaces:
+      __metadata:
+        name: "prometheusOperator.targetNamespaces.namespaces"
+        label: "Namespaces"
+        description: "Namespaces for the operator. Only valid when releaseNamespaceOnly is set as false."
+        type: "string"
+        immutable: false
+        required: false
+  resources:
+    limits:
+      cpu:
+        __metadata:
+          name: "prometheusOperator.resources.limits.cpu"
+          label: "Maximum CPU"
+          description: "Describes the maximum amount of CPU allowed."
+          type: "string"
+          immutable: false
+          required: false
+      memory:
+        __metadata:
+          name: "prometheusOperator.resources.limits.memory"
+          label: "Maximum memory"
+          description: "Describes the maximum amount of memory allowed."
+          type: "string"
+          immutable: false
+          required: false
+    requests:
+      cpu:
+        __metadata:
+          name: "prometheusOperator.resources.requests.cpu"
+          label: "Requested cpu"
+          description: "Describes the requested cpu ammount."
+          type: "string"
+          immutable: false
+          required: false
+      memory:
+        __metadata:
+          name: "prometheusOperator.resources.requests.memory"
+          label: "Requested memory"
+          description: "Describes the requested memory ammount."
+          type: "string"
+          immutable: false
+          required: false
+
+prometheusOperatorController:
+  __metadata:
+    name: "prometheusOperatorController"
+    label: "Prometheus Operator Controller"
+    description: "Options section for Prometheus Operator Controller"
+  image:
+    repository:
+      __metadata:
+        name: "prometheusOperatorController.image.repository"
+        label: "Repository"
+        description: "Docker image location"
+        type: "string"
+        immutable: false
+        required: true
+    tag:
+      __metadata:
+        name: "prometheusOperatorController.image.tag"
+        label: "Tag"
+        description: "Docker image tag"
+        type: "string"
+        immutable: false
+        required: true
+  resources:
+    limits:
+      cpu:
+        __metadata:
+          name: "prometheusOperatorController.resources.limits.cpu"
+          label: "Maximum CPU"
+          description: "Describes the maximum amount of CPU allowed."
+          type: "string"
+          immutable: false
+          required: false
+      memory:
+        __metadata:
+          name: "prometheusOperatorController.resources.limits.memory"
+          label: "Maximum memory"
+          description: "Describes the maximum amount of memory allowed."
+          type: "string"
+          immutable: false
+          required: false
+    requests:
+      cpu:
+        __metadata:
+          name: "prometheusOperatorController.resources.requests.cpu"
+          label: "Requested cpu"
+          description: "Describes the requested cpu ammount."
+          type: "string"
+          immutable: false
+          required: false
+      memory:
+        __metadata:
+          name: "prometheusOperatorController.resources.requests.memory"
+          label: "Requested memory"
+          description: "Describes the requested memory ammount."
+          type: "string"
+          immutable: false
+          required: false
+
 alertmanager:
+  __metadata:
+    name: "alertmanager"
+    label: "Alertmanager"
+    description: "Options section for Alertmanager"
+  enabled:
+    __metadata:
+      name: "alertmanager.enabled"
+      label: "Enable Alertmanager"
+      description: "Specifices whether Alertmanager is enabled."
+      type: "boolean"
+      immutable: false
+      required: true
   image:
     repository:
       __metadata:
@@ -598,14 +740,6 @@ alertmanager:
         type: "boolean"
         immutable: false
         required: true
-    useDynamicProvisioning:
-      __metadata:
-        name: "alertmanager.persistentVolume.useDynamicProvisioning"
-        label: "Use dynamic provisioning for persistent volume"
-        description: "If dynamic provisioning is available in the cluster this option will automatically provision the requested volume if set to true."
-        type: "boolean"
-        immutable: false
-        required: true
     size:
       __metadata:
         name: "alertmanager.persistentVolume.size"
@@ -619,14 +753,6 @@ alertmanager:
         name: "alertmanager.persistentVolume.storageClass"
         label: "Name of the storageClass for the persistentVolume"
         description: "The storage class name of the persistent volume.  Defaults to -"
-        type: "string"
-        immutable: false
-        required: false
-    existingClaimName:
-      __metadata:
-        name: "alertmanager.persistentVolume.existingClaimName"
-        label: "Name of existing persistentVolumeClaim"
-        description: "By default a new persistent volume claim will be created. Specify an existing claim here if one is available."
         type: "string"
         immutable: false
         required: false
@@ -647,15 +773,6 @@ alertmanager:
           type: "string"
           immutable: false
           required: false
-  probe:
-    enabled:
-      __metadata:
-        name: "alertmanager.probe.enabled"
-        label: "Enable readiness and liveness probes"
-        description: "Setting to true will turn on the readiness and liveness probes"
-        type: "boolean"
-        immutable: false
-        required: false
   resources:
     limits:
       cpu:
@@ -691,14 +808,6 @@ alertmanager:
           type: "string"
           immutable: false
           required: false
-  configFiles:
-      __metadata:
-        name: "alertmanager.configFiles."
-        label: "Config files"
-        description: "The config filename for alertmanager"
-        type: "string"
-        immutable: false
-        required: false
   ingress:
     enabled:
       __metadata:
@@ -732,6 +841,10 @@ alertmanager:
             value: "NodePort"
 
 kubeStateMetrics:
+  __metadata:
+    name: "kubeStateMetrics"
+    label: "Kube State Metrics"
+    description: "Options section for Kube State Metrics"
   enabled:
     __metadata:
       name: "kubeStateMetrics.enabled"
@@ -742,6 +855,14 @@ kubeStateMetrics:
       required: true
   resources:
     limits:
+      cpu:
+        __metadata:
+          name: "kubeStateMetrics.resources.limits.cpu"
+          label: "Maximum CPU"
+          description: "Describes the maximum amount of CPU allowed."
+          type: "string"
+          immutable: false
+          required: false
       memory:
         __metadata:
           name: "kubeStateMetrics.resources.limits.memory"
@@ -751,6 +872,14 @@ kubeStateMetrics:
           immutable: false
           required: false
     requests:
+      cpu:
+        __metadata:
+          name: "kubeStateMetrics.resources.requests.cpu"
+          label: "Requested cpu"
+          description: "Describes the requested cpu ammount."
+          type: "string"
+          immutable: false
+          required: false
       memory:
         __metadata:
           name: "kubeStateMetrics.resources.requests.memory"
@@ -795,6 +924,10 @@ kubeStateMetrics:
         required: false
 
 nodeExporter:
+  __metadata:
+    name: "nodeExporter"
+    label: "Node Exporter"
+    description: "Options section for Node Exporter"
   enabled:
     __metadata:
       name: "nodeExporter.enabled"
@@ -805,6 +938,14 @@ nodeExporter:
       required: true
   resources:
     limits:
+      cpu:
+        __metadata:
+          name: "nodeExporter.resources.limits.cpu"
+          label: "Maximum CPU"
+          description: "Describes the maximum amount of CPU allowed."
+          type: "string"
+          immutable: false
+          required: false
       memory:
         __metadata:
           name: "nodeExporter.resources.limits.memory"
@@ -814,6 +955,14 @@ nodeExporter:
           immutable: false
           required: false
     requests:
+      cpu:
+        __metadata:
+          name: "nodeExporter.resources.requests.cpu"
+          label: "Requested cpu"
+          description: "Describes the requested cpu ammount."
+          type: "string"
+          immutable: false
+          required: false
       memory:
         __metadata:
           name: "nodeExporter.resources.requests.memory"
@@ -847,6 +996,14 @@ nodeExporter:
       type: "number"
       immutable: false
       required: true
+  healthyPort:
+    __metadata:
+      name: "nodeExporter.healthyPort"
+      label: "HealthyPort"
+      description: "The https port that the container will expose the health of nodeExporter"
+      type: "number"
+      immutable: false
+      required: true
   listenPort:
     __metadata:
       name: "nodeExporter.listenPort"
@@ -866,6 +1023,18 @@ nodeExporter:
         required: false
 
 grafana:
+  __metadata:
+    name: "grafana"
+    label: "Grafana"
+    description: "Options section for Grafana"
+  enabled:
+    __metadata:
+      name: "grafana.enabled"
+      label: "Enable Grafana"
+      description: "Specifices whether Grafana is enabled."
+      type: "boolean"
+      immutable: false
+      required: true
   image:
     repository:
       __metadata:
@@ -891,22 +1060,6 @@ grafana:
       type: "number"
       immutable: false
       required: true
-  user:
-    __metadata:
-      name: "grafana.user"
-      label: "Username"
-      description: "The grafana username"
-      type: "string"
-      immutable: false
-      required: false
-  password:
-    __metadata:
-      name: "grafana.password"
-      label: "Password"
-      description: "The grafana password"
-      type: "password"
-      immutable: false
-      required: false
   persistentVolume:
     enabled:
       __metadata:
@@ -1048,17 +1201,12 @@ grafana:
             value: "ClusterIP"
           - label: "Node Port"
             value: "NodePort"
-  elasticsearchDash:
-    enabled:
-      __metadata:
-        name: "grafana.elasticsearchDash.enabled"
-        label: "Elasticsearch Dash enabled"
-        description: "Specifices whether elasticsearchDash is enabled."
-        type: "boolean"
-        immutable: false
-        required: true
 
 collectdExporter:
+  __metadata:
+    name: "collectdExporter"
+    label: "Collectd Exporter"
+    description: "Options section for Collectd Exporter"
   enabled:
     __metadata:
       name: "collectdExporter.enabled"
@@ -1069,6 +1217,14 @@ collectdExporter:
       required: true
   resources:
     limits:
+      cpu:
+        __metadata:
+          name: "collectdExporter.resources.limits.cpu"
+          label: "Maximum CPU"
+          description: "Describes the maximum amount of CPU allowed."
+          type: "string"
+          immutable: false
+          required: false
       memory:
         __metadata:
           name: "collectdExporter.resources.limits.memory"
@@ -1078,6 +1234,14 @@ collectdExporter:
           immutable: false
           required: false
     requests:
+      cpu:
+        __metadata:
+          name: "collectdExporter.resources.requests.cpu"
+          label: "Requested cpu"
+          description: "Describes the requested cpu ammount."
+          type: "string"
+          immutable: false
+          required: false
       memory:
         __metadata:
           name: "collectdExporter.resources.requests.memory"
@@ -1131,25 +1295,10 @@ collectdExporter:
         required: false
 
 configmapReload:
-  resources:
-    limits:
-      memory:
-        __metadata:
-          name: "configmapReload.resources.limits.memory"
-          label: "Maximum memory"
-          description: "Describes the maximum amount of memory allowed."
-          type: "string"
-          immutable: false
-          required: false
-    requests:
-      memory:
-        __metadata:
-          name: "configmapReload.resources.requests.memory"
-          label: "Requested memory"
-          description: "Describes the requested memory ammount."
-          type: "string"
-          immutable: false
-          required: false
+  __metadata:
+    name: "configmapReload"
+    label: "Configmap Reload"
+    description: "Options section for Configmap Reload"
   image:
     repository:
       __metadata:
@@ -1169,6 +1318,10 @@ configmapReload:
         required: true
 
 router:
+  __metadata:
+    name: "router"
+    label: "Router"
+    description: "Options section for Router"
   image:
     repository:
       __metadata:
@@ -1196,6 +1349,14 @@ router:
       required: false
   resources:
     limits:
+      cpu:
+        __metadata:
+          name: "router.resources.limits.cpu"
+          label: "Maximum CPU"
+          description: "Describes the maximum amount of CPU allowed."
+          type: "string"
+          immutable: false
+          required: false
       memory:
         __metadata:
           name: "router.resources.limits.memory"
@@ -1205,6 +1366,14 @@ router:
           immutable: false
           required: false
     requests:
+      cpu:
+        __metadata:
+          name: "router.resources.requests.cpu"
+          label: "Requested cpu"
+          description: "Describes the requested cpu ammount."
+          type: "string"
+          immutable: false
+          required: false
       memory:
         __metadata:
           name: "router.resources.requests.memory"
@@ -1214,129 +1383,11 @@ router:
           immutable: false
           required: false
 
-elasticsearchExporter:
-  enabled:
-    __metadata:
-      name: "elasticsearchExporter.enabled"
-      label: "Elasticsearch Exporter enabled"
-      description: "Specifices whether elasticsearchExporter is enabled."
-      type: "boolean"
-      immutable: false
-      required: true
-  resources:
-    limits:
-      memory:
-        __metadata:
-          name: "elasticsearchExporter.resources.limits.memory"
-          label: "Maximum memory"
-          description: "Describes the maximum amount of memory allowed."
-          type: "string"
-          immutable: false
-          required: false
-    requests:
-      memory:
-        __metadata:
-          name: "elasticsearchExporter.resources.requests.memory"
-          label: "Requested memory"
-          description: "Describes the requested memory ammount."
-          type: "string"
-          immutable: false
-          required: false
-  image:
-    repository:
-      __metadata:
-        name: "elasticsearchExporter.image.repository"
-        label: "Repository"
-        description: "Docker image location"
-        type: "string"
-        immutable: false
-        required: true
-    tag:
-      __metadata:
-        name: "elasticsearchExporter.image.tag"
-        label: "Tag"
-        description: "Docker image tag"
-        type: "string"
-        immutable: false
-        required: true
-  esUri:
-    __metadata:
-      name: "elasticsearchExporter.esUri"
-      label: "URI"
-      description: "the URI for elasticsearch"
-      type: "string"
-      immutable: false
-      required: true
-  tls:
-    enabled:
-      __metadata:
-        name: "elasticsearchExporter.tls.enabled"
-        label: "Elasticsearch Exporter tls enabled"
-        description: "Specifices whether elasticsearchExporter security is enabled."
-        type: "boolean"
-        immutable: false
-        required: true
-    ca:
-      secretName:
-        __metadata:
-          name: "elasticsearchExporter.tls.ca.secretName"
-          label: "ca secret"
-          description: "secret for ca cert"
-          type: "string"
-          immutable: false
-          required: true
-      certFieldName:
-        __metadata:
-          name: "elasticsearchExporter.tls.ca.certFieldName"
-          label: "ca cert field name"
-          description: "field name for ca cert in secret"
-          type: "string"
-          immutable: false
-          required: true
-    client:
-      existingSecretName:
-        __metadata:
-          name: "elasticsearchExporter.tls.client.existingSecretName"
-          label: "existing client secret"
-          description: "existing secret for client cert"
-          type: "string"
-          immutable: false
-          required: false
-      certFieldName:
-        __metadata:
-          name: "elasticsearchExporter.tls.client.certFieldName"
-          label: "client cert filed name"
-          description: "field name for client cert in secret"
-          type: "string"
-          immutable: false
-          required: true
-      keyFieldName:
-        __metadata:
-          name: "elasticsearchExporter.tls.client.keyFieldName"
-          label: "client key field name"
-          description: "field name for client key in secret"
-          type: "string"
-          immutable: false
-          required: true
-  port:
-    __metadata:
-      name: "elasticsearchExporter.port"
-      label: "Port"
-      description: "The port that the container will expose"
-      type: "number"
-      immutable: false
-      required: true
-  probe:
-    enabled:
-      __metadata:
-        name: "elasticsearchExporter.probe.enabled"
-        label: "Enable readiness and liveness probes"
-        description: "Setting to true will turn on the readiness and liveness probes"
-        type: "boolean"
-        immutable: false
-        required: false
-
 dashboardController:
+  __metadata:
+    name: "dashboardController"
+    label: "Dashboard Controller"
+    description: "Options section for Dashboard Controller"
   image:
     repository:
       __metadata:
@@ -1356,6 +1407,14 @@ dashboardController:
         required: true
   resources:
     limits:
+      cpu:
+        __metadata:
+          name: "dashboardController.resources.limits.cpu"
+          label: "Maximum CPU"
+          description: "Describes the maximum amount of CPU allowed."
+          type: "string"
+          immutable: false
+          required: false
       memory:
         __metadata:
           name: "dashboardController.resources.limits.memory"
@@ -1365,6 +1424,14 @@ dashboardController:
           immutable: false
           required: false
     requests:
+      cpu:
+        __metadata:
+          name: "dashboardController.resources.requests.cpu"
+          label: "Requested cpu"
+          description: "Describes the requested cpu ammount."
+          type: "string"
+          immutable: false
+          required: false
       memory:
         __metadata:
           name: "dashboardController.resources.requests.memory"
@@ -1374,45 +1441,11 @@ dashboardController:
           immutable: false
           required: false
 
-alertruleController:
-  image:
-    repository:
-      __metadata:
-        name: "alertruleController.image.repository"
-        label: "Repository"
-        description: "Alert Rule Controller image location"
-        type: "string"
-        immutable: false
-        required: true
-    tag:
-      __metadata:
-        name: "alertruleController.image.tag"
-        label: "Tag"
-        description: "Alert Rule Controller image tag"
-        type: "string"
-        immutable: false
-        required: true
-  resources:
-    limits:
-      memory:
-        __metadata:
-          name: "alertruleController.resources.limits.memory"
-          label: "Maximum memory"
-          description: "Describes the maximum amount of memory allowed."
-          type: "string"
-          immutable: false
-          required: false
-    requests:
-      memory:
-        __metadata:
-          name: "alertruleController.resources.requests.memory"
-          label: "Requested memory"
-          description: "Describes the requested memory ammount."
-          type: "string"
-          immutable: false
-          required: false
-
 curl:
+  __metadata:
+    name: "curl"
+    label: "Curl"
+    description: "Options section for Curl"
   image:
     repository:
       __metadata:
@@ -1432,6 +1465,10 @@ curl:
         required: true
 
 init:
+  __metadata:
+    name: "init"
+    label: "Init"
+    description: "Options section for Init"
   image:
     repository:
       __metadata:

@@ -2,21 +2,9 @@
 
 {{/*
   Licensed Materials - Property of IBM
-   IBM Confidential
-   OCO Source Materials
-   (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
-   The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
+  @ Copyright IBM Corporation 2016, 2019. All Rights Reserved.
+  US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
 */}}
-
-{{- /*
-"sch.version" contains the version information and tillerVersion constraint
-for this version of the Shared Configurable Helpers.
-*/ -}}
-{{- define "sch.version" -}}
-version: "1.2.0"
-tillerVersion: ">=2.7.0"
-{{- end -}}
-
 
 {{/*
 Create a default fully qualified app name for monitoring.
@@ -71,27 +59,6 @@ Create a password for grafana.
 {{- printf $name | b64enc -}}
 {{- end -}}
 
-{{/*
-Monitoring stack tolerations and affinity.
-*/}}
-{{- define "monitoring.affinity" -}}
-{{- if eq .Values.mode "managed" }}
-tolerations:
-- key: "dedicated"
-  operator: "Exists"
-  effect: "NoSchedule"
-affinity:
-  nodeAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      nodeSelectorTerms:
-      - matchExpressions:
-        - key: management
-          operator: In
-          values:
-          - "true"
-{{- end }}
-{{- end -}}
-
 {{- define "router.probes" -}}
     {{- $params := . -}}
     {{- $clusterDomain := first $params -}}
@@ -102,7 +69,7 @@ readinessProbe:
     - sh
     - -c
     - "wget --spider --no-check-certificate -S 'https://platform-identity-provider.kube-system.svc.{{- $clusterDomain -}}:4300/v1/info'"
-  initialDelaySeconds: 10
+  initialDelaySeconds: 30
   periodSeconds: 10
 livenessProbe:
   exec:

@@ -1,11 +1,9 @@
 {{- if and .Values.prometheus.enabled -}}
 # Licensed Materials - Property of IBM
-# IBM Confidential
-# OCO Source Materials
-# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
-# The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
+# @ Copyright IBM Corporation 2016, 2019. All Rights Reserved.
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
 
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
@@ -17,6 +15,11 @@ metadata:
   name: {{ template "prometheus.fullname" . }}-operator
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "prometheus.fullname" . }}
+      component: prometheus-operator
+      release: {{ .Release.Name }}
   template:
     metadata:
       labels:
@@ -25,20 +28,20 @@ spec:
         component: prometheus-operator
         release: {{ .Release.Name }}
         heritage: {{ .Release.Service }}
+      name:  {{ template "prometheus.fullname" . }}-operator
       annotations:
-        productName: prometheusoperator
-        productVersion: v0.31.1
-        productID: none
         scheduler.alpha.kubernetes.io/critical-pod: ""
     spec:
 {{- if eq .Values.mode "managed" }}
       priorityClassName: system-cluster-critical
 {{- end }}
-{{ include "monitoring.affinity" . | indent 6 }}
     {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
         - name: {{ .Values.imagePullSecrets }}
     {{- end }}
+      hostPID: false
+      hostIPC: false
+      hostNetwork: false
       containers:
         - name: prometheus-operator
           image: {{ .Values.prometheusOperator.image.repository }}:{{ .Values.prometheusOperator.image.tag }}
@@ -48,21 +51,66 @@ spec:
           securityContext:
             allowPrivilegeEscalation: false
             runAsUser: 65534
+            runAsNonRoot: true
+            privileged: false
+            capabilities:
+              drop:
+              - ALL
           args:
             - --kubelet-service=kube-system/kubelet
             - --logtostderr=true
             - --log-level=debug
-            - --namespaces={{ .Values.prometheusOperator.namespaces }}
+          {{- if .Values.prometheusOperator.targetNamespaces.releaseNamespaceOnly }}
+            - --namespaces={{ .Release.Namespace }}
+          {{- else }}
+            - --namespaces={{ .Values.prometheusOperator.targetNamespaces.namespaces }}
+          {{- end }}
             - --config-reloader-image={{ .Values.configmapReload.image.repository }}:{{ .Values.configmapReload.image.tag }}
             - --prometheus-config-reloader={{ .Values.prometheusConfigReloader.image.repository }}:{{ .Values.prometheusConfigReloader.image.tag }}
-        - name: prometheus-operator-controller
+        - name: prometheus-controller
           image: {{ .Values.prometheusOperatorController.image.repository }}:{{ .Values.prometheusOperatorController.image.tag }}
           imagePullPolicy: {{ .Values.imagePullPolicy }}
-          resources:
-{{ toYaml .Values.prometheusOperatorController.resources | indent 12 }}
           securityContext:
             allowPrivilegeEscalation: false
+            privileged: false
+            capabilities:
+              drop:
+              - ALL
+          resources:
+{{ toYaml .Values.prometheusOperatorController.resources | indent 12 }}
           env:
             - name: INIT_IMAGE
               value: {{ .Values.init.image.repository }}:{{ .Values.init.image.tag }}
+            - name: NAMESPACES
+            {{- if .Values.prometheusOperator.targetNamespaces.releaseNamespaceOnly }}
+              value: "{{ .Release.Namespace }}"
+            {{- else }}
+              value: "{{ .Values.prometheusOperator.targetNamespaces.namespaces }}"
+            {{- end }}
+            - name: CLUSTER_ADDRESS
+              value: {{ .Values.clusterAddress }}
+            - name: CLUSTER_PORT
+              value: "{{ .Values.clusterPort }}"
+            - name: IS_HUB_CLUSTER
+            {{- if .Values.standalone }}
+              value: "false"
+            {{- else }}
+              value: "true"
+            {{- end }}
+          volumeMounts:
+            - mountPath: "/opt/ibm/monitoring/caCerts"
+              name: monitoring-ca-certs
+            - mountPath: "/opt/ibm/monitoring/certs"
+              name: monitoring-client-certs
+      volumes:
+        - name: monitoring-ca-certs
+          secret:
+            secretName: {{ .Values.tls.ca.secretName }}
+        - name: monitoring-client-certs
+          secret:
+          {{- if .Values.tls.client.existingSecretName }}
+            secretName: {{ .Values.tls.client.existingSecretName }}
+          {{- else }}
+            secretName: {{ template "monitoring.fullname" . }}-client-certs
+          {{- end }}
 {{- end -}}

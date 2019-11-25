@@ -1,13 +1,11 @@
 {{/*
   Licensed Materials - Property of IBM
-   IBM Confidential
-   OCO Source Materials
-   (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
-   The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
+  @ Copyright IBM Corporation 2016, 2019. All Rights Reserved.
+  US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
 */}}
 
 {{/* Prometheus Configuration Files */}}
-{{- define "prometheusScrapeTargets" }}
+{{- define "monitoring.prometheusScrapeTargets" }}
     - job_name: prometheus
       static_configs:
         - targets:

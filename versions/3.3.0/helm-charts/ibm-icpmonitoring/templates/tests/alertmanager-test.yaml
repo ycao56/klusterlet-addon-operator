@@ -1,8 +1,6 @@
 # Licensed Materials - Property of IBM
-# IBM Confidential
-# OCO Source Materials
-# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
-# The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
+# @ Copyright IBM Corporation 2016, 2019. All Rights Reserved.
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
 
 apiVersion: v1
 kind: Pod
@@ -21,10 +19,22 @@ spec:
   imagePullSecrets:
     - name: {{ .Values.imagePullSecrets }}
 {{- end }}
+  hostPID: false
+  hostIPC: false
+  hostNetwork: false
   containers:
     - name: "{{ template "prometheus.fullname" . }}-alertmanager-test"
       image: {{ .Values.curl.image.repository }}:{{ .Values.curl.image.tag }}
       imagePullPolicy: {{ .Values.imagePullPolicy }}
+      securityContext:
+        runAsUser: 1000
+        allowPrivilegeEscalation: false
+        runAsNonRoot: true
+        privileged: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+          - ALL
       command: ['curl']
     {{- if .Values.tls.enabled }}
       args: ['-k', '--cert', '/opt/ibm/monitoring/certs/tls.crt', '--key', '/opt/ibm/monitoring/certs/tls.key', 'https://{{ template "prometheus.fullname" . }}-alertmanager:{{ .Values.alertmanager.port }}']

@@ -1,11 +1,9 @@
 {{- if .Values.grafana.enabled -}}
 # Licensed Materials - Property of IBM
-# IBM Confidential
-# OCO Source Materials
-# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
-# The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
+# @ Copyright IBM Corporation 2016, 2019. All Rights Reserved.
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
 
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
@@ -17,6 +15,11 @@ metadata:
   name: {{ template "grafana.fullname" . }}
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "grafana.fullname" . }}
+      component: grafana
+      release: "{{ .Release.Name }}"
   template:
     metadata:
       labels:
@@ -25,24 +28,30 @@ spec:
         component: grafana
         release: "{{ .Release.Name }}"
         heritage: {{ .Release.Service }}
+      name: {{ template "grafana.fullname" . }}
       annotations:
-        productName: grafana
-        productVersion: 5.2.0
-        productID: none
         scheduler.alpha.kubernetes.io/critical-pod: ""
     spec:
 {{- if eq .Values.mode "managed" }}
       priorityClassName: system-cluster-critical
 {{- end }}
-{{ include "monitoring.affinity" . | indent 6 }}
     {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
         - name: {{ .Values.imagePullSecrets }}
     {{- end }}
+      hostPID: false
+      hostIPC: false
+      hostNetwork: false
       initContainers:
         - name: init-container
           image: "{{ .Values.init.image.repository }}:{{ .Values.init.image.tag }}"
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            capabilities:
+              drop:
+              - ALL
           command: ["/opt/entry/entrypoint.sh"]
           volumeMounts:
             - name: grafana-storage
@@ -61,6 +70,13 @@ spec:
         - name: grafana
           image: {{ .Values.grafana.image.repository }}:{{ .Values.grafana.image.tag }}
           imagePullPolicy: {{ .Values.imagePullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: true
+            privileged: true
+            capabilities:
+              drop:
+              - ALL
+              add: [CHOWN, NET_ADMIN, NET_RAW, LEASE, SETGID, SETUID]
           env:
             - name: GF_SECURITY_ADMIN_USER
               valueFrom:
@@ -123,6 +139,13 @@ spec:
         - name: dashboard-crd-controller
           image: {{ .Values.dashboardController.image.repository }}:{{ .Values.dashboardController.image.tag }}
           imagePullPolicy: "{{ .Values.imagePullPolicy }}"
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            capabilities:
+              drop:
+              - ALL
+              add: [CHOWN, NET_ADMIN, NET_RAW, LEASE, SETGID, SETUID]
           resources:
 {{ toYaml .Values.dashboardController.resources | indent 12 }}
           command: ["/grafana/entry/run.sh"]
@@ -169,6 +192,14 @@ spec:
         - name: router
           image: {{ .Values.router.image.repository }}:{{ .Values.router.image.tag }}
           imagePullPolicy: {{ .Values.imagePullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+              - ALL
+              add: [CHOWN, NET_ADMIN, NET_RAW, LEASE, SETGID, SETUID]
           resources:
 {{ toYaml .Values.router.resources | indent 12 }}
           command: ["/opt/ibm/router/entry/entrypoint.sh"]
@@ -276,34 +307,4 @@ spec:
           configMap:
             name: {{ template "grafana.fullname" . }}-default-dashboards-config
       {{- end }}
-
----
-
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  labels:
-    app: {{ template "grafana.fullname" . }}
-    chart: {{ .Chart.Name }}
-    component: grafana
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-  name: {{ template "grafana.fullname" . }}-grafana-crd-entry
-data:
-  run.sh: |
-    #!/bin/bash
-    FLAG=false
-    while [[ $FLAG == false ]]; do
-    {{- if .Values.tls.enabled }}
-      curl -k --connect-timeout 10 https://127.0.0.1:{{ .Values.clusterPort }}/api
-    {{- else }}
-      curl -k --connect-timeout 10 http://127.0.0.1:3000/api
-    {{- end }}
-      if [[ $? == 0 ]]; then
-        FLAG=true
-        echo "Grafana process started"
-      fi
-    done
-
-    /grafana-dashboard-crd
 {{- end -}}

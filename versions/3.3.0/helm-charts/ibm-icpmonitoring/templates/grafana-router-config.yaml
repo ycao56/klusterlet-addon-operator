@@ -1,10 +1,8 @@
 {{- if and .Values.grafana.enabled .Values.tls.enabled -}}
 
 # Licensed Materials - Property of IBM
-# IBM Confidential
-# OCO Source Materials
-# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
-# The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
+# @ Copyright IBM Corporation 2016, 2019. All Rights Reserved.
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
 
 apiVersion: v1
 kind: ConfigMap
@@ -85,16 +83,26 @@ data:
             location /public {
               proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
               proxy_set_header Host $http_host;
-              header_filter_by_lua 'ngx.header.Authorization = "Basic {GRAFANA_CRED_STR}"';
               proxy_pass https://grafana/public;
               proxy_ssl_certificate     /opt/ibm/router/nginx/conf/server.crt;
               proxy_ssl_certificate_key /opt/ibm/router/nginx/conf/server.key;
+              header_filter_by_lua_block {
+                  ngx.header.Authorization = "Basic {GRAFANA_CRED_STR}"
+                  ngx.header["Cache-control"] = "no-cache, no-store, must-revalidate"
+                  ngx.header["Pragma"] = "no-cache"
+                  ngx.header["Access-Control-Allow-Credentials"] = "false"
+              }
             }
 
             location / {
               proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
               proxy_set_header Host $http_host;
             {{- if eq .Values.mode "managed" }}
+              header_filter_by_lua_block {
+                  ngx.header["Cache-control"] = "no-cache, no-store, must-revalidate"
+                  ngx.header["Pragma"] = "no-cache"
+                  ngx.header["Access-Control-Allow-Credentials"] = "false"
+              }
               rewrite_by_lua 'grafana.rewrite_grafana_header()';
             {{- else }}
               header_filter_by_lua 'ngx.header.Authorization = "Basic {GRAFANA_CRED_STR}"';

@@ -5,7 +5,7 @@ This chart deploy Prometheus(https://prometheus.io), Grafana(https://grafana.com
 
 ## Chart Details
 This chart includes
-  - Deployments of prometheus, alertmanager, grafana, kube-state-metrics exporter, collectd exporter, elasticsearch exporter and corresponding services;
+  - Deployments of prometheus, alertmanager, grafana, kube-state-metrics exporter, collectd exporter and corresponding services;
   - Daemonset of node exporter and corresponding service;
   - Ingress configurations for prometheus, alertmanager and grafana;
   - Persistent Volume Claims for prometheus, alertmanager and grafana;
@@ -19,6 +19,64 @@ This chart includes
 IBM Cloud Private 2.1.0.3 or higher for deployment mode "managed"
 
 PV provisioner support in the underlying infrastructure
+
+## PodSecurityPolicy Requirements
+
+This chart requires a PodSecurityPolicy to be bound to the target namespace prior to installation. To meet this requirement there may be cluster scoped as well as namespace scoped pre and post actions that need to occur.
+
+The predefined PodSecurityPolicy name: [`ibm-privileged-psp`](https://ibm.biz/cpkspec-psp) has been verified for this chart, if your target namespace is bound to this PodSecurityPolicy you can proceed to install the chart.
+
+This chart also defines a custom `PodSecurityPolicy` which can be used to finely control the permissions/capabilities needed to deploy this chart. You can enable this custom `PodSecurityPolicy` using the IBM Cloud Private management console. Note that this `PodSecurityPolicy` is already defined in IBM Cloud Private 3.1.1 or higher.
+
+- From the user interface, you can copy and paste the following snippets to enable the custom `PodSecurityPolicy` into the create resource section
+  - Custom PodSecurityPolicy definition:
+    ```yaml
+    apiVersion: policy/v1beta1
+    kind: PodSecurityPolicy
+    metadata:
+      annotations:
+        kubernetes.io/description: "This policy grants access to all privileged 
+          host features and allows a pod to run with any 
+          UID and GID and any volume.
+          WARNING:  This policy is the least restrictive and 
+          should only used for cluster administration.
+          Use with caution."
+        seccomp.security.alpha.kubernetes.io/allowedProfileNames: '*'
+        cloudpak.ibm.com/version: "1.1.0"
+      name: ibm-privileged-psp
+    spec:
+      allowPrivilegeEscalation: true
+      allowedCapabilities:
+      - '*'
+      allowedUnsafeSysctls:
+      - '*'
+      fsGroup:
+        rule: RunAsAny
+      hostIPC: true
+      hostNetwork: true
+      hostPID: true
+      hostPorts:
+      - max: 65535
+        min: 0
+      privileged: true
+      runAsUser:
+        rule: RunAsAny
+      runAsGroup:
+        rule: RunAsAny
+      seLinux:
+        rule: RunAsAny
+      supplementalGroups:
+        rule: RunAsAny
+      volumes:
+      - '*'
+  ```
+
+
+### Red Hat OpenShift SecurityContextConstraints Requirements
+
+This chart requires a `SecurityContextConstraints` to be bound to the target namespace prior to installation. To meet this requirement there may be cluster scoped as well as namespace scoped pre and post actions that need to occur.
+
+The predefined `SecurityContextConstraints` name: [`ibm-privileged-scc`](https://ibm.biz/cpkspec-scc) has been verified for this chart, if your target namespace is bound to this `SecurityContextConstraints` resource you can proceed to install the chart.
 
 ## Resources Required
 
@@ -46,8 +104,8 @@ The following tables lists the configurable parameters of the Prometheus chart a
 
 Parameter | Description | Default
 --------- | ----------- | -------
-`environment` | Target environment of deployment, options include openshift and non-openshift | non-openshift
 `mode` | deploy mode, options include managed and standard | managed
+`environment` | Target environment of deployment, options include openshift and non-openshift | non-openshift
 `tls.enabled` | Enabled security for the Chart | false
 `tls.issuer` | Name of the issuer | icp-ca-issuer
 `tls.issuerKind` | Kind of the issuer, options include Issuer and ClusterIssuer | ClusterIssuer
@@ -69,28 +127,23 @@ Parameter | Description | Default
 `clusterDomain` | Cluster domain name | cluster.local
 `clusterName` | Name of the target cluster. | mycluster
 `crdCreation` | Create the CRDs for grafana dashboards and alert rules if true. | false
+`prometheus.enabled` | Enable Prometheus install? | true
 `prometheus.image.repository` | Prometheus server container image name | ibmcom/prometheus
-`prometheus.image.tag` | Prometheus server container image tag | v2.0.0
+`prometheus.image.tag` | Prometheus server container image tag | v2.8.0-f1
 `prometheus.port` | Prometheus server service port | 80
 `prometheus.scrapeInterval` | interval to scrape metrics | 1m
 `prometheus.evaluationInterval` | evaluation interval for alert rules | 1m
 `prometheus.retention` | Prometheus storage retention time | 24h
-`prometheus.args` | arguments for prometheus container | {}
 `prometheus.persistentVolume.enabled` | create a volume to store data if true| false
-`prometheus.persistentVolume.useDynamicProvisioning` | dynamically provison persistent volume if true | true
 `prometheus.persistentVolume.size` | size of persistent volume claim | 10Gi
 `prometheus.persistentVolume.storageClass` | storageClass for prometheus PV | ""
-`prometheus.persistentVolume.existingClaimName` | to use an existing persistent volume claim | ""
 `prometheus.persistentVolume.selector.label` | field to select the volume | ""
 `prometheus.persistentVolume.selector.value` | value of the field to select the volume | ""
 `prometheus.probe.enabled` | enable health probe for prometheus if true | true
-`prometheus.probe.readiness.args` | args for readiness probe | {}
-`prometheus.probe.liveness.args` | args for liveness probe | {}
 `prometheus.resources.limits.cpu` | prometheus cpu limits | 500m
 `prometheus.resources.limits.memory` | prometheus memory imits | 512Mi
 `prometheus.resources.requests.cpu` | prometheus cpu requests | 100m
 `prometheus.resources.requests.memory` | prometheus memory requests | 128Mi
-`prometheus.configFiles` | Prometheus configurations template | prometheusConfig
 `prometheus.rbacRoleCreation` | create rbac role&rolebinding if true | true
 `prometheus.ingress.enabled` | create promethues ingress if true | false
 `prometheus.ingress.annotations` | annotation for prometheus ingress | {}
@@ -105,49 +158,44 @@ Parameter | Description | Default
 `prometheus.alerts.highCPUUsage.enabled`| Default alert to trigger when the `prometheus.alerts.highCPUUsage.highCPUUsageThreshold` is exceeded | true
 `prometheus.alerts.highCPUUsage.highCPUUsageThreshold`| Default percentage to trigger a high CPU usage alert | 85
 `prometheus.alerts.failedJobs`| Default alert if a job failed.  | true
-`prometheus.alerts.elasticsearchClusterHealth`| Alerts if the elasticsearch cluster is not healthy.  | false
 `prometheus.alerts.podsTerminated`| Alerts if a pod was terminated and didn't complete.  | true
 `prometheus.alerts.podsRestarting`| Alerts if a pod is restarting more than 5 times in 10 minutes.  | true
+`alertmanager.enabled` | Enable Alertmanager install? | true
 `alertmanager.image.repository` | alertmanager container image name | ibmcom/alertmanager
-`alertmanager.image.tag` | alertmanager container image tag | v0.13.0
+`alertmanager.image.tag` | alertmanager container image tag | v0.15.0-f4
 `alertmanager.port` | alertmanager service port | 80
 `alertmanager.persistentVolume.enabled` | create a volume to store data if true | false
-`alertmanager.persistentVolume.useDynamicProvisioning` | dynamically provison persistent volume if true | true
 `alertmanager.persistentVolume.size` | size of persistent volume claim | 1Gi
 `alertmanager.persistentVolume.storageClass` | storageClass for alertmanager PV | ""
-`alertmanager.persistentVolume.existingClaimName` | to use an existing persistent volume claim | ""
 `alertmanager.persistentVolume.selector.label` | field to select the volume | ""
 `alertmanager.persistentVolume.selector.value` | value of the field to select the volume | ""
--`alertmanager.probe.enabled` | enable health probe for alertmanager if true | true
--`alertmanager.probe.readiness.args` | args for readiness probe | {}
--`alertmanager.probe.liveness.args` | args for liveness probe | {}
 `alertmanager.resources.limits.cpu` | alertmanager cpu limits | 200m
 `alertmanager.resources.limits.memory` | alertmanager memory imits | 256Mi
 `alertmanager.resources.requests.cpu` | alertmanager cpu requests | 10m
 `alertmanager.resources.requests.memory` | alertmanager memory requests | 64Mi
-`alertmanager.configFiles` | alertmanager configurations | alermanagerConfig
 `alertmanager.ingress.enabled` | create alertmanager ingress if true | false
 `alertmanager.ingress.annotations` | annotation for alertmanager ingress | {}
 `alertmanager.service.type` | type for alertmanager service | ClusterIP
 `kubeStateMetrics.enabled` | install kubernetes metrics exporter if true | false
+`kubeStateMetrics.resources.limits.memory` | kubernetes metrics exporter memory imits | 256Mi
+`kubeStateMetrics.resources.requests.memory` | kubernetes metrics exporter memory requests | 64Mi
 `kubeStateMetrics.image.repository` | kube-state-metrics container image name | ibmcom/kube-state-metrics
-`kubeStateMetrics.image.tag` | kube-state-metrics container image tag | v1.2.0
+`kubeStateMetrics.image.tag` | kube-state-metrics container image tag | v1.3.0-f4
 `kubeStateMetrics.port` | kube-state-metrics service port | 80
 `kubeStateMetrics.probe.enabled` | enable health probe for kubeStateMetrics if true | true
-`kubeStateMetrics.probe.readiness.args` | args for readiness probe | {}
-`kubeStateMetrics.probe.liveness.args` | args for liveness probe | {}
 `nodeExporter.enabled` | install node exporter if true | false
+`nodeExporter.resources.limits.memory` | node-exporter memory imits | 256Mi
+`nodeExporter.resources.requests.memory` | node-exporter memory requests | 64Mi
 `nodeExporter.image.repository` | node-exporter container image name | ibmcom/node-exporter
-`nodeExporter.image.tag` | node-exporter container image tag | v0.15.2
-`nodeExporter.port` | node-exporter service port | 9100
+`nodeExporter.image.tag` | node-exporter container image tag | v0.16.0-f4
+`nodeExporter.port` | node-exporter service port | 8445
+`nodeExporter.healthyPort` | node-exporter service health check port | 8446
+`nodeExporter.listenPort` | node-exporter service listener port | 9100
 `nodeExporter.probe.enabled` | enable health probe for nodeExporter if true | true
-`nodeExporter.probe.readiness.args` | args for readiness probe | {}
-`nodeExporter.probe.liveness.args` | args for liveness probe | {}
+`grafana.enabled` | Enable Grafana install? | true
 `grafana.image.repository` | Grafana Docker Image Name | ibmcom/grafana
-`grafana.image.tag` | Grafana Docker Image Tag | 4.6.3
+`grafana.image.tag` | Grafana Docker Image Tag | 5.2.0-f4
 `grafana.port` | Grafana Container Exposed Port | 3000
-`grafana.user` | Grafana user's name | "admin"
-`grafana.password` | Grafana user's password | ""
 `grafana.persistentVolume.enabled` | Create a volume to store data if true | false
 `grafana.persistentVolume.useDynamicProvisioning` | dynamically provison persistent volume if true | true
 `grafana.persistentVolume.size` | Size of persistent volume claim | 1Gi
@@ -156,52 +204,49 @@ Parameter | Description | Default
 `grafana.persistentVolume.selector.label` | field to select the volume | ""
 `grafana.persistentVolume.selector.value` | value of the field to select the volume | ""
 `grafana.probe.enabled` | enable health probe for grafana if true | true
-`grafana.probe.readiness.args` | args for readiness probe | {}
-`grafana.probe.liveness.args` | args for liveness probe | {}
 `grafana.resources.limits.cpu` | grafana cpu limits | 500m
 `grafana.resources.limits.memory` | grafana memory imits | 512Mi
 `grafana.resources.requests.cpu` | grafana cpu requests | 100m
 `grafana.resources.requests.memory` | grafana memory requests | 128Mi
-`grafana.configFiles` | grafana configurations | grafanaConfig
+`grafana.configFiles` | Name of the Grafana configuratio file | grafanaConfig
 `grafana.ingress.enabled` | create grafana ingress if true | false
 `grafana.ingress.annotations` | annotation for grafana ingress | {}
 `grafana.service.type` | type for grafana service | ClusterIP
-`grafana.elasticsearchDash.enabled` | add elasticsearch dashboard if true | false
 `collectdExporter.enabled` | install collectd exporter if true | false
+`collectdExporter.resources.limits.memory` | collectd exporter memory imits | 256Mi
+`collectdExporter.resources.requests.memory` | collectd exporter memory requests | 64Mi
 `collectdExporter.image.repository` | Collectd Exporter Image Name | ibmcom/collectd-exporter
-`collectdExporter.image.tag` | Collectd Exporter Image Tag | 0.3.1
+`collectdExporter.image.tag` | Collectd Exporter Image Tag | v0.4.-.f4
 `collectdExporter.service.serviceMetricsPort` | Metrics Service Exposed Port | 9103
 `collectdExporter.service.serviceCollectorPort` | Collector Service Exposed Port | 25826
 `collectdExporter.probe.enabled` | enable health probe for collectdExporter if true | true
-`collectdExporter.probe.readiness.args` | args for readiness probe | {}
-`collectdExporter.probe.liveness.args` | args for liveness probe | {}
 `configmapReload.image.repository` | configmapReload Docker Image Name | ibmcom/configmap-reload
-`configmapReload.image.tag` | configmapReload Docker Image Tag | v0.1
+`configmapReload.image.tag` | configmapReload Docker Image Tag | v0.2.2-f4
 `router.image.repository` | router Docker Image Name | ibmcom/icp-router
-`router.image.tag` | router Docker Image Tag | 2.2.0
+`router.image.tag` | router Docker Image Tag | 2.4.0
 `router.subjectAlt` | subject alternative dns or ip for the ssl key | 127.0.0.1
-`elasticsearchExporter.enabled` | install elasticsearch exporter if true | false
-`elasticsearchExporter.image.repository` | elasticsearchExporter Docker Image Name | ibmcom/lasticsearch_exporter
-`elasticsearchExporter.image.tag` | elasticsearchExporter Docker Image Tag | 1.0.2
-`elasticsearchExporter.esUri` | elasticsearch url | https://elasticsearch:9200
-`elasticsearchExporter.tls.enabled` | enable tls for exporter to request elasticsearch endpoint | true
-`elasticsearchExporter.tls.ca.secretName` | secret for ca cert | cluster-ca-cert
-`elasticsearchExporter.tls.ca.certFieldName` | field name for ca cert in secret | tls.crt
-`elasticsearchExporter.tls.client.existingSecretName` | existing secret for client cert | ""
-`elasticsearchExporter.tls.client.certFieldName` | field name for client cert in secret | tls.crt
-`elasticsearchExporter.tls.client.keyFieldName` | field name for client key in secret | tls.key
-`elasticsearchExporter.port` | elasticsearchExporter exposed port | 9108
-`elasticsearchExporter.probe.enabled` | enable health probe for elasticsearchExporter if true | true
-`elasticsearchExporter.probe.readiness.args` | args for readiness probe | {}
-`elasticsearchExporter.probe.liveness.args` | args for liveness probe | {}
+`router.resources.limits.memory` | router memory imits | 256Mi
+`router.resources.requests.memory` | router memory requests | 64Mi
 `dashboardController.image.repository` | Grafana Dashboard Controller Docker Image Name | ibmcom/dashboard-controller
-`dashboardController.image.tag` | Grafana Dashboard Controller Docker Image Tag | v1.1.0
-`alertruleController.image.repository` | Alert Rule Controller Docker Image Name | ibmcom/alert-rule-controller
-`alertruleController.image.tag` | Alert Rule Controller Docker Image Tag | v1.1.0
+`dashboardController.image.tag` | Grafana Dashboard Controller Docker Image Tag | v1.1.0-f1
+`dashboardController.resources.limits.memory` | Grafana Dashboard Controller memory imits | 256Mi
+`dashboardController.resources.requests.memory` | Grafana Dashboard Controller memory requests | 64Mi
+`prometheusOperator.image.repository` | prometheusOperator Docker Image Name | ibmcom/dashboard-controller
+`prometheusOperator.image.tag` | prometheusOperator Docker Image Tag | v0.31
+`prometheusOperator.targetNamespaces.releaseNamespaceOnly` | Is the Prometheus Operator limited by namespaces only? | true
+`prometheusOperator.targetNamespaces.namespaces` | The Name of the namespace| ""
+`prometheusOperator.resources.limits.memory` | prometheusOperator memory limits | ""
+`prometheusOperator.resources.requests.memory` | prometheusOperator memory requests | 64Mi
+`prometheusOperatorController.image.repository` | Prometheus Operator Controller Docker Image Name | ibmcom/dashboard-controller
+`prometheusOperatorController.image.tag` | Prometheus Operator Controller Docker Image Tag | v1.0.0
+`prometheusOperatorController.resources.limits.memory` | Prometheus Operator Controller memory limits | ""
+`prometheusOperatorController.resources.requests.memory` | Prometheus Operator Controller memory requests | 64Mi
+`prometheusConfigReloader.image.repository` | Prometheus config reloader Docker Image Name | ibmcom/dashboard-controller
+`prometheusConfigReloader.image.tag` | Prometheus config reloader Docker Image Tag | v0.31
 `curl.image.repository` | curl Docker Image Name | ibmcom/curl
-`curl.image.tag` | curl Docker Image Tag | 4.0.0
+`curl.image.tag` | curl Docker Image Tag | 4.2.0-f4
 `init.image.repository` | init Docker Image Name | ibmcom/icp-initcontainer
-`init.image.tag` | init Docker Image Tag | 1.0.0
+`init.image.tag` | init Docker Image Tag | 1.0.0-f4
 
 ### Managed Mode
 
@@ -229,13 +274,8 @@ nodeExporter:
 grafana:
   ingress:
     enabled: true
-  elasticsearchDash:
-    enabled: true
 
 collectdExporter:
-  enabled: true
-
-elasticsearchExporter:
   enabled: true
 ```
 
@@ -309,7 +349,7 @@ If set tls.enabled as true, prometheus/alert manager/grafana will block the inco
     icp.management.ibm.com/rewrite-target: "/"
 ```
 
-Notes: The communications between prometheus and exporters(node exporter, kube state metrics exporter, collectd exporter and elasticsearch exporter) still use plain http ones without tls.
+Notes: The communications between prometheus and exporters(node exporter, kube state metrics exporter, collectd exporter) still use plain http ones without tls.
 
 ## Limitations
 

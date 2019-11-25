@@ -1,9 +1,7 @@
 {{- if .Values.crdCreation -}}
 # Licensed Materials - Property of IBM
-# IBM Confidential
-# OCO Source Materials
-# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
-# The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
+# @ Copyright IBM Corporation 2016, 2019. All Rights Reserved.
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
 
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -11,6 +9,7 @@ metadata:
   labels:
     kubernetes.io/bootstrapping: rbac-defaults
     rbac.icp.com/aggregate-to-icp-view: "true"
+    rbac.authorization.k8s.io/aggregate-to-view: "true"
   name: monitoring-view-aggregate
 rules:
   -
@@ -40,6 +39,7 @@ metadata:
   labels:
     kubernetes.io/bootstrapping: rbac-defaults
     rbac.icp.com/aggregate-to-icp-admin: "true"
+    rbac.authorization.k8s.io/aggregate-to-admin: "true"
   name: monitoring-admin-aggregate
 rules:
   -
@@ -79,6 +79,7 @@ metadata:
   labels:
     kubernetes.io/bootstrapping: rbac-defaults
     rbac.icp.com/aggregate-to-icp-edit: "true"
+    rbac.authorization.k8s.io/aggregate-to-edit: "true"
   name: monitoring-edit-aggregate
 rules:
   -
@@ -112,6 +113,7 @@ metadata:
   labels:
     kubernetes.io/bootstrapping: rbac-defaults
     rbac.icp.com/aggregate-to-icp-operate: "true"
+    rbac.authorization.k8s.io/aggregate-to-edit: "true"
   name: monitoring-operate-aggregate
 rules:
   -
