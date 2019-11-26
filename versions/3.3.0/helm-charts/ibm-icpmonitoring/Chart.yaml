@@ -10,7 +10,7 @@ keywords:
 - OpenSource
 - DevOps
 - Commercial
-kubeVersion: '>=1.9'
+kubeVersion: '>=1.9.0-0'
 name: ibm-icpmonitoring
 sources:
 - https://github.com/prometheus/prometheus

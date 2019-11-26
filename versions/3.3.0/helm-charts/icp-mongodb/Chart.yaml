@@ -10,7 +10,7 @@ keywords:
 - s390x
 - database
 - ICP
-kubeVersion: '>=1.9'
+kubeVersion: '>=1.9.0-0'
 name: icp-mongodb
 sources:
 - https://github.com/mongodb/mongo
