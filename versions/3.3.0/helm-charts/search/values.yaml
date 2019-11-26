@@ -15,7 +15,7 @@ clusterNamespace: null
 
 image:
   repository: ibmcom/search-collector
-  tag: 3.2.1
+  tag: 3.3.0
   pullPolicy: IfNotPresent
 
 tillerIntegration:
