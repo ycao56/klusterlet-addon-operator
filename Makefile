@@ -28,7 +28,7 @@ IMAGE_MAINTAINER      = liuhao@us.ibm.com
 IMAGE_VENDOR          = IBM
 IMAGE_SUMMARY         = $(IMAGE_DESCRIPTION)
 IMAGE_OPENSHIFT_TAGS  = multicloud-manager
-IMAGE_VERSION        ?= $(RELEASE_TAG)
+IMAGE_VERSION        ?= $(SEMVERSION)
 IMAGE_RELEASE        ?= $(VCS_REF)
 
 DOCKER_BUILD_OPTS = --build-arg VCS_REF=$(VCS_REF) \

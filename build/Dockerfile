@@ -14,14 +14,19 @@ ARG IMAGE_OPENSHIFT_TAGS
 ARG IMAGE_DESCRIPTION
 
 COPY versions/ ${HOME}/versions
+COPY licenses /licenses
 
-LABEL release="$VCS_REF" \
-      vendor="$IMAGE_VENDOR" \
+LABEL org.label-schema.vendor="IBM" \
+      org.label-schema.name="$IMAGE_NAME_ARCH" \
+      org.label-schema.description="$IMAGE_DESCRIPTION" \
+      org.label-schema.vcs-ref="$VCS_REF" \
+      org.label-schema.vcs-url="$VCS_URL" \
+      org.label-schema.license="Licensed Materials - Property of IBM" \
+      org.label-schema.schema-version="1.0" \
       name="$IMAGE_NAME" \
-      summary="$IMAGE_SUMMARY" \
+      vendor="IBM" \
+      version="$IMAGE_VERSION" \
+      release="$VCS_REF" \
       description="$IMAGE_DESCRIPTION" \
-      version="$IMAGE_VERSION"  \
-      maintainer="$IMAGE_MAINTAINER"  \
-      vcs_url="$VCS_URL" \
-      image_name_arch="$IMAGE_NAME_ARCH"  \
-      openshifttags="$IMAGE_OPENSHIFT_TAGS"
+      summary="$IMAGE_SUMMARY" \
+      vcs_url="$VCS_URL" 
