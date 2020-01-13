@@ -1,4 +1,4 @@
-FROM quay.io/operator-framework/helm-operator:v0.9.0
+FROM quay.io/operator-framework/helm-operator:v0.10.1
 
 ARG VCS_REF
 ARG VCS_URL
