@@ -46,7 +46,7 @@ pushd "$BASEIMAGEDIR"
 mkdir -p build/_output/bin/
 cp $ROOTDIR/build/operator-sdk-dev-${ARCH}-linux-gnu build/_output/bin/helm-operator
 
-sed -i 's/ubi-minimal:latest/ubi-minimal:7.7-98/g' build/Dockerfile
+sed -i 's/ubi-minimal:latest/ubi-minimal:7.7-238/g' build/Dockerfile
 
 operator-sdk build quay.io/operator-framework/helm-operator:dev
 
