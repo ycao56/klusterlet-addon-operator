@@ -50,6 +50,7 @@ sed -i 's/ubi-minimal:latest/ubi-minimal:7.7-238/g' build/Dockerfile
 
 operator-sdk build quay.io/operator-framework/helm-operator:dev
 
-docker tag quay.io/operator-framework/helm-operator:dev quay.io/operator-framework/helm-operator:v0.9.0
+docker tag quay.io/operator-framework/helm-operator:dev quay.io/operator-framework/helm-operator:v0.10.1
+
 echo ">>> Done Building Helm Operator Image"
 popd
