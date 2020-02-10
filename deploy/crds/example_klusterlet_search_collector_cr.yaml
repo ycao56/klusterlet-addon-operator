@@ -13,11 +13,3 @@ spec:
 
   clusterName: CLUSTER_NAME
   clusterNamespace: CLUSTER_NAMESPACE
-
-  tillerIntegration:
-    enabled: true
-    endpoint: TILLER_RELEASE:44134
-    certIssuer: TILLER_RELEASE
-    user: admin
-    autoGenSecret: true
-    secret: null

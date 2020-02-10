@@ -1,3 +1,0 @@
-You have successfully installed metering {{ .Chart.Version }}.  
-Access the metering console to verify that data is being collected.  
-Information about platform metrics will be available 10 minutes after installation.
