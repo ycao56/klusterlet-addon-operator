@@ -6,9 +6,6 @@
 
 enabled: true
 replicas: 1
-globalView:
-  enabled: false
-  collectorLabels: "mcm.ibm.com/globalview=true"
 clusterName: null
 clusterNamespace: null
 

@@ -50,18 +50,13 @@ spec:
           {{- toYaml .Values.resources | nindent 10 }}
         args:
           - "/klusterlet-operator"
-          - "--operator-configmap={{ .Release.Namespace }}/{{ template "connection-manager.fullname" . }}"
-          - "--cert-store-secret={{ .Release.Namespace }}/{{ template "connection-manager.fullname" . }}-cert-store"
+          - "--bootstrap-secret={{ .Release.Namespace }}/{{ .Values.bootstrapConfig.hubSecret }}"
           - "--cluster={{ .Values.clusterNamespace }}/{{ .Values.clusterName }}"
           - "--klusterlet-secret={{ .Release.Namespace }}/{{ template "connection-manager.fullname" . }}-hub-kubeconfig"
           - "--klusterlet-labels=controller=operator"
         {{- if gt .Values.replicas 1.0 }}
           - "--leader-elect=true"
         {{- end }}
-        {{- if .Values.globalView.enabled }}
-          - "--enable-global-view"
-          - "--collector-labels={{ .Values.globalView.collectorLabels }}"
-        {{- end}}
         livenessProbe: null
         readinessProbe: null
         securityContext:
