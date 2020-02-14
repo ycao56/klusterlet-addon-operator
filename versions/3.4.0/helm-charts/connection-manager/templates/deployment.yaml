@@ -50,7 +50,7 @@ spec:
           {{- toYaml .Values.resources | nindent 10 }}
         args:
           - "/klusterlet-connectionmanager"
-          - "--bootstrap-secret={{ .Release.Namespace }}/{{ .Values.bootstrapConfig.hubSecret }}"
+          - "--bootstrap-secret={{ .Values.bootstrapConfig.hubSecret }}"
           - "--cluster={{ .Values.clusterNamespace }}/{{ .Values.clusterName }}"
           - "--klusterlet-secret={{ .Release.Namespace }}/{{ template "connection-manager.fullname" . }}-hub-kubeconfig"
           - "--klusterlet-labels=controller=operator"
