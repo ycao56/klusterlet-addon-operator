@@ -1,3 +1,9 @@
+# Files
 .build-harness
-build-harness/
-.idea
+.build-harness-bootstrap
+.vscode
+
+# Folders
+.build-docker
+build-harness
+build-harness-extensions
