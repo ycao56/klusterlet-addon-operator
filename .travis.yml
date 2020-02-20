@@ -26,8 +26,8 @@ jobs:
       name: "Build and push image"
       before_install:
         - git config --global url.git@github.com:open-cluster-management/.insteadOf https://github.com/open-cluster-management/
-        - make init
-        - make component/init
+        - make
+        - make deps
       script:
         - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export COMPONENT_TAG_EXTENSION="-PR${TRAVIS_PULL_REQUEST}-${TRAVIS_COMMIT}"; fi;
         - make component/build

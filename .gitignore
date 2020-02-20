@@ -2,6 +2,7 @@
 .build-harness
 .build-harness-bootstrap
 .vscode
+OPENSOURCE.check
 
 # Folders
 .build-docker
