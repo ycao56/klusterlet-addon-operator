@@ -30,6 +30,7 @@ jobs:
         - make deps
       script:
         - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export COMPONENT_TAG_EXTENSION="-PR${TRAVIS_PULL_REQUEST}-${TRAVIS_COMMIT}"; fi;
+        - make check
         - make component/build
         - make component/push
         - echo "TRAVIS_EVENT_TYPE = $TRAVIS_EVENT_TYPE"
