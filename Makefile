@@ -38,8 +38,6 @@ BEFORE_SCRIPT := $(shell build/before-make.sh)
 .PHONY: deps
 ## Download all project dependencies
 deps: init component/init
-	# do a get in a tmp dir to avoid local go.mod update
-	cd $(shell mktemp -d) && GOSUMDB=off go get -u github.com/open-cluster-management/go-ossc/ossc
 
 # TODO look into adding yamllint; doesn't like operator-sdk generated files
 .PHONY: check
