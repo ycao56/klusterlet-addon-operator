@@ -9,27 +9,23 @@ services:
 branches:
   only:
     - master
-    - /^[0-9]+\..*$/
-    - /^v[0-9]+\..*$/
     - /^release-[0-9]+\..*$/
-
-os:
-  - linux
 
 stages:
   - build
   - publish
 
-jobs:
+before_install:
+  - git config --global url.git@github.com:open-cluster-management/.insteadOf https://github.com/open-cluster-management/
+  - make init
+
+  jobs:
   include:
     - stage: build
       name: "Build and push image"
-      before_install:
-        - git config --global url.git@github.com:open-cluster-management/.insteadOf https://github.com/open-cluster-management/
-        - make init
-        - make component/init
       script:
         - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export COMPONENT_TAG_EXTENSION="-PR${TRAVIS_PULL_REQUEST}-${TRAVIS_COMMIT}"; fi;
+        - make component/init
         - make check
         - make component/build
         - make component/push
