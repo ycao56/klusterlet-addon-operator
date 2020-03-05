@@ -54,7 +54,7 @@ spec:
             readOnlyRootFilesystem: true
             runAsNonRoot: true
           args:
-            - "/collector"
+            - "/usr/local/bin/collector"
             - "--cluster-name={{ .Values.clusterName }}"
             - "--cluster-namespace={{ .Values.clusterNamespace }}"
             - "--controller-config-file=/var/lib/hcm/kubeconfig"
