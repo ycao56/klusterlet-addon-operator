@@ -25,9 +25,6 @@ resources:
     cpu: 500m
     memory: 256Mi
 
-cemIntegration: 
-  enabled: false
-
 nodeSelector: {}
 
 affinity: {}
