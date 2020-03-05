@@ -50,7 +50,6 @@ spec:
           - "-logtostderr=true"
           - "--watch-ns={{ .Values.clusterNamespace }}"
           - "--cluster-name={{ .Values.clusterName }}"
-          - "--alert-target={{ .Values.cemIntegration.enabled }}"
           - "-v={{ .Values.logLevel }}"
         livenessProbe: null
         readinessProbe: null
@@ -65,7 +64,6 @@ spec:
           - "--remote-kubeconfig=/var/run/klusterlet/kubeconfig"
           - "--watch-ns={{ .Values.clusterNamespace }}"
           - "--klusterlet-ns={{ .Release.Namespace }}"
-          - "--alert-target={{ .Values.cemIntegration.enabled }}"
           - "-logtostderr=true"
           - "-v={{ .Values.logLevel }}"
         livenessProbe: null
