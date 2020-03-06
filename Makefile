@@ -69,7 +69,7 @@ operator\:build:
 
 .PHONY: operator\:run
 operator\:run:
-	operator-sdk up local --zap-devel --namespace=""
+	operator-sdk run --local --operator-flags="--zap-devel=true" --namespace=""
 
 ### HELPER UTILS #######################
 
@@ -92,4 +92,4 @@ utils\:charts\:version:
 
 .PHONY: utils\:link\:setup
 utils\:link\:setup:
-	sudo ln -sfn $$PWD/versions /opt
+	sudo ln -sfn $$PWD/versions /opt/helm
