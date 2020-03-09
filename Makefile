@@ -1,29 +1,28 @@
 
 SHELL := /bin/bash
 
-.EXPORT_ALL_VARIABLES:
 
-GIT_COMMIT      = $(shell git rev-parse --short HEAD)
-GIT_REMOTE_URL  = $(shell git config --get remote.origin.url)
-GITHUB_USER    := $(shell echo $(GITHUB_USER) | sed 's/@/%40/g')
-GITHUB_TOKEN   ?=
+export GIT_COMMIT      = $(shell git rev-parse --short HEAD)
+export GIT_REMOTE_URL  = $(shell git config --get remote.origin.url)
+export GITHUB_USER    := $(shell echo $(GITHUB_USER) | sed 's/@/%40/g')
+export GITHUB_TOKEN   ?=
 
-ARCH       ?= $(shell uname -m)
-BUILD_DATE  = $(shell date '+%m/%d@%H:%M:%S')
-VCS_REF     = $(if $(shell git status --porcelain),$(GIT_COMMIT)-$(BUILD_DATE),$(GIT_COMMIT))
+export ARCH       ?= $(shell uname -m)
+export BUILD_DATE  = $(shell date '+%m/%d@%H:%M:%S')
+export VCS_REF     = $(if $(shell git status --porcelain),$(GIT_COMMIT)-$(BUILD_DATE),$(GIT_COMMIT))
 
-PROJECT_DIR            = $(shell 'pwd')
-BUILD_DIR              = $(PROJECT_DIR)/build
-COMPONENT_SCRIPTS_PATH = $(BUILD_DIR)
+export PROJECT_DIR            = $(shell 'pwd')
+export BUILD_DIR              = $(PROJECT_DIR)/build
+export COMPONENT_SCRIPTS_PATH = $(BUILD_DIR)
 
-IMAGE_DESCRIPTION  = Endpoint_Component_Operator
-DOCKER_FILE        = $(BUILD_DIR)/Dockerfile
-DOCKER_REGISTRY   ?= quay.io
-DOCKER_NAMESPACE  ?= open-cluster-management
-DOCKER_IMAGE      ?= $(COMPONENT_NAME)
-DOCKER_BUILD_TAG  ?= latest
-DOCKER_TAG        ?= $(shell whoami)
-DOCKER_BUILD_OPTS  = --build-arg VCS_REF=$(VCS_REF) \
+export IMAGE_DESCRIPTION  = Endpoint_Component_Operator
+export DOCKER_FILE        = $(BUILD_DIR)/Dockerfile
+export DOCKER_REGISTRY   ?= quay.io
+export DOCKER_NAMESPACE  ?= open-cluster-management
+export DOCKER_IMAGE      ?= $(COMPONENT_NAME)
+export DOCKER_BUILD_TAG  ?= latest
+export DOCKER_TAG        ?= $(shell whoami)
+export DOCKER_BUILD_OPTS  = --build-arg VCS_REF=$(VCS_REF) \
 	--build-arg VCS_URL=$(GIT_REMOTE_URL) \
 	--build-arg IMAGE_NAME=$(DOCKER_IMAGE) \
 	--build-arg IMAGE_DESCRIPTION=$(IMAGE_DESCRIPTION) \
