@@ -1,0 +1,26 @@
+imagePullSecret: ""
+replicas: 1
+image:
+  repository: quay.io/open-cluster-management/iam-policy-controller
+  tag: 3.5.0
+  pullPolicy: Always
+args:
+  frequency: 60
+  verbosity: 0
+securityContext:
+  privileged: false
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+nodeSelector: {}
+tolerations:
+- effect: NoSchedule
+  key: dedicated
+  operator: Exists
+- key: CriticalAddonsOnly
+  operator: Exists
+- effect: NoSchedule
+  key: node.kubernetes.io/not-ready
+  operator: Exists
+serviceAccount:
+  create: true

@@ -68,7 +68,8 @@ operator\:build:
 
 .PHONY: operator\:run
 operator\:run:
-	operator-sdk run --local --operator-flags="--zap-devel=true" --namespace=""
+	# operator-sdk run --local --operator-flags="--zap-devel=true" --namespace=""
+	operator-sdk-v0.9.0 up local --operator-flags="--zap-devel=true" --namespace=""
 
 ### HELPER UTILS #######################
 
