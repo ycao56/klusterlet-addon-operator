@@ -1,0 +1,57 @@
+#!/bin/sh
+set -e ; # Have script exit in the event of a failed command.
+
+# connectToMinio
+# Use a check-sleep-check loop to wait for Minio service to be available
+connectToMinio() {
+  ATTEMPTS=0 ; LIMIT=29 ; # Allow 30 attempts
+  set -e ; # fail if we can't read the keys.
+  set +e ; # The connections to minio are allowed to fail.
+  echo "Connecting to Minio server: https://{{ template "minio.fullname" . }}:9000" ;
+  MC_COMMAND="mc -C /mcconf config host add cisminio https://{{ template "minio.fullname" . }}:9000 ibm-va CloudforAll! --insecure" ;
+  $MC_COMMAND ;
+  STATUS=$? ;
+  until [ $STATUS = 0 ]
+  do
+    ATTEMPTS=`expr $ATTEMPTS + 1` ;
+    echo \"Failed attempts: $ATTEMPTS\" ;
+    if [ $ATTEMPTS -gt $LIMIT ]; then
+      exit 1 ;
+    fi ;
+    sleep 2 ; # 1 second intervals between attempts
+    $MC_COMMAND ;
+    STATUS=$? ;
+  done ;
+  set -e ; # reset `e` as active
+  return 0
+}
+
+# checkBucketExists ($bucket)
+# Check if the bucket exists, by using the exit code of `mc ls`
+checkBucketExists() {
+  BUCKET=$1
+  CMD=$(/usr/bin/mc -C /mcconf --insecure ls cisminio/$BUCKET > /dev/null 2>&1)
+  return $?
+}
+
+# Clean bucket
+cleanBucket() {
+
+  for BUCKET in $@
+  do
+      bucket_name=${BUCKET%:*}
+      age=${BUCKET#*:}
+      if checkBucketExists $bucket_name ; then
+        echo "Clean bucket '$bucket_name' and preserve data within '$age' days "
+        /usr/bin/mc -C /mcconf rm --recursive --insecure --dangerous --force --older-than=$age cisminio/$bucket_name/icp:{{ .Values.clusterIP }}:{{ .Values.cluster_external_https_port}}/
+      else
+        echo "Bucket '$bucket_name' is not exists."
+      fi
+  done
+
+}
+
+# Try connecting to Minio instance
+connectToMinio
+# Clean the bucket
+cleanBucket {{ .Values.minioCleaner.preserve_buckets }}

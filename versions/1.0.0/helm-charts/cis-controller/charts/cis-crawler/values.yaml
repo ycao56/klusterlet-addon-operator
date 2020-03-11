@@ -1,0 +1,28 @@
+# Licensed Materials - Property of IBM
+# 5737-E67
+# @ Copyright IBM Corporation 2019 All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
+imagePullPolicy: IfNotPresent
+security:
+  enabled: true
+
+tolerations:
+- key: "dedicated"
+  operator: "Exists"
+  effect: "NoSchedule"
+
+cisCrawler:
+  name: "cis-crawler"
+  enabled: true
+  crawlInterval: 86400
+  image:
+    repository: "ibmcom/cis-crawler"
+    tag: "latest"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi

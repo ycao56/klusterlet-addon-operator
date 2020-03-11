@@ -1,0 +1,36 @@
+
+# Licensed Materials - Property of IBM
+# 5737-E67
+# @ Copyright IBM Corporation 2016, 2018 All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
+image:
+  repository: ibmcom/minio
+  tag: RELEASE.2019-04-09T01-22-30Z.2
+  pullPolicy: IfNotPresent
+
+resources:
+  requests:
+    memory: 256Mi
+    cpu: 250m
+
+mountPath: "/var/lib/minio"
+replicas: 1
+
+persistence:
+  enabled: false
+  storageClass: "-"
+  accessMode: ReadWriteOnce
+  size: 20Gi
+
+tolerations:
+- key: "dedicated"
+  operator: "Exists"
+  effect: "NoSchedule"
+- effect: NoExecute
+  key: node.kubernetes.io/not-ready
+  operator: Exists
+- effect: NoExecute
+  key: node.kubernetes.io/unreachable
+  operator: Exists
+affinity: {}

@@ -1,0 +1,102 @@
+# Licensed Materials - Property of IBM
+# 5737-E67
+# @ Copyright IBM Corporation 2019 All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
+global:
+  fullnameOverride: endpoint-cisctrl
+
+imagePullPolicy: IfNotPresent
+# imagePullSecret: myregistrykey
+
+caCertIssuer: null
+issuerKind: ClusterIssuer
+  
+config:
+  cloud_env: "icp"
+
+tolerations:
+- key: "dedicated"
+  operator: "Exists"
+  effect: "NoSchedule"
+
+cis-crawler:
+  cisCrawler:
+    enabled: true
+    crawlInterval: 86400
+    image:
+      repository: "quay.io/open-cluster-management/cis-crawler"
+      tag: "3.6.0"
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+drishti-cis:
+  drishti:
+    name: "drishti-cis"
+    image:
+      repository: "quay.io/open-cluster-management/drishti-cis"
+      tag: "3.4.0"
+  config:
+    cloud_env: "icp"
+  image:
+    pullPolicy: IfNotPresent
+    pullSecret:
+      enabled: false
+      name: regcred
+  tolerations:
+  - key: "dedicated"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+minioCleaner:
+  name: "minioCleaner"
+# The buckets name with survival time
+  preserve_buckets: ciscos-host:180d cis-k8s:180d
+  schedule: "59 23 * * *"
+  image:
+    repository: "quay.io/open-cluster-management/img-minio-mc"
+    tag: "RELEASE.2019-04-03T17-59-57Z.3"
+    pullPolicy: "IfNotPresent"
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "128Mi"
+    limits:
+      cpu: 100m
+      memory: 512Mi
+
+cisController:
+  name: cis-controller
+  image:
+    repository: "quay.io/open-cluster-management/cis-controller"
+    tag: "3.6.0"
+    pullPolicy: "IfNotPresent"
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "256Mi"
+    limits:
+      cpu: 200m
+      memory: 512Mi
+
+minio:
+  replicas: 1
+  image:
+    repository: "quay.io/open-cluster-management/img-minio"
+    tag: "RELEASE.2019-04-09T01-22-30Z.3"
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+  persistence:
+    enabled: false
+    size: "20Gi"
+    storageClass: "-"

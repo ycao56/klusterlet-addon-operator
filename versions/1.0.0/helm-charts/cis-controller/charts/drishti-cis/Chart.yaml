@@ -1,0 +1,15 @@
+apiVersion: v1
+description:  CIS enablement with confuse.
+name: drishti-cis
+version: 99.99.99
+keywords:
+- kubernetes
+- IBM Cloud Private
+- ICP
+- CIS
+- Compliance
+sources:
+- https://github.ibm.com/IBMPrivateCloud/drishti-cis
+maintainers:
+- name: IBM
+  email: icp@us.ibm.com

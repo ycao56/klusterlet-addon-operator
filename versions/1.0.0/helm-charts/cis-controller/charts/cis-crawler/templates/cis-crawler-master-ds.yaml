@@ -1,0 +1,173 @@
+# Licensed Materials - Property of IBM
+# 5737-E67
+# @ Copyright IBM Corporation 2016, 2018 All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
+apiVersion: apps/v1beta2
+kind: DaemonSet
+metadata:
+  name: {{ template "cisCrawlerMaster.fullname" . }}
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    app: {{ template "cisCrawlerMaster.fullname" . }}
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  minReadySeconds: 0
+  revisionHistoryLimit: 10
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: {{ template "cisCrawlerMaster.fullname" . }}
+  template:
+    metadata:
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ''
+        seccomp.security.alpha.kubernetes.io/allowedProfileNames: docker/default
+      labels:
+        app: {{ template "cisCrawlerMaster.fullname" . }}
+    spec:
+      serviceAccountName: {{ template "cisController.fullname" . }}-sa
+      affinity:
+        nodeAffinity:
+         requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: node-role.kubernetes.io/master
+              operator: In
+              values:
+              - ''
+      containers:
+      - name: cis-crawler
+        image: "{{ .Values.cisCrawler.image.repository }}:{{ .Values.cisCrawler.image.tag }}"
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        env:
+        - name: VAAAS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ template "cisCrawler.fullname" . }}-config"
+              key: VAAAS_URL
+        - name: MINIO_URL
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ template "cisCrawler.fullname" . }}-config"
+              key: MINIO_URL
+        - name: FREQUENCY
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ template "cisCrawler.fullname" . }}-config"
+              key: FREQUENCY
+        - name: FEATURES
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ template "cisCrawler.fullname" . }}-config" 
+              key: FEATURES
+        - name: CRAWLER_LOGLEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ template "cisCrawler.fullname" . }}-config"
+              key: LOGLEVEL
+        - name: MY_NODE_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: spec.nodeName 
+        - name: EXTRA_METADATA
+          value: '{"hostType":"master"}'
+        resources:
+{{ toYaml .Values.cisCrawler.resources | indent 10 }}
+
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - "ps -ef | grep [c]is-crawler"
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+        readinessProbe:
+          exec:
+            command: ["sh", "-c", "exec echo start cis-crawler"]
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+
+        securityContext:
+          privileged: true
+
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/cos-secrets
+          name: cos-secrets
+          readOnly: true
+        - mountPath: /confuse_proxy_etc
+          name: confuse-etc 
+          readOnly: true
+        - mountPath: /confuse_proxy_var
+          name: confuse-var
+          readOnly: true
+        - mountPath: /confuse_proxy_lib
+          name: confuse-lib
+          readOnly: true
+        - mountPath: /etc/crawler/config_known_fpath
+          subPath: config_known_fpath 
+          name: "{{ template "cisCrawler.fullname" . }}-config"
+
+      tolerations:
+      - effect: NoSchedule
+        key: node.kubernetes.io/memory-pressure
+        operator: Exists
+      - effect: NoSchedule
+        key: node.kubernetes.io/unschedulable
+        operator: Exists
+      - effect: NoSchedule
+        key: node.kubernetes.io/network-unavailable
+        operator: Exists
+      - effect: NoSchedule
+        key: dedicated
+        operator: Exists
+      - key: CriticalAddonsOnly
+        operator: Exists
+      - effect: NoExecute
+        key: node.kubernetes.io/not-ready
+        operator: Exists
+      - effect: NoExecute
+        key: node.kubernetes.io/unreachable
+        operator: Exists
+      - effect: NoSchedule
+        key: node.kubernetes.io/disk-pressure
+        operator: Exists
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+
+
+      enableServiceLinks: true
+      hostIPC: true
+      hostNetwork: true
+      hostPID: true
+      dnsPolicy: ClusterFirstWithHostNet
+
+      volumes:
+      - hostPath:
+          path: /etc
+          type: ""
+        name: confuse-etc
+      - hostPath:
+          path: /lib
+          type: ""
+        name: confuse-lib
+      - hostPath:
+          path: /var
+          type: ""
+        name: confuse-var
+      - name: cos-secrets
+        secret:
+          defaultMode: 420
+          secretName: cis-controller-secret
+      - name: "{{ template "cisCrawler.fullname" . }}-config"
+        configMap:
+          name: "{{ template "cisCrawler.fullname" . }}-config"

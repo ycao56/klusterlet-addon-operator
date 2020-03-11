@@ -1,0 +1,101 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: "{{ template "drishti-cis.fullname" . }}"
+  labels:
+    app: "{{ template "drishti-cis.fullname" . }}"
+  annotations:
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames: docker/default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "{{ template "drishti-cis.fullname" . }}"
+  template:
+    metadata:
+      labels:
+        app: "{{ template "drishti-cis.fullname" . }}"
+    spec:
+      serviceAccountName: {{ template "cisController.fullname" . }}-sa
+      containers:
+      - name: drishti-cis
+        image: {{ .Values.drishti.image.repository }}:{{ .Values.drishti.image.tag }}
+        imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+        command: ["./bin/drishti-cis"]
+        args: ["-cos", "$(CIS_COS_URL)", "-frequency", "$(CIS_CHECK_FREQUENCY)", "-version", "$(K8S_VERSION)"]
+        livenessProbe:
+          exec:
+            command:
+            - pgrep
+            - drishti-cis
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+        readinessProbe:
+          exec:
+            command: ["sh", "-c", "exec echo start drishti-cis"]
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        securityContext:
+          privileged: true
+          readOnlyRootFilesystem: true
+        env:
+          - name: CIS_COS_URL
+            valueFrom:
+              configMapKeyRef:
+                name: "{{ template "drishti-cis.fullname" . }}-config"
+                key: CIS_COS_URL
+          - name: CIS_CHECK_FREQUENCY
+            valueFrom:
+              configMapKeyRef:
+                name: "{{ template "drishti-cis.fullname" . }}-config"
+                key: CIS_CHECK_FREQUENCY
+          - name: K8S_VERSION
+            valueFrom:
+              configMapKeyRef:
+                name: "{{ template "drishti-cis.fullname" . }}-config"
+                key: K8S_VERSION
+        resources:
+          requests:
+            cpu: 125m
+            memory: 256Mi
+          limits:
+            cpu: 250m
+            memory: 512Mi
+
+        volumeMounts:
+          - mountPath: "/mnt"
+            name: mntdir
+          - mountPath: "/dev/fuse"
+            name: fuse
+          - mountPath: "/var/run"
+            name: shared-data
+          - name: cis-controller-secret
+            mountPath: /etc/ciscos/
+          - name: cis-controller-secret
+            mountPath: /etc/vacos/
+          - name: scratch
+            mountPath: /tmp
+
+      volumes:
+      - hostPath:
+          path: "/dev/fuse"
+        name: fuse
+      - name: mntdir
+        emptyDir: {}
+      - name: shared-data
+        emptyDir: {}
+      - name: shared-vol
+        emptyDir: {}
+      - name: scratch
+        emptyDir: {}
+      - name: cis-controller-secret
+        secret:
+          secretName: "cis-controller-secret"
+
+      tolerations:
+      - effect: NoSchedule
+        key: dedicated
+        operator: Exists
+      - key: "CriticalAddonsOnly"
+        operator: "Exists"

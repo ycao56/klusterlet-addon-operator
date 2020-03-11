@@ -1,0 +1,18 @@
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  labels:
+    app: "{{ template "cisController.fullname" . }}"
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    component: "{{ .Values.cisController.name }}"
+    heritage: "{{ .Release.Service }}"
+    release: "{{ .Release.Name }}"
+  name: "{{ template "cisController.fullname" . }}-controller-clusterrolebinding"
+subjects:
+- kind: ServiceAccount
+  name: {{ template "cisController.fullname" . }}-sa
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ template "cisController.fullname" . }}-controller-clusterrole
+  apiGroup: rbac.authorization.k8s.io

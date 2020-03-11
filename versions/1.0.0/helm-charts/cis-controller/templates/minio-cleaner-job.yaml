@@ -1,0 +1,61 @@
+# Licensed Materials - Property of IBM
+# 5737-E67
+# @ Copyright IBM Corporation 2016, 2019 All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
+---
+
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  labels:
+    app: {{ template "minioCleaner.fullname" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    component: "{{ .Values.minioCleaner.name }}"
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "minioCleaner.fullname" . }}-minio-cleaner
+spec:
+  schedule: "{{ .Values.minioCleaner.schedule }}"
+  concurrencyPolicy: Replace
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: {{ template "cisController.fullname" . }}-sa
+          containers:
+          - name: cleaner
+            image: "{{ .Values.minioCleaner.image.repository }}:{{ .Values.minioCleaner.image.tag }}"
+            imagePullPolicy: "{{ .Values.minioCleaner.image.pullPolicy }}"
+            command: ["/bin/sh", "/cis/clean.sh"]
+            resources:
+{{ toYaml .Values.minioCleaner.resources | indent 14 }}
+            volumeMounts:
+              - name: cleanerconfig
+                mountPath: /cis/
+              - name: mc-config-dir
+                mountPath: /mcconf
+          securityContext:
+            fsGroup: 5001
+            runAsNonRoot: true
+            runAsUser: 5001
+            runAsNonRoot: true
+          volumes:
+          - name: cleanerconfig
+            configMap:
+              name: {{ template "minioCleaner.fullname" . }}-minio-cleaner-config
+          - name: mc-config-dir
+            emptyDir: {}
+          restartPolicy: OnFailure
+        {{- if .Values.nodeSelector }}
+          nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 12 }}
+        {{- end }}
+        {{- if .Values.tolerations }}
+          tolerations:
+{{ toYaml .Values.tolerations | indent 10 }}
+        {{- end }}
+        {{- if .Values.imagePullSecret }}
+          imagePullSecrets:
+          - name: {{ .Values.imagePullSecret }}
+        {{- end }}
