@@ -13,6 +13,12 @@ git checkout v0.9.0
 echo ">>> >>> Running make tidy"
 make tidy
 
+if [ $ARCH = x86_64 ];
+then
+  ARCH=amd64
+  echo 'use amd64'
+fi
+
 echo ">>> >>> Patching Makefile"
 sed -i s/x86_64/$ARCH/g Makefile
 sed -i s/amd64/$ARCH/g Makefile
