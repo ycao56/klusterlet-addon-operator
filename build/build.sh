@@ -5,7 +5,7 @@
 
 # maybe bring this back when we're doing multi arch builds
 # this builds the base helm operator image
-# $BUILD_DIR/build-helm-operator-image.sh
+$BUILD_DIR/build-helm-operator-image.sh
 
 echo "Building operator"
 echo "--IMAGE: $DOCKER_IMAGE"
