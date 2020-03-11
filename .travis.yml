@@ -30,6 +30,7 @@ jobs:
         - make component/build
         - make component/push
         - echo "TRAVIS_EVENT_TYPE = $TRAVIS_EVENT_TYPE"
+        - make security/scans
 
     - stage: publish
       name: "Publish Image"
