@@ -46,7 +46,7 @@ pushd "$BASEIMAGEDIR"
 mkdir -p build/_output/bin/
 cp $ROOTDIR/build/operator-sdk-dev-${ARCH}-linux-gnu build/_output/bin/helm-operator
 
-sed -i 's/ubi-minimal:latest/ubi-minimal:8.1-398/g' build/Dockerfile
+sed -i 's/ubi7\/ubi-minimal:latest/ubi8\/ubi-minimal:8.1-398/g' build/Dockerfile
 # ^ this mechanism was not working before
 # >>> >>> Make custom helm-operator image
 # /tmp/tmp.pPiHmdubpz/helm-operator ~/gopath/src/github.com/operator-framework/operator-sdk ~/gopath/src/github.ibm.com/IBMPrivateCloud/klusterlet-component-operator
