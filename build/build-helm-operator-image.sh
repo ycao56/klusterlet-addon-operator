@@ -3,9 +3,9 @@
 export GO111MODULE=on
 echo ">>> Building Helm Operator Image"
 CURR_FOLDER_PATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
-git checkout $CURR_FOLDER_PATH/../operator-sdk
-pushd $CURR_FOLDER_PATH/../operator-sdk
 
+pushd $CURR_FOLDER_PATH/../operator-sdk
+git checkout .
 
 echo ">>> >>> Running make tidy"
 make tidy || echo 'make tidy failed, skipping'
