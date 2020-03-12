@@ -9,8 +9,8 @@ else
        Q = @
 endif
 
-VERSION = 'v0.9.0'
-GIT_COMMIT = ''
+VERSION = v0.9.0-dirty
+GIT_COMMIT = 560208dc998de497bbf59fea1b63426aec430934
 REPO = github.com/operator-framework/operator-sdk
 BUILD_PATH = $(REPO)/cmd/operator-sdk
 PKGS = $(shell go list ./... | grep -v /vendor/)

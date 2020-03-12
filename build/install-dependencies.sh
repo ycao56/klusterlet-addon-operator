@@ -20,13 +20,13 @@ if ! which operator-sdk > /dev/null; then
     # cannot use 'set -e' because this command always fails after project has been cloned down for some reason
     go get -d github.com/operator-framework/operator-sdk
     set -e
+    git checkout $curr_dir/../operator-sdk
+    echo $curr_dir/../operator-sdk
     cd $curr_dir/../operator-sdk
-    echo ">>> >>> Checking out $OPERATOR_SDK_VER"
-    git checkout .
-    git checkout $OPERATOR_SDK_VER
+    
     echo ">>> >>> Running make tidy"
     go version
-    GO111MODULE=on make tidy
+    GO111MODULE=on make tidy || echo 'make tidy failed, skipping'
     echo ">>> >>> Running make install"
     GO111MODULE=on make install
     echo ">>> Done installing Operator SDK"

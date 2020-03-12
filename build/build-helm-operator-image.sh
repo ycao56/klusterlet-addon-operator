@@ -8,7 +8,7 @@ pushd $CURR_FOLDER_PATH/../operator-sdk
 
 
 echo ">>> >>> Running make tidy"
-make tidy
+make tidy || echo 'make tidy failed, skipping'
 
 if [ $ARCH = x86_64 ];
 then
@@ -44,19 +44,6 @@ mkdir -p build/_output/bin/
 cp $ROOTDIR/build/operator-sdk-dev-${ARCH}-linux-gnu build/_output/bin/helm-operator
 
 sed -i 's/ubi7\/ubi-minimal:latest/ubi8\/ubi-minimal:8.1-398/g' build/Dockerfile
-# ^ this mechanism was not working before
-# >>> >>> Make custom helm-operator image
-# /tmp/tmp.pPiHmdubpz/helm-operator ~/gopath/src/github.com/operator-framework/operator-sdk ~/gopath/src/github.ibm.com/IBMPrivateCloud/klusterlet-component-operator
-# INFO[0000] Created build/Dockerfile
-# INFO[0000] Created bin/entrypoint
-# INFO[0000] Created bin/user_setup
-# INFO[0000] Building OCI image quay.io/operator-framework/helm-operator:dev
-# Sending build context to Docker daemon  116.2MB
-# Step 1/7 : FROM registry.access.redhat.com/ubi7/ubi-minimal:8.1-398
-# error parsing HTTP 404 response body: invalid character 'F' looking for beginning of value: "File not found.\""
-# Error: failed to output build image quay.io/operator-framework/helm-operator:dev: (failed to exec []string{"docker", "build", "-f", "build/Dockerfile", "-t", "quay.io/operator-framework/helm-operator:dev", "."}: exit status 1)
-# Usage:
-#   operator-sdk build <image> [flags]
 
 operator-sdk build quay.io/operator-framework/helm-operator:dev
 
