@@ -2,13 +2,10 @@
 
 export GO111MODULE=on
 echo ">>> Building Helm Operator Image"
-echo ">>> >>> Downloading source code"
-go get -d github.com/operator-framework/operator-sdk
+CURR_FOLDER_PATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+git checkout $CURR_FOLDER_PATH/../operator-sdk
+pushd $CURR_FOLDER_PATH/../operator-sdk
 
-pushd $GOPATH/src/github.com/operator-framework/operator-sdk
-
-echo ">>> >>> Checking out version 0.9.0"
-git checkout v0.9.0
 
 echo ">>> >>> Running make tidy"
 make tidy
