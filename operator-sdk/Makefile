@@ -9,8 +9,8 @@ else
        Q = @
 endif
 
-VERSION = $(shell git describe --dirty --tags --always)
-GIT_COMMIT = $(shell git rev-parse HEAD)
+VERSION = 'v0.9.0'
+GIT_COMMIT = ''
 REPO = github.com/operator-framework/operator-sdk
 BUILD_PATH = $(REPO)/cmd/operator-sdk
 PKGS = $(shell go list ./... | grep -v /vendor/)
