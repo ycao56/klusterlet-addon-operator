@@ -1,7 +1,0 @@
-IBM cert-manager has been deployed successfully!
-
-In order to begin issuing certificates, you will need to set up an Issuer (namespace-scoped) or a ClusterIssuer (cluster-scoped).
-
-More information on generating certificates can be found in our documentation:
-
-https://www.ibm.com/support/knowledgecenter/en/SSBS6K_4.1.0/manage_applications/create_cert.html

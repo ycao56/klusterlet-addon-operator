@@ -1,0 +1,15 @@
+IBM cert-manager has been deployed! 
+
+Please validate the service is running by checking if the pod is running, its logs to make sure there are no errors, and that the CRDs have been successfully installed.
+
+```
+kubectl get pods -n cert-manager
+kubectl logs -n cert-manager <cert-manager pod>
+kubectl get crds | grep certmanager
+```
+
+In order to begin issuing certificates, you will need to set up an Issuer (namespace-scoped) or a ClusterIssuer (cluster-scoped).
+
+More information on generating certificates can be found in our documentation:
+
+https://www.ibm.com/support/knowledgecenter/SSFC4F_1.2.0/kc_welcome_cloud_pak.html

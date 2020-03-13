@@ -5,63 +5,53 @@
 # The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
 
 ---
-- version: v1beta1
-  group: multicloud.ibm.com
-  kind: CertManager
-  chart: /opt/helm/versions/1.0.0/helm-charts/ibm-cert-manager
-  watchDependentResources: false
-- version: v1beta1
-  group: multicloud.ibm.com
-  kind: CertPolicyController
-  chart: /opt/helm/versions/1.0.0/helm-charts/cert-policy-controller
-  watchDependentResources: false
-- version: v1beta1
-  group: multicloud.ibm.com
-  kind: IAMPolicyController
-  chart: /opt/helm/versions/1.0.0/helm-charts/iam-policy-controller
-  watchDependentResources: false
-- version: v1beta1
-  group: multicloud.ibm.com
-  kind: ConnectionManager
-  chart: /opt/helm/versions/1.0.0/helm-charts/connection-manager
-  watchDependentResources: false
-- version: v1beta1
-  group: multicloud.ibm.com
-  kind: WorkManager
-  chart: /opt/helm/versions/1.0.0/helm-charts/work-manager
-  watchDependentResources: false
-- version: v1beta1
-  group: multicloud.ibm.com
-  kind: PolicyController
-  chart: /opt/helm/versions/1.0.0/helm-charts/policy
-  watchDependentResources: false
-- version: v1beta1
-  group: multicloud.ibm.com
-  kind: SearchCollector
-  chart: /opt/helm/versions/1.0.0/helm-charts/search
-  watchDependentResources: false
-- version: v1beta1
-  group: multicloud.ibm.com
-  kind: TopologyCollector
-  chart: /opt/helm/versions/1.0.0/helm-charts/topology
-  watchDependentResources: false
-- version: v1beta1
-  group: multicloud.ibm.com
-  kind: ServiceRegistry
-  chart: /opt/helm/versions/1.0.0/helm-charts/service-registry
-  watchDependentResources: false
-- version: v1beta1
-  group: multicloud.ibm.com
-  kind: ApplicationManager
-  chart: /opt/helm/versions/1.0.0/helm-charts/application-manager
-  watchDependentResources: false
-- version: v1beta1
-  group: multicloud.ibm.com
-  kind: Monitoring
-  chart: /opt/helm/versions/1.0.0/helm-charts/ibm-icpmonitoring
-  watchDependentResources: false
-- version: v1beta1
-  group: multicloud.ibm.com
-  kind: CISController
-  chart: /opt/helm/versions/1.0.0/helm-charts/cis-controller
-  watchDependentResources: false
+    - version: v1beta1
+      group: multicloud.ibm.com
+      kind: CertManager
+      chart: /opt/helm/versions/1.0.0/helm-charts/cert-manager
+      watchDependentResources: false
+    - version: v1beta1
+      group: multicloud.ibm.com
+      kind: CertPolicy
+      chart: /opt/helm/versions/1.0.0/helm-charts/cert-policy-controller
+      watchDependentResources: false
+    - version: v1beta1
+      group: multicloud.ibm.com
+      kind: ConnectionManager
+      chart: /opt/helm/versions/1.0.0/helm-charts/connection-manager
+      watchDependentResources: false
+    - version: v1beta1
+      group: multicloud.ibm.com
+      kind: WorkManager
+      chart: /opt/helm/versions/1.0.0/helm-charts/work-manager
+      watchDependentResources: false
+    - version: v1beta1
+      group: multicloud.ibm.com
+      kind: PolicyController
+      chart: /opt/helm/versions/1.0.0/helm-charts/policy
+      watchDependentResources: false
+    - version: v1beta1
+      group: multicloud.ibm.com
+      kind: SearchCollector
+      chart: /opt/helm/versions/1.0.0/helm-charts/search
+      watchDependentResources: false
+    - version: v1beta1
+      group: multicloud.ibm.com
+      kind: TopologyCollector
+      chart: /opt/helm/versions/1.0.0/helm-charts/topology
+      watchDependentResources: false
+    - version: v1beta1
+      group: multicloud.ibm.com
+      kind: ServiceRegistry
+      chart: /opt/helm/versions/1.0.0/helm-charts/service-registry
+      watchDependentResources: false
+    - version: v1beta1
+      group: multicloud.ibm.com
+      kind: ApplicationManager
+      chart: /opt/helm/versions/1.0.0/helm-charts/application-manager
+      watchDependentResources: false
+    - version: v1beta1
+      group: multicloud.ibm.com
+      kind: Monitoring
+      chart: /opt/helm/versions/1.0.0/helm-charts/ibm-icpmonitoring
+      watchDependentResources: false
