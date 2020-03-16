@@ -33,10 +33,6 @@ spec:
         release: {{ .Release.Name }}
         heritage: {{ .Release.Service }}
         chart: {{ template "application-manager.chart" . }}
-      annotations:
-        productName: "IBM Multicloud Manager - Klusterlet"
-        productID: "c18240a57c1c41969d5e81b39435da6c"
-        productVersion: "3.2.1"
     spec:
       serviceAccountName: {{ template "application-manager.fullname" . }}
       containers:

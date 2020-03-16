@@ -11,7 +11,7 @@ metadata:
   labels:
     app: {{ template "application-manager.name" . }}
     chart: {{ template "application-manager.chart" . }}
-    component: "woapplicationk-manager"
+    component: "application-manager"
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 subjects:
