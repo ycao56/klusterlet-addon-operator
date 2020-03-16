@@ -38,13 +38,13 @@ spec:
         runAsUser: 1000
       serviceAccountName: {{ template "service-registry.fullname" . }}
       containers:
-      - name: mcm-service-registry
+      - name: serviceregistry
         image: "{{ .Values.serviceRegistry.image.repository }}:{{ .Values.serviceRegistry.image.tag }}"
         imagePullPolicy: {{ .Values.serviceRegistry.image.pullPolicy }}
         resources:
-          {{- toYaml .Values.resources | nindent 10 }}  
+          {{- toYaml .Values.resources | nindent 10 }}
         livenessProbe: null
-        command: ["/mcm-service-registry-plugin"]
+        command: ["/serviceregistry"]
         args:
           - "--logtostderr=1"
           - "-v={{ .Values.logLevel }}"
