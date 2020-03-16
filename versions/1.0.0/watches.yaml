@@ -12,7 +12,7 @@
       watchDependentResources: false
     - version: v1beta1
       group: multicloud.ibm.com
-      kind: CertPolicy
+      kind: CertPolicyController
       chart: /opt/helm/versions/1.0.0/helm-charts/cert-policy-controller
       watchDependentResources: false
     - version: v1beta1
