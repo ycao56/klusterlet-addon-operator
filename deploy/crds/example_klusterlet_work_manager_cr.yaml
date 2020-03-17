@@ -47,16 +47,3 @@ spec:
   #   host: null
   #   port: null
 
-  # OpenShift monitoring
-  prometheusIntegration:
-    enabled: true
-    service: "openshift-monitoring/prometheus-k8s"
-    secret: "kube-system/monitoring-monitoring-client-certs"
-    useBearerToken: true
-
-  # ICP monitoring
-  # prometheusIntegration:
-  #   enabled: true
-  #   service: "kube-system/monitoring-prometheus"
-  #   secret: "kube-system/monitoring-monitoring-client-certs"
-  #   useBearerToken: false

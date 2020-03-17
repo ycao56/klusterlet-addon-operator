@@ -37,13 +37,6 @@ ingress:
   host: null
   port: null
 
-prometheusIntegration:
-  enabled: true
-  service: "kube-system/monitoring-prometheus"
-  secret: "kube-system/monitoring-monitoring-client-certs"
-  scrapeTarget: "kubernetes-cadvisor"
-  useBearerToken: false
-
 nodeSelector: {}
 
 affinity: {}

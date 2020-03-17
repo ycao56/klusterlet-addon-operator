@@ -84,20 +84,6 @@ spec:
           - "--klusterlet-port={{ .Values.ingress.port }}"
         {{- end }}
         {{- end }}
-        {{- if .Values.prometheusIntegration.enabled }}
-        {{- if .Values.prometheusIntegration.scrapeTarget }}
-          - "--prometheus-scrape-target={{ .Values.prometheusIntegration.scrapeTarget }}"
-        {{- end }}
-        {{- if .Values.prometheusIntegration.service }}
-          - "--prometheus-service={{ .Values.prometheusIntegration.service }}"
-        {{- end }}
-        {{- if .Values.prometheusIntegration.secret }}
-          - "--prometheus-secret={{ .Values.prometheusIntegration.secret }}"
-        {{- end }}
-        {{- if .Values.prometheusIntegration.useBearerToken }}
-          - "--prometheus-use-bearer-token={{ .Values.prometheusIntegration.useBearerToken }}"
-        {{- end }}
-        {{- end }}
         env:
         - name: POD_NAMESPACE
           valueFrom:

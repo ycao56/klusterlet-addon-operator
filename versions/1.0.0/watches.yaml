@@ -50,8 +50,4 @@
       kind: ApplicationManager
       chart: /opt/helm/versions/1.0.0/helm-charts/application-manager
       watchDependentResources: false
-    - version: v1beta1
-      group: multicloud.ibm.com
-      kind: Monitoring
-      chart: /opt/helm/versions/1.0.0/helm-charts/ibm-icpmonitoring
-      watchDependentResources: false
+
