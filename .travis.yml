@@ -13,6 +13,7 @@ branches:
 
 stages:
   - build
+  - release-ff
   - publish
 
 before_install:
@@ -31,7 +32,12 @@ jobs:
         - make component/push
         - echo "TRAVIS_EVENT_TYPE = $TRAVIS_EVENT_TYPE"
         - make security/scans
-
+    - stage: release-ff
+      name: "Push commits to current release branch"
+      if: type = push AND branch =~ /^master$/
+      script:
+        - make
+        - make release-ff
     - stage: publish
       name: "Publish Image"
       if: type = push AND branch =~ /^release-[0-9]+\..*$/
