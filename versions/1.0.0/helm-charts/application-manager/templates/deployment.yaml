@@ -65,7 +65,7 @@ spec:
           capabilities:
             drop:
             - ALL
-        command: ["/usr/local/bin/multicloud-operators-subscription"]
+        command: ["/usr/local/bin/multicluster-operators-subscription"]
         args:
           - "--alsologtostderr"
           - "--cluster-name={{ .Values.clusterName }}"
