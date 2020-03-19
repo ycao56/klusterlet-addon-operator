@@ -50,4 +50,13 @@
       kind: ApplicationManager
       chart: /opt/helm/versions/1.0.0/helm-charts/application-manager
       watchDependentResources: false
-
+    - version: v1beta1
+      group: multicloud.ibm.com
+      kind: IAMPolicyController
+      chart: /opt/helm/versions/1.0.0/helm-charts/iam-policy-controller
+      watchDependentResources: false
+    - version: v1beta1
+      group: multicloud.ibm.com
+      kind: CISController
+      chart: /opt/helm/versions/1.0.0/helm-charts/cis-controller
+      watchDependentResources: false
