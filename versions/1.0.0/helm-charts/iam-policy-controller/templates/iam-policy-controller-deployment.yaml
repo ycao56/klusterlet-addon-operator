@@ -1,35 +1,34 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "controller.fullname" . }}
-  namespace: {{ .Release.Namespace | quote }}
+  name: {{ template "iamPolicyController.fullname" . }}
   labels:
-    app: {{ include "controller.fullname" . }}
-    chart: {{ include "controller.chart" . }}
+    app: {{ template "iamPolicyController.fullname" . }}
+    chart: {{ template "iamPolicyController.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.replicas }}
   selector:
     matchLabels:
-      app: {{ include "controller.name" . }}
+      app: {{ template "iamPolicyController.fullname" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        k8s-app: {{ include "controller.name" . }}
-        app: {{ include "controller.name" . }}
+        k8s-app: {{ template "iamPolicyController.name" . }}
+        app: {{ template "iamPolicyController.fullname" . }}
+        chart: {{ template "iamPolicyController.chart" . }}
         release: {{ .Release.Name }}
         heritage: {{ .Release.Service }}
-        chart: {{ include "controller.chart" . }}
     spec:
       hostNetwork: false
       hostPID: false
       hostIPC: false
-      serviceAccount: {{ template "controller.serviceAccountName" . }}
+      serviceAccountName: {{ template "iamPolicyController.serviceAccount" . }}
       containers:
-      - name: {{ .Chart.Name }}
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+      - name: {{ template "iamPolicyController.name" . }}
+        image: "{{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}{{ .Values.imageTagPostfix }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         args:
         - --v={{ .Values.args.verbosity }}

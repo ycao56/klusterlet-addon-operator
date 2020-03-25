@@ -2,11 +2,10 @@
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
-  creationTimestamp: null
   labels:
     controller-tools.k8s.io: "1.0"
-    app: {{ include "controller.name" . }}
-    chart: {{ include "controller.chart" . }}
+    app: {{ template "iamPolicyController.fullname" . }}
+    chart: {{ template "iamPolicyController.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
   name: iampolicies.iam.policies.ibm.com

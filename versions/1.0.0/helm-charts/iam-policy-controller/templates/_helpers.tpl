@@ -2,14 +2,14 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "controller.name" -}}
+{{- define "iamPolicyController.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
 Define the full name.
 */}}
-{{- define "controller.fullname" -}}
+{{- define "iamPolicyController.fullname" -}}
 {{- if .Values.fullnameOverride -}}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
@@ -25,17 +25,38 @@ Define the full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "controller.chart" -}}
+{{- define "iamPolicyController.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
 Create the name of the service account to use
 */}}
-{{- define "controller.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create -}}
-    {{ default (include "controller.fullname" .) .Values.serviceAccount.name }}
-{{- else -}}
-    {{ default "default" .Values.serviceAccount.name }}
+{{- define "iamPolicyController.serviceAccount" -}}
+  {{- if .Values.serviceAccount -}}
+    {{- .Values.serviceAccount -}}
+  {{- else -}}
+    {{- template "iamPolicyController.fullname" . -}}-sa
+  {{- end -}}
 {{- end -}}
+
+{{/*
+Create the name of the cluster Role to use
+*/}}
+{{- define "iamPolicyController.clusterRole" -}}
+  {{- template "iamPolicyController.fullname" . -}}-role
+{{- end -}}
+
+{{/*
+Create the name of the cluster Rolebinding to use
+*/}}
+{{- define "iamPolicyController.clusterRoleBinding" -}}
+  {{- template "iamPolicyController.fullname" . -}}-rolebinding
+{{- end -}}
+
+{{/*
+Create the name of the scc to use
+*/}}
+{{- define "iamPolicyController.scc" -}}
+  {{- template "iamPolicyController.fullname" . -}}-scc
 {{- end -}}
