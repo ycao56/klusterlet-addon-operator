@@ -1,7 +1,0 @@
-# requirements.yaml
-dependencies:
-- name: cert-manager-crd
-  version: "3.4.0"
-  repository: "file://cert-manager-crd"
-  alias: crd
-  condition: cert-manager-crd.enabled
