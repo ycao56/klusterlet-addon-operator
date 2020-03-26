@@ -28,7 +28,7 @@ spec:
       serviceAccountName: {{ template "iamPolicyController.serviceAccount" . }}
       containers:
       - name: {{ template "iamPolicyController.name" . }}
-        image: "{{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}{{ .Values.imageTagPostfix }}"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         args:
         - --v={{ .Values.args.verbosity }}
