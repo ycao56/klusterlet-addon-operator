@@ -8,10 +8,10 @@
 apiVersion: apps/v1beta2
 kind: DaemonSet
 metadata:
-  name: {{ template "cisCrawlerWorker.fullname" . }}
+  name: {{ template "cisCrawlerCompute.fullname" . }}
   labels:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    app: {{ template "cisCrawlerWorker.fullname" . }}
+    app: {{ template "cisCrawlerCompute.fullname" . }}
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 spec:
@@ -23,14 +23,14 @@ spec:
     type: RollingUpdate
   selector:
     matchLabels:
-      app: {{ template "cisCrawlerWorker.fullname" . }}
+      app: {{ template "cisCrawlerCompute.fullname" . }}
   template:
     metadata:
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
         seccomp.security.alpha.kubernetes.io/allowedProfileNames: docker/default
       labels:
-        app: {{ template "cisCrawlerWorker.fullname" . }}
+        app: {{ template "cisCrawlerCompute.fullname" . }}
     spec:
       serviceAccountName: {{ template "cisController.fullname" . }}-sa
       affinity:
@@ -38,13 +38,13 @@ spec:
          requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
           - matchExpressions:
-            - key: node-role.kubernetes.io/worker
+            - key: node-role.kubernetes.io/compute
               operator: In
               values:
-              - ''
+              - 'true'
       containers:
       - name: cis-crawler
-        image: "{{ .Values.cisCrawler.image.repository }}:{{ .Values.cisCrawler.image.tag }}"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         env:
         - name: VAAAS_URL

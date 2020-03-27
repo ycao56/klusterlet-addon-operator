@@ -7,7 +7,7 @@
 
 apiVersion: v1
 description: CIS Controller checks kubernetes clusters for CIS compliance and reports any violations 
-name: cis-crawler
+name: cisCrawler
 icon: https://raw.githubusercontent.com/kubernetes/kubernetes/master/logo/logo.png
 keywords:
 - security

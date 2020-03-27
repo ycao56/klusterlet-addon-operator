@@ -20,30 +20,45 @@ tolerations:
   operator: "Exists"
   effect: "NoSchedule"
 
-cis-crawler:
-  cisCrawler:
-    enabled: true
-    crawlInterval: 86400
-    image:
-      repository: "quay.io/open-cluster-management/cis-crawler"
-      tag: "3.6.0"
-    resources:
-      requests:
-        cpu: 50m
-        memory: 64Mi
-      limits:
-        cpu: 500m
-        memory: 512Mi
 
-drishti-cis:
-  drishti:
-    name: "drishti-cis"
-    image:
-      repository: "quay.io/open-cluster-management/drishti-cis"
-      tag: "3.4.0"
+cisCrawler:
+  enabled: true
+  crawlInterval: 86400
+  image:
+    repository: "quay.io/open-cluster-management/cis-crawler"
+    tag: "3.6.0"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+minio:
+  replicas: 1
+  image:
+    repository: "quay.io/open-cluster-management/img-minio"
+    tag: "RELEASE.2019-04-09T01-22-30Z.3"
+  resources:
+    requests:
+      cpu: 250m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+  persistence:
+    enabled: false
+    size: "20Gi"
+    storageClass: "-"
+
+drishti:
   config:
     cloud_env: "icp"
   image:
+    name: "drishti-cis"
+    repository: "quay.io/open-cluster-management/drishti-cis"
+    tag: "3.4.0"
     pullPolicy: IfNotPresent
     pullSecret:
       enabled: false
@@ -84,19 +99,3 @@ cisController:
       cpu: 200m
       memory: 512Mi
 
-minio:
-  replicas: 1
-  image:
-    repository: "quay.io/open-cluster-management/img-minio"
-    tag: "RELEASE.2019-04-09T01-22-30Z.3"
-  resources:
-    requests:
-      cpu: 250m
-      memory: 256Mi
-    limits:
-      cpu: 500m
-      memory: 1024Mi
-  persistence:
-    enabled: false
-    size: "20Gi"
-    storageClass: "-"

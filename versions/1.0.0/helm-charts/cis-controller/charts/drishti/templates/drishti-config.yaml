@@ -7,12 +7,12 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   labels:
-    app: "{{ template "drishti-cis.fullname" . }}"
+    app: "{{ template "drishti.fullname" . }}"
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     component: "{{ .Values.drishti.name }}"
     heritage: "{{ .Release.Service }}"
     release: "{{ .Release.Name }}"
-  name: "{{ template "drishti-cis.fullname" . }}-config"
+  name: "{{ template "drishti.fullname" . }}-config"
 data:
   CIS_COS_URL: "{{ template "cisController.fullname" . }}-minio:9000"
   CIS_CHECK_FREQUENCY: "86400"

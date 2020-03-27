@@ -10,7 +10,9 @@ image:
   pullSecret:
     enabled: false
     name: regcred
-
+  name: "drishti-cis"
+  repository: "ibmcom/drishti-cis"
+  tag: "latest"
 
 tolerations:
 - key: "dedicated"

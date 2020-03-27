@@ -45,3 +45,19 @@ Create a default fully qualified app name for cisWorkerCrawler.
 {{- end -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Create a default fully qualified app name for cisWorkerCrawler on OCP 3.11.
+*/}}
+{{- define "cisCrawlerCompute.fullname" -}}
+{{- if .Values.fullnameOverride -}}
+{{- printf "%s-%s" .Values.fullnameOverride "crawler-compute" | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- if .Values.global.fullnameOverride -}}
+{{- printf "%s-%s" .Values.global.fullnameOverride "crawler-compute" | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- $name := default "cis-crawler-compute" .Values.nameOverride -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}

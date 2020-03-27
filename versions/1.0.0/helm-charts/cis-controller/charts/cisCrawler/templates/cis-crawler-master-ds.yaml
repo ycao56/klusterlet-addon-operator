@@ -42,7 +42,7 @@ spec:
               - ''
       containers:
       - name: cis-crawler
-        image: "{{ .Values.cisCrawler.image.repository }}:{{ .Values.cisCrawler.image.tag }}"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         env:
         - name: VAAAS_URL
