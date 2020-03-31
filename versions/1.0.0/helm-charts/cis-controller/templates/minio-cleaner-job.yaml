@@ -35,6 +35,22 @@ spec:
                 mountPath: /cis/
               - name: mc-config-dir
                 mountPath: /mcconf
+            env:
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "cisController.fullname" . }}-secret
+                  key: access_key
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "cisController.fullname" . }}-secret
+                  key: secret_key
+            - name: MINIO_REGION_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "cisController.fullname" . }}-secret
+                  key: location
           securityContext:
             fsGroup: 5001
             runAsNonRoot: true

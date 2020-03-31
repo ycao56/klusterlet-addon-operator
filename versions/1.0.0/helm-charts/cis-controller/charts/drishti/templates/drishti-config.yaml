@@ -19,6 +19,6 @@ data:
 {{- if (eq "openshift" .Values.config.cloud_env) }}
   K8S_VERSION: "ocp-3.11"
 {{- else }}
-  K8S_VERSION: "1.13"
+  K8S_VERSION: {{ .Values.config.cloud_env }}
 {{- end }}
 

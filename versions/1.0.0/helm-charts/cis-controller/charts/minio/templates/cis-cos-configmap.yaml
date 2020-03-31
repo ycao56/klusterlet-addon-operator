@@ -18,11 +18,6 @@ data:
   config.json: |
     {
         "version":"32",
-        "credential":{
-            "accessKey":"ibm-va",
-            "secretKey":"CloudforAll!"
-        },
-        "region":"icp-va-local",
         "browser":"on",
         "domain":"",
         "storageclass":{

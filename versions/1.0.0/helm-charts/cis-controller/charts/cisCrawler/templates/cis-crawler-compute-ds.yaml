@@ -169,7 +169,7 @@ spec:
       - name: cos-secrets
         secret:
           defaultMode: 420
-          secretName: cis-controller-secret
+          secretName: {{ template "cisController.fullname" . }}-secret
       - name: "{{ template "cisCrawler.fullname" . }}-config"
         configMap:
           name: "{{ template "cisCrawler.fullname" . }}-config"

@@ -65,17 +65,17 @@ spec:
         - name: MINIO_ACCESS_KEY
           valueFrom:
             secretKeyRef:
-              name: cis-controller-secret
+              name: {{ template "cisController.fullname" . }}-secret
               key: access_key
         - name: MINIO_SECRET_KEY
           valueFrom:
             secretKeyRef:
-              name: cis-controller-secret
+              name: {{ template "cisController.fullname" . }}-secret
               key: secret_key
         - name: MINIO_REGION_NAME
           valueFrom:
             secretKeyRef:
-              name: cis-controller-secret
+              name: {{ template "cisController.fullname" . }}-secret
               key: location
         volumeMounts:
         - name: minio-config

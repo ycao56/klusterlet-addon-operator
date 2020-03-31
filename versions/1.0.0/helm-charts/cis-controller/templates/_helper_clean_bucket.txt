@@ -8,7 +8,7 @@ connectToMinio() {
   set -e ; # fail if we can't read the keys.
   set +e ; # The connections to minio are allowed to fail.
   echo "Connecting to Minio server: https://{{ template "minio.fullname" . }}:9000" ;
-  MC_COMMAND="mc -C /mcconf config host add cisminio https://{{ template "minio.fullname" . }}:9000 ibm-va CloudforAll! --insecure" ;
+  MC_COMMAND="mc -C /mcconf config host add cisminio https://{{ template "minio.fullname" . }}:9000 $MINIO_ACCESS_KEY $MINIO_SECRET_KEY --insecure" ;
   $MC_COMMAND ;
   STATUS=$? ;
   until [ $STATUS = 0 ]

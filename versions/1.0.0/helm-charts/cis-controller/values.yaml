@@ -13,7 +13,7 @@ caCertIssuer: null
 issuerKind: ClusterIssuer
   
 config:
-  cloud_env: "icp"
+  cloud_env: "openshift"
 
 tolerations:
 - key: "dedicated"
@@ -54,7 +54,7 @@ minio:
 
 drishti:
   config:
-    cloud_env: "icp"
+    cloud_env: "openshift"
   image:
     name: "drishti-cis"
     repository: "quay.io/open-cluster-management/drishti-cis"
