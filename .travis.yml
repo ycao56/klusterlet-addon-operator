@@ -29,6 +29,7 @@ jobs:
         - make component/init
         - make check
         - make component/build
+        - make component/test/functional
         - make component/push
         - echo "TRAVIS_EVENT_TYPE = $TRAVIS_EVENT_TYPE"
         - make security/scans

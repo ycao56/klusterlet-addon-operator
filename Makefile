@@ -28,7 +28,7 @@ export DOCKER_BUILD_OPTS  = --build-arg VCS_REF=$(VCS_REF) \
 	--build-arg IMAGE_DESCRIPTION=$(IMAGE_DESCRIPTION) \
 	--build-arg IMAGE_VERSION=$(SEMVERSION)
 
-
+# COMPONENT_TAG_EXTENSION=-dom
 BEFORE_SCRIPT := $(shell build/before-make.sh)
 
 -include $(shell curl -s -H 'Authorization: token ${GITHUB_TOKEN}' -H 'Accept: application/vnd.github.v4.raw' -L https://api.github.com/repos/open-cluster-management/build-harness-extensions/contents/templates/Makefile.build-harness-bootstrap -o .build-harness-bootstrap; echo .build-harness-bootstrap)
@@ -73,23 +73,29 @@ operator\:run:
 
 ### HELPER UTILS #######################
 
-.PHONY: utils\:crds\:install
-utils\:crds\:install:
-	for file in `ls deploy/crds/*_crd.yaml`; do kubectl apply -f $$file; done
+.PHONY: utils/crds/install
+utils/crds/install:
+	for file in `ls deploy/crds/multicloud.ibm.com_*_crd.yaml`; do kubectl apply -f $$file; done
 
-.PHONY: utils\:crds\:uninstall
-utils\:crds\:uninstall:
-	for file in `ls deploy/crds/*_crd.yaml`; do kubectl delete -f $$file; done
+.PHONY: utils/crds/uninstall
+utils/crds/uninstall:
+	for file in `ls deploy/crds/multicloud.ibm.com_*_crd.yaml`; do kubectl delete -f $$file; done
 
 .PHONY: utils\:charts\:versions
 utils\:charts\:versions:
 	ls versions
 
-.PHONY: utils\:charts\:version
-utils\:charts\:version:
+.PHONY: utils/charts/version
+utils/charts/version:
 	ln -sfn versions/$$version/watches.yaml watches.yaml
 	ln -sfn versions/$$version/helm-charts helm-charts
 
-.PHONY: utils\:link\:setup
-utils\:link\:setup:
+.PHONY: utils/link/setup
+utils/link/setup:
 	sudo ln -sfn $$PWD/versions /opt/helm
+
+.PHONY: delete-cluster
+delete-cluster:
+	kubectl config unset current-context; \
+	kubectl config delete-context kind-test-cluster; \
+	kind delete cluster --name=test-cluster

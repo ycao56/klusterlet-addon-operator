@@ -4,10 +4,12 @@
 # (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
 # The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
 
-apiVersion: v1
-kind: ServiceAccount
+apiVersion: multicloud.ibm.com/v1beta1
+kind: ApplicationManager
 metadata:
-  name: endpoint-component-operator
+  name: applicationmanager
   namespace: multicluster-endpoint
-imagePullSecrets:
-- name: multicloud-image-pull-secret
+# spec:
+  # Add fields here
+  # size: 3
+  # fullnameOverride: example

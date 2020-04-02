@@ -4,7 +4,7 @@
 # @ Copyright IBM Corporation 2016, 2018 All Rights Reserved
 # US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
 
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ template "minio.fullname" . }}
@@ -14,6 +14,10 @@ metadata:
     release: {{ .Release.Name | quote }}
     heritage: {{ .Release.Service | quote }}
 spec:
+  selector:
+    matchLabels:
+      app: {{ include "minio.name" . | quote }}
+      release: {{ .Release.Name | quote }}
   serviceName: {{ template "minio.fullname" . }}
   updateStrategy:
     rollingUpdate:

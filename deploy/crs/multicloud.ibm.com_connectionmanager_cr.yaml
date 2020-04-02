@@ -5,9 +5,15 @@
 # The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
 
 apiVersion: multicloud.ibm.com/v1beta1
-kind: CertManager
+kind: ConnectionManager
 metadata:
-  name: example-certmanager
-spec:
-  # Add fields here
-  size: 3
+  name: connectionmanager
+  namespace: multicluster-endpoint
+# spec:
+#   clusterName: test
+#   clusterNamespace: cluster1
+#   fullnameOverride: cluster1
+#   bootstrapConfig:
+#     hubSecret: multicluster-endpoint/klusterlet-bootstrap
+#   # Add fields here
+#   size: 3

@@ -5,10 +5,7 @@
 # The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
 
 apiVersion: multicloud.ibm.com/v1beta1
-kind: ApplicationManager
+kind: WorkManager
 metadata:
-  name: example-applicationmanager
-spec:
-  # Add fields here
-  size: 3
-  fullnameOverride: example
+  name: workmanager
+  namespace: multicluster-endpoint

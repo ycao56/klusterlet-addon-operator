@@ -3,6 +3,7 @@
 .build-harness-bootstrap
 .vscode
 OPENSOURCE.check
+.DS_Store
 
 # Folders
 .build-docker

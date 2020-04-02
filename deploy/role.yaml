@@ -12,15 +12,15 @@ metadata:
 rules:
 - apiGroups:
   - '*'
-  attributeRestrictions: null
+  # attributeRestrictions: null
   resources:
   - '*'
   verbs:
   - '*'
-- apiGroups: null
-  attributeRestrictions: null
-  nonResourceURLs:
-  - '*'
-  resources: []
-  verbs:
-  - '*'
+# - apiGroups: null
+#   attributeRestrictions: null
+#   nonResourceURLs:
+#   - '*'
+#   resources: []
+#   verbs:
+#   - '*'

@@ -9,6 +9,8 @@ global:
 imagePullPolicy: IfNotPresent
 # imagePullSecret: myregistrykey
 
+ocp: true
+
 caCertIssuer: null
 issuerKind: ClusterIssuer
   

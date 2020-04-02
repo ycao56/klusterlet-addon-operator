@@ -57,7 +57,7 @@ make operator:run
 
 To manually create a instance of the component you will need to create the component CR the spec of the CR will be use as the value override for the helm chart associated with the .the `deploy/crd` folder contain example CR for the components
 
-The https://github.com/open-cluster-management/endpoint-operator project automaically create and manage the update of the CR for the components in the endpoint component operator. See Endpoint Operator's README for how to run the Endpoint Operator
+The [endpoint-operator](https://github.com/open-cluster-management/endpoint-operator) project automaically create and manage the update of the CR for the components in the endpoint component operator. See Endpoint Operator's README for how to run the Endpoint Operator
 
 ## Build and publish a personal build to scratch artifactory
 
@@ -65,3 +65,21 @@ The https://github.com/open-cluster-management/endpoint-operator project automai
 - `make operator:build`
 - `make docker:tag`
 - `make docker:push`
+
+## Run functional test
+
+The implemented funcitonal tests deploy the endpoint-component-operator in KinD v0.7.0.
+
+The kind configuration file are located in the [build/kind-config](build/kind-config).
+
+The test runs for each provided kind configuration.
+
+To add new configuration, copy one of the existing config and change the `nodes.imagee` to a given image release. Check [here](https://github.com/kubernetes-sigs/kind/releases) for available kube version.
+
+To run the test call depending on the kube version the test must run on:
+
+- `make component/test/functional`
+
+## Add a component into the test
+
+To add a new component into the test, the endpoint-operator CRD must be added in the [deploy/crds](deploy/crds) directory and a corresponding CR must be added in the [deploy/crs](deploy/crd) directory.
