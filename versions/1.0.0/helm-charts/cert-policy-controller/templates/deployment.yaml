@@ -60,7 +60,6 @@ spec:
             cpu: "200m"
           requests:
             memory: "150Mi"
-            cpu: "100m"
         securityContext:
           allowPrivilegeEscalation: {{ .Values.securityContext.container.allowPrivilegeEscalation }}
           readOnlyRootFilesystem: {{ .Values.securityContext.container.readOnlyRootFilesystem }}

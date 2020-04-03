@@ -12,7 +12,6 @@ image:
 resources:
   requests:
     memory: 256Mi
-    cpu: 250m
 
 mountPath: "/var/lib/minio"
 replicas: 1

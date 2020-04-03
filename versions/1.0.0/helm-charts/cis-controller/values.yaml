@@ -31,7 +31,6 @@ cisCrawler:
     tag: "3.6.0"
   resources:
     requests:
-      cpu: 50m
       memory: 64Mi
     limits:
       cpu: 500m
@@ -44,7 +43,6 @@ minio:
     tag: "RELEASE.2019-04-09T01-22-30Z.3"
   resources:
     requests:
-      cpu: 250m
       memory: 256Mi
     limits:
       cpu: 500m
@@ -81,7 +79,6 @@ minioCleaner:
     pullPolicy: "IfNotPresent"
   resources:
     requests:
-      cpu: "50m"
       memory: "128Mi"
     limits:
       cpu: 100m
@@ -95,7 +92,6 @@ cisController:
     pullPolicy: "IfNotPresent"
   resources:
     requests:
-      cpu: "100m"
       memory: "256Mi"
     limits:
       cpu: 200m

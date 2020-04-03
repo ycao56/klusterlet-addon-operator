@@ -31,7 +31,6 @@ coredns:
     pullPolicy: IfNotPresent
   resources:
     requests:
-      cpu: 100m
       memory: 70Mi
     limits:
       cpu: 500m
@@ -49,7 +48,6 @@ tolerations:
 
 resources:
   requests:
-    cpu: 100m
     memory: 128Mi
   limits:
     cpu: 500m
