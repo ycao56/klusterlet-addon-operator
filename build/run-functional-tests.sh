@@ -27,7 +27,7 @@ install_kubectl () {
         set_linux_arch
         sudo curl -s -L https://storage.googleapis.com/kubernetes-release/release/v1.18.0/bin/linux/$_linux_arch/kubectl -o /usr/local/bin/kubectl
         sudo chmod +x /usr/local/bin/kubectl
-        kubectl -h
+        kubectl version --client=true
         if [ $? != 0 ]; then
           echo "kubectl installation failed"
           return 1
@@ -69,7 +69,7 @@ wait_installed() {
         _result_exit_code=$?
         _result_not_success=$(echo "$_result" | grep -v "InstallSuccessful")
         if [ $? == 0 ] || [ $_result_exit_code != 0 ] ; then
-            echo "=========== Retry ==========="
+            echo "=========== Waiting for success ==========="
             echo "$_result"
             sleep $_interval_seconds
             _max_nb_loop=$(($_max_nb_loop-1))
