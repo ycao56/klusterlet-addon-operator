@@ -51,10 +51,8 @@ spec:
         resources:
           limits:
             memory: "300Mi"
-            cpu: "200m"
           requests:
             memory: "150Mi"
-            cpu: "100m"
         securityContext:
           privileged: {{ .Values.securityContext.privileged }}
           allowPrivilegeEscalation: {{ .Values.securityContext.allowPrivilegeEscalation }}

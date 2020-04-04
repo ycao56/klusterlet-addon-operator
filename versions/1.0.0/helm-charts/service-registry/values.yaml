@@ -33,7 +33,6 @@ coredns:
     requests:
       memory: 70Mi
     limits:
-      cpu: 500m
       memory: 170Mi
 
 nodeSelector: {}
@@ -50,7 +49,6 @@ resources:
   requests:
     memory: 128Mi
   limits:
-    cpu: 500m
     memory: 256Mi
 
 imagePullSecret: null

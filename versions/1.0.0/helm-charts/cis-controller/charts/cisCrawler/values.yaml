@@ -23,5 +23,4 @@ cisCrawler:
     requests:
       memory: 64Mi
     limits:
-      cpu: 500m
       memory: 512Mi

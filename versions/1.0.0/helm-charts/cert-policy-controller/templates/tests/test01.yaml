@@ -30,10 +30,8 @@ spec:
     command: ["sh", "-c", "echo cert-policy-controller-tests"]
     resources:
       requests:
-        cpu: "100m"
         memory: "150Mi"
       limits:
-        cpu: "200m"
         memory: "300Mi"
     securityContext:
       allowPrivilegeEscalation: {{ .Values.securityContext.container.allowPrivilegeEscalation }}
