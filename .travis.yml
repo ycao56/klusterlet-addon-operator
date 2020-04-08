@@ -13,6 +13,7 @@ branches:
 
 stages:
   - build
+  - unit-test
   - release-ff
   - publish
 
@@ -33,6 +34,10 @@ jobs:
         - make component/push
         - echo "TRAVIS_EVENT_TYPE = $TRAVIS_EVENT_TYPE"
         - make security/scans
+    - stage: unit-test
+      name: "Build and run unit tests"
+      script: 
+        - make copyright-check TRAVIS_BRANCH=${TRAVIS_BRANCH}
     - stage: release-ff
       name: "Push commits to current release branch"
       if: type = push AND branch =~ /^master$/

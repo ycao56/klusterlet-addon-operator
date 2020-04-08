@@ -55,6 +55,9 @@ ossc:
 ## Builds operator binary inside of an image
 build: component/build
 
+copyright-check:
+	./build/copyright-check.sh $(TRAVIS_BRANCH)
+
 .PHONY: operator\:build\:helm
 operator\:build\:helm:
 	./build/build-helm-operator-image.sh
