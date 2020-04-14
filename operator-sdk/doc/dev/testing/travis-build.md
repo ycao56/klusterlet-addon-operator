@@ -1,4 +1,4 @@
-# TravisCI Build Information
+# TravisCI Build Information for Operator SDK
 
 Travis is set to run one every push to a branch or PR.
 The results of the builds can be found [here][branches] for branches and [here][pr-builds] for PRs.
@@ -21,7 +21,7 @@ For the Go, Ansible, and Helm tests, the `before_install` and `install` stages a
 2. Run `make tidy` to ensure `go.mod` and `go.sum` are up-to-date.
 3. Build and install the sdk using `make install`.
 4. Install ansible using `sudo pip install ansible`.
-5. Run the [`hack/ci/setup-openshift`][script] script, which spins up an openshift cluster by configuring docker and then downloading the `oc` v3.11 binary and running `oc cluster up`.
+5. Run the [`hack/ci/setup-k8s.sh`][k8s-script] script, which spins up a [kind][kind] Kubernetes cluster of a particular version by configuring docker, and downloads the `kubectl` of the same version.
 
 The Go, Ansible, and Helm tests then differ in what tests they run.
 
@@ -46,7 +46,7 @@ The Go, Ansible, and Helm tests then differ in what tests they run.
 4. Run [go e2e tests][go-e2e].
     1. Scaffold a project using `hack/tests/scaffolding/e2e-go-scaffold.sh`
     2. Build `memcached-operator` image to be used in tests
-    3. Run scaffolded project e2e tests using `operator-sdk up local`
+    3. Run scaffolded project e2e tests using `operator-sdk run --local`
         1. Run cluster test (namespace is auto-generated and deleted by test framework).
             1. Deploy operator and required resources to the cluster.
             2. Run the leader election test.
@@ -66,20 +66,20 @@ The Go, Ansible, and Helm tests then differ in what tests they run.
                 1. Make sure the metrics Service was created.
                 2. Get metrics via proxy pod and make sure they are present.
                 3. Perform linting of the existing metrics.
-                4. Perform checks on each custom resource generated metric and makes sure the name, type, value, labels and metric are correct. 
+                4. Perform checks on each custom resource generated metric and makes sure the name, type, value, labels and metric are correct.
         2. Run local test (namespace is auto-generated and deleted by test framework).
-            1. Start operator using `up local` subcommand.
+            1. Start operator using the `run --local` subcommand.
             2. Run memcached scale test (described in step 4.3.1.3)
     4. Run [TLS library tests][tls-tests].
         1. This test runs multiple simple tests of the operator-sdk's TLS library. The tests run in parallel and each tests runs in its own namespace.
 
 ### Ansible tests
 
-1. Run [ansible molecule tests][ansible-molecule].
+1. Run [ansible molecule tests][ansible-molecule]. (`make test-e2e-ansible-molecule)
     1. Create and configure a new ansible type memcached-operator.
     2. Create cluster resources.
     3. Run `operator-sdk test local` to run ansible molecule tests
-    4. Change directory to [`test/ansible-inventory`][ansible-inventory] and run `operator-sdk test local`
+    4. Change directory to [`test/ansible`][ansible-test] and run `operator-sdk test local`
 
 **NOTE**: All created resources, including the namespace, are deleted using a bash trap when the test finishes
 
@@ -109,13 +109,14 @@ The markdown test does not create a new cluster and runs in a barebones Travis V
 
 [branches]: https://travis-ci.org/operator-framework/operator-sdk/branches
 [pr-builds]: https://travis-ci.org/operator-framework/operator-sdk/pull_requests
-[script]: ../../../hack/ci/setup-openshift.sh
+[k8s-script]: ../../../hack/ci/setup-k8s.sh
+[kind]: https://kind.sigs.k8s.io/
 [sanity]: ../../../hack/tests/sanity-check.sh
-[subcommand]: ../../../hack/tests/test-subcommand.sh
+[subcommand]: ../../../hack/tests/subcommand.sh
 [go-e2e]: ../../../hack/tests/e2e-go.sh
 [tls-tests]: ../../../test/e2e/tls_util_test.go
 [ansible-molecule]: ../../../hack/tests/e2e-ansible-molecule.sh
-[ansible-inventory]: ../../../test/ansible-inventory
+[ansible-test]: ../../../test/ansible
 [helm-e2e]: ../../../hack/tests/e2e-helm.sh
 [helm-base]: ../../../hack/image/helm/scaffold-helm-image.go
 [marker-github]: https://github.com/crawford/marker

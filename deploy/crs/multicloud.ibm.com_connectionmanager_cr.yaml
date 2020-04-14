@@ -9,11 +9,9 @@ kind: ConnectionManager
 metadata:
   name: connectionmanager
   namespace: multicluster-endpoint
-# spec:
-#   clusterName: test
-#   clusterNamespace: cluster1
-#   fullnameOverride: cluster1
-#   bootstrapConfig:
-#     hubSecret: multicluster-endpoint/klusterlet-bootstrap
-#   # Add fields here
-#   size: 3
+spec:
+  clusterName: test
+  clusterNamespace: test
+  connectionManager: test-connmgr
+  fullnameOverride: test-connmgr
+  bootstrapConfig: {}

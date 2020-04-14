@@ -22,9 +22,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/operator-framework/operator-sdk/internal/pkg/scaffold"
+	"github.com/operator-framework/operator-sdk/internal/scaffold"
 	"github.com/operator-framework/operator-sdk/internal/util/projutil"
 
+	"github.com/google/shlex"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -39,8 +40,8 @@ func NewCmd() *cobra.Command {
 	buildCmd := &cobra.Command{
 		Use:   "build <image>",
 		Short: "Compiles code and builds artifacts",
-		Long: `The operator-sdk build command compiles the code, builds the executables,
-and generates Kubernetes manifests.
+		Long: `The operator-sdk build command compiles the Operator code into an executable binary
+and generates the Dockerfile manifest.
 
 <image> is the container image to be built, e.g. "quay.io/example/operator:v0.0.1".
 This image will be automatically set in the deployment manifests.
@@ -48,14 +49,18 @@ This image will be automatically set in the deployment manifests.
 After build completes, the image would be built locally in docker. Then it needs to
 be pushed to remote registry.
 For example:
+
 	$ operator-sdk build quay.io/example/operator:v0.0.1
 	$ docker push quay.io/example/operator:v0.0.1
 `,
 		RunE: buildFunc,
 	}
-	buildCmd.Flags().StringVar(&imageBuildArgs, "image-build-args", "", "Extra image build arguments as one string such as \"--build-arg https_proxy=$https_proxy\"")
-	buildCmd.Flags().StringVar(&imageBuilder, "image-builder", "docker", "Tool to build OCI images. One of: [docker, podman, buildah]")
-	buildCmd.Flags().StringVar(&goBuildArgs, "go-build-args", "", "Extra Go build arguments as one string such as \"-ldflags -X=main.xyz=abc\"")
+	buildCmd.Flags().StringVar(&imageBuildArgs, "image-build-args", "",
+		"Extra image build arguments as one string such as \"--build-arg https_proxy=$https_proxy\"")
+	buildCmd.Flags().StringVar(&imageBuilder, "image-builder", "docker",
+		"Tool to build OCI images. One of: [docker, podman, buildah]")
+	buildCmd.Flags().StringVar(&goBuildArgs, "go-build-args", "",
+		"Extra Go build arguments as one string such as \"-ldflags -X=main.xyz=abc\"")
 	return buildCmd
 }
 
@@ -72,7 +77,10 @@ func createBuildCommand(imageBuilder, context, dockerFile, image string, imageBu
 
 	for _, bargs := range imageBuildArgs {
 		if bargs != "" {
-			splitArgs := strings.Fields(bargs)
+			splitArgs, err := shlex.Split(bargs)
+			if err != nil {
+				return nil, fmt.Errorf("image-build-args is not parseable: %v", err)
+			}
 			args = append(args, splitArgs...)
 		}
 	}
@@ -89,12 +97,6 @@ func buildFunc(cmd *cobra.Command, args []string) error {
 
 	projutil.MustInProjectRoot()
 	goBuildEnv := append(os.Environ(), "GOOS=linux")
-
-	if value, ok := os.LookupEnv("GOARCH"); ok {
-		goBuildEnv = append(goBuildEnv, "GOARCH="+value)
-	} else {
-		goBuildEnv = append(goBuildEnv, "GOARCH=amd64")
-	}
 
 	// If CGO_ENABLED is not set, set it to '0'.
 	if _, ok := os.LookupEnv("CGO_ENABLED"); !ok {
@@ -119,10 +121,9 @@ func buildFunc(cmd *cobra.Command, args []string) error {
 			PackagePath: path.Join(projutil.GetGoPkg(), filepath.ToSlash(scaffold.ManagerDir)),
 			Args:        args,
 			Env:         goBuildEnv,
-			GoMod:       projutil.IsDepManagerGoMod(),
 		}
 		if err := projutil.GoBuild(opts); err != nil {
-			return fmt.Errorf("failed to build operator binary: (%v)", err)
+			return fmt.Errorf("failed to build operator binary: %v", err)
 		}
 	}
 
@@ -136,7 +137,7 @@ func buildFunc(cmd *cobra.Command, args []string) error {
 	}
 
 	if err := projutil.ExecCmd(buildCmd); err != nil {
-		return fmt.Errorf("failed to output build image %s: (%v)", image, err)
+		return fmt.Errorf("failed to output build image %s: %v", image, err)
 	}
 
 	log.Info("Operator build complete.")

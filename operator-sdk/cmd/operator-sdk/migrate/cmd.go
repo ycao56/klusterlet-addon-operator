@@ -19,19 +19,17 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/operator-framework/operator-sdk/internal/pkg/scaffold"
-	"github.com/operator-framework/operator-sdk/internal/pkg/scaffold/ansible"
-	"github.com/operator-framework/operator-sdk/internal/pkg/scaffold/helm"
-	"github.com/operator-framework/operator-sdk/internal/pkg/scaffold/input"
+	"github.com/operator-framework/operator-sdk/internal/scaffold"
+	"github.com/operator-framework/operator-sdk/internal/scaffold/ansible"
+	"github.com/operator-framework/operator-sdk/internal/scaffold/helm"
+	"github.com/operator-framework/operator-sdk/internal/scaffold/input"
 	"github.com/operator-framework/operator-sdk/internal/util/projutil"
 
-	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
 var (
-	depManager string
 	headerFile string
 	repo       string
 )
@@ -41,13 +39,16 @@ func NewCmd() *cobra.Command {
 	newCmd := &cobra.Command{
 		Use:   "migrate",
 		Short: "Adds source code to an operator",
-		Long:  `operator-sdk migrate adds a main.go source file and any associated source files for an operator that is not of the "go" type.`,
-		RunE:  migrateRun,
+		Long: `operator-sdk migrate adds a main.go source file and any associated source files` +
+			`for an operator that is not of the "go" type.`,
+		RunE: migrateRun,
 	}
 
-	newCmd.Flags().StringVar(&depManager, "dep-manager", "modules", `Dependency manager the new project will use (choices: "dep", "modules")`)
-	newCmd.Flags().StringVar(&headerFile, "header-file", "", "Path to file containing headers for generated Go files. Copied to hack/boilerplate.go.txt")
-	newCmd.Flags().StringVar(&repo, "repo", "", "Project repository path. Used as the project's Go import path. This must be set if outside of $GOPATH/src with Go modules, and cannot be set if --dep-manager=dep")
+	newCmd.Flags().StringVar(&headerFile, "header-file", "",
+		"Path to file containing headers for generated Go files. Copied to hack/boilerplate.go.txt")
+	newCmd.Flags().StringVar(&repo, "repo", "",
+		"Project repository path. Used as the project's Go import path. This must be set if outside of "+
+			"$GOPATH/src (e.g. github.com/example-inc/my-operator)")
 
 	return newCmd
 }
@@ -76,7 +77,7 @@ func migrateRun(cmd *cobra.Command, args []string) error {
 }
 
 func verifyFlags() error {
-	err := projutil.CheckDepManagerWithRepo(projutil.DepManagerType(depManager), repo)
+	err := projutil.CheckRepo(repo)
 	if err != nil {
 		return err
 	}
@@ -94,8 +95,9 @@ func migrateAnsible() error {
 	}
 
 	dockerfile := ansible.DockerfileHybrid{
-		Watches: true,
-		Roles:   true,
+		Watches:      true,
+		Roles:        true,
+		Requirements: true,
 	}
 	_, err := os.Stat(ansible.PlaybookYamlFile)
 	switch {
@@ -104,7 +106,7 @@ func migrateAnsible() error {
 	case os.IsNotExist(err):
 		log.Info("No playbook was found, so not including it in the new Dockerfile")
 	default:
-		return fmt.Errorf("error trying to stat %s: (%v)", ansible.PlaybookYamlFile, err)
+		return fmt.Errorf("error trying to stat %s: %v", ansible.PlaybookYamlFile, err)
 	}
 	if err := renameDockerfile(); err != nil {
 		return err
@@ -114,25 +116,23 @@ func migrateAnsible() error {
 	if headerFile != "" {
 		err = s.Execute(cfg, &scaffold.Boilerplate{BoilerplateSrcPath: headerFile})
 		if err != nil {
-			return fmt.Errorf("boilerplate scaffold failed: (%v)", err)
+			return fmt.Errorf("boilerplate scaffold failed: %v", err)
 		}
 		s.BoilerplatePath = headerFile
 	}
 
-	if err := scaffoldAnsibleDepManager(s, cfg); err != nil {
-		return errors.Wrap(err, "migrate Ansible dependency manager file scaffold failed")
-	}
-
 	err = s.Execute(cfg,
+		&ansible.GoMod{},
+		&scaffold.Tools{},
 		&ansible.Main{},
 		&dockerfile,
 		&ansible.Entrypoint{},
 		&ansible.UserSetup{},
-		&ansible.K8sStatus{},
+		// todo(camilamacedo86): It is deprecated and should be removed before 1.0.0
 		&ansible.AoLogs{},
 	)
 	if err != nil {
-		return fmt.Errorf("migrate ansible scaffold failed: (%v)", err)
+		return fmt.Errorf("migrate ansible scaffold failed: %v", err)
 	}
 	return nil
 }
@@ -155,16 +155,14 @@ func migrateHelm() error {
 	if headerFile != "" {
 		err := s.Execute(cfg, &scaffold.Boilerplate{BoilerplateSrcPath: headerFile})
 		if err != nil {
-			return fmt.Errorf("boilerplate scaffold failed: (%v)", err)
+			return fmt.Errorf("boilerplate scaffold failed: %v", err)
 		}
 		s.BoilerplatePath = headerFile
 	}
 
-	if err := scaffoldHelmDepManager(s, cfg); err != nil {
-		return errors.Wrap(err, "migrate Helm dependency manager file scaffold failed")
-	}
-
 	err := s.Execute(cfg,
+		&helm.GoMod{},
+		&scaffold.Tools{},
 		&helm.Main{},
 		&helm.DockerfileHybrid{
 			Watches:    true,
@@ -174,7 +172,7 @@ func migrateHelm() error {
 		&helm.UserSetup{},
 	)
 	if err != nil {
-		return fmt.Errorf("migrate helm scaffold failed: (%v)", err)
+		return fmt.Errorf("migrate helm scaffold failed: %v", err)
 	}
 	return nil
 }
@@ -184,34 +182,9 @@ func renameDockerfile() error {
 	newDockerfilePath := dockerfilePath + ".sdkold"
 	err := os.Rename(dockerfilePath, newDockerfilePath)
 	if err != nil {
-		return fmt.Errorf("failed to rename Dockerfile: (%v)", err)
+		return fmt.Errorf("failed to rename Dockerfile: %v", err)
 	}
-	log.Infof("Renamed Dockerfile to %s and replaced with newer version. Compare the new Dockerfile to your old one and manually migrate any customizations", newDockerfilePath)
+	log.Infof("Renamed Dockerfile to %s and replaced with newer version. Compare the new Dockerfile to your"+
+		" old one and manually migrate any customizations", newDockerfilePath)
 	return nil
-}
-
-func scaffoldHelmDepManager(s *scaffold.Scaffold, cfg *input.Config) error {
-	var files []input.File
-	switch m := projutil.DepManagerType(depManager); m {
-	case projutil.DepManagerDep:
-		files = append(files, &helm.GopkgToml{})
-	case projutil.DepManagerGoMod:
-		files = append(files, &helm.GoMod{}, &scaffold.Tools{})
-	default:
-		return projutil.ErrInvalidDepManager(depManager)
-	}
-	return s.Execute(cfg, files...)
-}
-
-func scaffoldAnsibleDepManager(s *scaffold.Scaffold, cfg *input.Config) error {
-	var files []input.File
-	switch m := projutil.DepManagerType(depManager); m {
-	case projutil.DepManagerDep:
-		files = append(files, &ansible.GopkgToml{})
-	case projutil.DepManagerGoMod:
-		files = append(files, &ansible.GoMod{}, &scaffold.Tools{})
-	default:
-		return projutil.ErrInvalidDepManager(depManager)
-	}
-	return s.Execute(cfg, files...)
 }

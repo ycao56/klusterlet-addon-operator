@@ -9,3 +9,8 @@ kind: PolicyController
 metadata:
   name: policycontroller
   namespace: multicluster-endpoint
+spec:
+  clusterName: test
+  clusterNamespace: test
+  connectionManager: test-connmgr
+  fullnameOverride: policyctrl-test

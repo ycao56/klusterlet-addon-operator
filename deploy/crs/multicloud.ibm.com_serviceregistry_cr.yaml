@@ -9,3 +9,11 @@ kind: ServiceRegistry
 metadata:
   name: serviceregistry
   namespace: multicluster-endpoint
+spec:
+  clusterName: test
+  clusterNamespace: test
+  connectionManager: test-connmgr
+  fullnameOverride: svcreg-test
+  serviceRegistry: 
+    image: {}
+  coredns: {}

@@ -9,3 +9,8 @@ kind: SearchCollector
 metadata:
   name: searchcollector
   namespace: multicluster-endpoint
+spec:
+  clusterName: test
+  clusterNamespace: test
+  connectionManager: test-connmgr
+  fullnameOverride: searchctrl-test

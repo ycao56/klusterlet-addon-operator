@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 ###############################################################################
 # (c) Copyright IBM Corporation 2019, 2020. All Rights Reserved.
 # Note to U.S. Government Users Restricted Rights:
@@ -25,14 +25,15 @@ then
 fi
 
 echo ">>> >>> Patching Makefile"
-sed -i s/x86_64/$ARCH/g Makefile
-sed -i s/amd64/$ARCH/g Makefile
+sed -i'.bak' s/x86_64/$ARCH/g Makefile 
+sed -i'.bak2' s/amd64/$ARCH/g Makefile && rm Makefile.bak2
 
 echo ">>> >>> build helm-operator binary"
 export GOARCH=$ARCH
 export GOOS=linux
 make build/operator-sdk-dev-$ARCH-linux-gnu
 
+mv Makefile.bak Makefile
 echo ">>> >>> Make custom helm-operator image"
 source hack/lib/test_lib.sh
 
@@ -51,11 +52,12 @@ pushd "$BASEIMAGEDIR"
 mkdir -p build/_output/bin/
 cp $ROOTDIR/build/operator-sdk-dev-${ARCH}-linux-gnu build/_output/bin/helm-operator
 
-sed -i 's/ubi7\/ubi-minimal:latest/ubi8\/ubi-minimal:8.1-398/g' build/Dockerfile
+cat build/Dockerfile
+sed -i'.bak' 's/ubi8\/ubi-minimal:latest/ubi8\/ubi-minimal:8.1-398/g' build/Dockerfile && rm build/Dockerfile.bak
 
 operator-sdk build quay.io/operator-framework/helm-operator:dev
 
-docker tag quay.io/operator-framework/helm-operator:dev quay.io/operator-framework/helm-operator:v0.9.0
+docker tag quay.io/operator-framework/helm-operator:dev quay.io/operator-framework/helm-operator:v0.16.0
 
 echo ">>> Done Building Helm Operator Image"
 popd

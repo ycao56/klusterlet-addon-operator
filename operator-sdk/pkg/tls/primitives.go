@@ -26,7 +26,7 @@ import (
 	"math/big"
 	"time"
 
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 )
 
 const (
@@ -99,7 +99,8 @@ func newSelfSignedCACertificate(key *rsa.PrivateKey) (*x509.Certificate, error) 
 // newSignedCertificate signs a certificate using the given private key, CA and returns a signed certificate.
 // The certificate could be used for both client and server auth.
 // The certificate has one-year lease.
-func newSignedCertificate(cfg *CertConfig, service *v1.Service, key *rsa.PrivateKey, caCert *x509.Certificate, caKey *rsa.PrivateKey) (*x509.Certificate, error) {
+func newSignedCertificate(cfg *CertConfig, service *v1.Service, key *rsa.PrivateKey, caCert *x509.Certificate,
+	caKey *rsa.PrivateKey) (*x509.Certificate, error) {
 	serial, err := rand.Int(rand.Reader, new(big.Int).SetInt64(math.MaxInt64))
 	if err != nil {
 		return nil, err

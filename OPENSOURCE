@@ -1,9 +1,2 @@
-https://hub.docker.com/_/quay.io/operator-framework/helm-operator,v0.9.0
-https://hub.docker.com/_/osdk-builder,latest
-https://hub.docker.com/_/ansible/ansible-runner,1.2
-https://hub.docker.com/_/osdk-builder,latest
-https://hub.docker.com/_/osdk-ansible,latest
-https://hub.docker.com/_/osdk-builder,latest
-https://hub.docker.com/_/ansible/ansible-runner,1.2
-https://hub.docker.com/_/openshift/origin-release,golang-1.12
-https://hub.docker.com/_/registry.access.redhat.com/ubi7/ubi-minimal,latest
+https://hub.docker.com/_/quay.io/operator-framework/helm-operator,v0.16.0
+https://hub.docker.com/_/registry.access.redhat.com/ubi8/ubi-minimal,latest

@@ -1,4 +1,4 @@
-# Unit testing
+# Unit testing with Operator SDK
 ------------
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
@@ -52,10 +52,9 @@ func TestMemcachedController(t *testing.T) {
     cl := fake.NewFakeClient(objs...)
 
     // List Memcached objects filtering by labels
+    opt := client.MatchingLabels(map[string]string{"label-key": "label-value"})
     memcachedList := &cachev1alpha1.MemcachedList{}
-    err := cl.List(context.TODO(), client.MatchingLabels(map[string]string{
-		"label-key": "label-value",
-    }), memcachedList)
+    err := cl.List(context.TODO(), memcachedList, opt)
     if err != nil {
         t.Fatalf("list memcached: (%v)", err)
     }
@@ -82,7 +81,7 @@ import (
     "k8s.io/client-go/kubernetes/scheme"
     "sigs.k8s.io/controller-runtime/pkg/client/fake"
     "sigs.k8s.io/controller-runtime/pkg/reconcile"
-    logf "sigs.k8s.io/controller-runtime/pkg/runtime/log"
+    logf "sigs.k8s.io/controller-runtime/pkg/log"
 )
 
 func TestMemcachedControllerDeploymentCreate(t *testing.T) {
@@ -249,7 +248,7 @@ Following is a snippet code as an example to increase the verbosity of the logs 
 ```go
 import (
     ...
-    logf "sigs.k8s.io/controller-runtime/pkg/runtime/log"
+    logf "sigs.k8s.io/controller-runtime/pkg/log"
     ...
 )
 func TestMemcachedController(t *testing.T) {
@@ -267,6 +266,6 @@ func TestMemcachedController(t *testing.T) {
 [doc-cr-fake-client]: https://godoc.org/github.com/kubernetes-sigs/controller-runtime/pkg/client/fake
 [repo-memcached-reconcile]: https://github.com/operator-framework/operator-sdk-samples/blob/4c6934448684a6953ece4d3d9f3f77494b1c125e/memcached-operator/pkg/controller/memcached/memcached_controller.go#L82
 [doc-reconcile]: https://godoc.org/sigs.k8s.io/controller-runtime/pkg/reconcile#Reconciler
-[code-test-example]: https://github.com/operator-framework/operator-sdk-samples/blob/master/memcached-operator/pkg/controller/memcached/memcached_controller_test.go#L25
+[code-test-example]: https://github.com/operator-framework/operator-sdk-samples/blob/master/go/memcached-operator/pkg/controller/memcached/memcached_controller_test.go#L25
 [user-guide]: ../user-guide.md#register-with-the-managers-scheme
 [ocp-doc-v1-route]: https://docs.openshift.com/container-platform/3.11/rest_api/apis-route.openshift.io/v1.Route.html

@@ -18,7 +18,7 @@ import (
 	"reflect"
 	"testing"
 
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -216,7 +216,8 @@ func TestRemoveCondition(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			RemoveCondition(&tc.status, tc.condType)
 			if tc.expectedSize != len(tc.status.Conditions) {
-				t.Fatalf("Conditions  did no match expected size:\nActual: %#v\nExpected: %#v", len(tc.status.Conditions), tc.expectedSize)
+				t.Fatalf("Conditions  did no match expected size:\nActual: %#v\nExpected: %#v",
+					len(tc.status.Conditions), tc.expectedSize)
 			}
 		})
 	}
@@ -283,7 +284,8 @@ func TestSetCondition(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			SetCondition(tc.status, *tc.condition)
 			if tc.expectedNewSize != len(tc.status.Conditions) {
-				t.Fatalf("New size of conditions did not match expected\nActual: %v\nExpected: %v", len(tc.status.Conditions), tc.expectedNewSize)
+				t.Fatalf("New size of conditions did not match expected\nActual: %v\nExpected: %v",
+					len(tc.status.Conditions), tc.expectedNewSize)
 			}
 			if tc.keepLastTransitionTime {
 				tc.condition.LastTransitionTime = lastTransitionTime

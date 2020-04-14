@@ -9,6 +9,8 @@ kind: CertPolicyController
 metadata:
   name: certpolicyctrl
   namespace: multicluster-endpoint
-# spec:
-#   # Add fields here
-#   size: 3
+spec:
+  clusterName: test
+  clusterNamespace: test
+  connectionManager: test-connmgr
+  fullnameOverride: certpolicyctrl-test

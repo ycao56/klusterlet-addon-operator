@@ -22,14 +22,18 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/operator-framework/operator-sdk/internal/util/k8sutil"
 	"github.com/operator-framework/operator-sdk/pkg/ansible/proxy/controllermap"
 	"github.com/operator-framework/operator-sdk/pkg/ansible/proxy/requestfactory"
 	k8sRequest "github.com/operator-framework/operator-sdk/pkg/ansible/proxy/requestfactory"
 	osdkHandler "github.com/operator-framework/operator-sdk/pkg/handler"
+
 	"k8s.io/apimachinery/pkg/api/meta"
 	metainternalversion "k8s.io/apimachinery/pkg/apis/meta/internalversion"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/fields"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/util/sets"
 	"sigs.k8s.io/controller-runtime/pkg/cache"
@@ -54,15 +58,17 @@ func (c *cacheResponseHandler) ServeHTTP(w http.ResponseWriter, req *http.Reques
 	switch req.Method {
 	case http.MethodGet:
 		// GET request means we need to check the cache
-		rf := k8sRequest.RequestInfoFactory{APIPrefixes: sets.NewString("api", "apis"), GrouplessAPIPrefixes: sets.NewString("api")}
+		rf := k8sRequest.RequestInfoFactory{APIPrefixes: sets.NewString("api", "apis"),
+			GrouplessAPIPrefixes: sets.NewString("api")}
 		r, err := rf.NewRequestInfo(req)
 		if err != nil {
 			log.Error(err, "Failed to convert request")
 			break
 		}
 
-		if c.skipCacheLookup(r) {
-			log.V(2).Info("Skipping cache lookup", "resource", r)
+		// Skip cache for non-resource requests, not a part of skipCacheLookup for performance.
+		if !r.IsResourceRequest {
+			log.Info("Skipping cache lookup", "resource", r)
 			break
 		}
 
@@ -75,7 +81,12 @@ func (c *cacheResponseHandler) ServeHTTP(w http.ResponseWriter, req *http.Reques
 		k, err := getGVKFromRequestInfo(r, c.restMapper)
 		if err != nil {
 			// break here in case resource doesn't exist in cache
-			log.Info("Cache miss, can not find in rest mapper")
+			log.Error(err, "Cache miss, can not find in rest mapper")
+			break
+		}
+
+		if c.skipCacheLookup(r, k, req) {
+			log.Info("Skipping cache lookup", "resource", r)
 			break
 		}
 
@@ -83,7 +94,7 @@ func (c *cacheResponseHandler) ServeHTTP(w http.ResponseWriter, req *http.Reques
 		isVR, err := c.apiResources.IsVirtualResource(k)
 		if err != nil {
 			// break here in case we can not understand if virtual resource or not
-			log.Info("Unable to determine if virtual resource", "gvk", k)
+			log.Error(err, "Unable to determine if virtual resource", "gvk", k)
 			break
 		}
 
@@ -137,9 +148,33 @@ func (c *cacheResponseHandler) ServeHTTP(w http.ResponseWriter, req *http.Reques
 }
 
 // skipCacheLookup - determine if we should skip the cache lookup
-func (c *cacheResponseHandler) skipCacheLookup(r *requestfactory.RequestInfo) bool {
-	// check if resource is present on request
-	if !r.IsResourceRequest {
+func (c *cacheResponseHandler) skipCacheLookup(r *requestfactory.RequestInfo, gvk schema.GroupVersionKind,
+	req *http.Request) bool {
+
+	owner, err := getRequestOwnerRef(req)
+	if err != nil {
+		log.Error(err, "Could not get owner reference from proxy.")
+		return false
+	}
+	ownerGV, err := schema.ParseGroupVersion(owner.APIVersion)
+	if err != nil {
+		m := fmt.Sprintf("Could not get group version for: %v.", owner)
+		log.Error(err, m)
+		return false
+	}
+	ownerGVK := schema.GroupVersionKind{
+		Group:   ownerGV.Group,
+		Version: ownerGV.Version,
+		Kind:    owner.Kind,
+	}
+
+	relatedController, ok := c.cMap.Get(ownerGVK)
+	if !ok {
+		log.Info("Could not find controller for gvk.", "ownerGVK:", ownerGVK)
+		return false
+	}
+	if relatedController.Blacklist[gvk] {
+		log.Info("Skipping, because gvk is blacklisted", "GVK", gvk)
 		return true
 	}
 
@@ -180,7 +215,8 @@ func (c *cacheResponseHandler) recoverDependentWatches(req *http.Request, un *un
 	if typeString, ok := un.GetAnnotations()[osdkHandler.TypeAnnotation]; ok {
 		ownerGV, err := schema.ParseGroupVersion(ownerRef.APIVersion)
 		if err != nil {
-			log.Error(err, "Could not get ownerRef from proxy")
+			m := fmt.Sprintf("could not get group version for: %v", ownerGV)
+			log.Error(err, m)
 			return
 		}
 		if typeString == fmt.Sprintf("%v.%v", ownerRef.Kind, ownerGV.Group) {
@@ -193,27 +229,37 @@ func (c *cacheResponseHandler) recoverDependentWatches(req *http.Request, un *un
 	}
 }
 
-func (c *cacheResponseHandler) getListFromCache(r *requestfactory.RequestInfo, req *http.Request, k schema.GroupVersionKind) (marshaler, error) {
-	listOptions := &metav1.ListOptions{}
-	if err := metainternalversion.ParameterCodec.DecodeParameters(req.URL.Query(), metav1.SchemeGroupVersion, listOptions); err != nil {
+func (c *cacheResponseHandler) getListFromCache(r *requestfactory.RequestInfo, req *http.Request,
+	k schema.GroupVersionKind) (marshaler, error) {
+	k8sListOpts := &metav1.ListOptions{}
+	if err := metainternalversion.ParameterCodec.DecodeParameters(req.URL.Query(), metav1.SchemeGroupVersion,
+		k8sListOpts); err != nil {
 		log.Error(err, "Unable to decode list options from request")
 		return nil, err
 	}
-	lo := client.InNamespace(r.Namespace)
-	if err := lo.SetLabelSelector(listOptions.LabelSelector); err != nil {
-		log.Error(err, "Unable to set label selectors for the client")
-		return nil, err
+	clientListOpts := []client.ListOption{
+		client.InNamespace(r.Namespace),
 	}
-	if listOptions.FieldSelector != "" {
-		if err := lo.SetFieldSelector(listOptions.FieldSelector); err != nil {
-			log.Error(err, "Unable to set field selectors for the client")
+	if k8sListOpts.LabelSelector != "" {
+		sel, err := labels.ConvertSelectorToLabelsMap(k8sListOpts.LabelSelector)
+		if err != nil {
+			log.Error(err, "Unable to convert label selectors for the client")
 			return nil, err
 		}
+		clientListOpts = append(clientListOpts, client.MatchingLabels(sel))
+	}
+	if k8sListOpts.FieldSelector != "" {
+		sel, err := fields.ParseSelector(k8sListOpts.FieldSelector)
+		if err != nil {
+			log.Error(err, "Unable to parse field selectors for the client")
+			return nil, err
+		}
+		clientListOpts = append(clientListOpts, k8sutil.MatchingFields{Sel: sel})
 	}
 	k.Kind = k.Kind + "List"
 	un := unstructured.UnstructuredList{}
 	un.SetGroupVersionKind(k)
-	err := c.informerCache.List(context.Background(), lo, &un)
+	err := c.informerCache.List(context.Background(), &un, clientListOpts...)
 	if err != nil {
 		// break here in case resource doesn't exist in cache but exists on APIserver
 		// This is very unlikely but provides user with expected 404
@@ -223,7 +269,8 @@ func (c *cacheResponseHandler) getListFromCache(r *requestfactory.RequestInfo, r
 	return &un, nil
 }
 
-func (c *cacheResponseHandler) getObjectFromCache(r *requestfactory.RequestInfo, req *http.Request, k schema.GroupVersionKind) (marshaler, error) {
+func (c *cacheResponseHandler) getObjectFromCache(r *requestfactory.RequestInfo, req *http.Request,
+	k schema.GroupVersionKind) (marshaler, error) {
 	un := &unstructured.Unstructured{}
 	un.SetGroupVersionKind(k)
 	obj := client.ObjectKey{Namespace: r.Namespace, Name: r.Name}

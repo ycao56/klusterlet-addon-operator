@@ -9,7 +9,12 @@ kind: ApplicationManager
 metadata:
   name: applicationmanager
   namespace: multicluster-endpoint
-# spec:
-  # Add fields here
-  # size: 3
-  # fullnameOverride: example
+spec:
+  clusterName: test
+  clusterNamespace: test
+  connectionManager: test-connmgr
+  fullnameOverride: appmgr-test
+  deployable: 
+    image: {}
+  subscription: 
+    image: {}

@@ -9,3 +9,15 @@ kind: WorkManager
 metadata:
   name: workmanager
   namespace: multicluster-endpoint
+spec:
+  clusterName: test
+  clusterNamespace: test
+  connectionManager: test-connmgr
+  fullnameOverride: workmgr-test
+  clusterLabels: {}
+  ingress: 
+    host: ""
+    port: ""
+    type: Ingress
+  service: 
+    type: ClusterIP

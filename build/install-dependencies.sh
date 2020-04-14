@@ -20,7 +20,6 @@ fi
 # Build tools
 
 if ! which operator-sdk > /dev/null; then
-    OPERATOR_SDK_VER=v0.9.0
     curr_dir="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
     echo ">>> Installing Operator SDK"
     set +e

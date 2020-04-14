@@ -1,4 +1,4 @@
-# Developer guide
+# Ansible Developer Guide for Operator SDK
 
 This document provides some useful information and tips for a developer
 creating an operator powered by Ansible.
@@ -19,7 +19,7 @@ and test them using a playbook.
 
 ### Installing the k8s Ansible modules
 
-To install the k8s Ansible modules, one must first install Ansible 2.6+. On
+To install the k8s Ansible modules, one must first install Ansible 2.9+. On
 Fedora/Centos:
 ```bash
 $ sudo dnf install ansible
@@ -28,7 +28,22 @@ $ sudo dnf install ansible
 In addition to Ansible, a user must install the [OpenShift Restclient
 Python][openshift_restclient_python] package. This can be installed from pip:
 ```bash
-$ pip install openshift
+$ pip3 install openshift
+```
+
+Finally, a user must install the Ansible Kubernetes collection from ansible-galaxy:
+```bash
+$ ansible-galaxy collection install community.kubernetes
+```
+
+Alternatively, if you've already initialized your operator, you will have a `requirements.yml`
+file at the top level of your project. This file specifies Ansible dependencies that
+need to be installed for your operator to function. By default it will install the
+`community.kubernetes` collection, which are used to interact with the Kubernetes API, as well
+as the `operator_sdk.util` collection, which provides modules and plugins for operator-specific
+operations. To install the Ansible modules from this file, run
+```bash
+$ ansible-galaxy collection install -r requirements.yml
 ```
 
 ### Testing the k8s Ansible modules locally
@@ -45,6 +60,7 @@ Create foo-operator/tmp/build/go-test.sh
 Rendering Ansible Galaxy role [foo-operator/roles/Foo]...
 Cleaning up foo-operator/tmp/init
 Create foo-operator/watches.yaml
+Create foo-operator/requirements.yml
 Create foo-operator/deploy/rbac.yaml
 Create foo-operator/deploy/crd.yaml
 Create foo-operator/deploy/cr.yaml
@@ -54,16 +70,17 @@ Initialized empty Git repository in /home/dymurray/go/src/github.com/dymurray/op
 Run git init done
 
 $ cd foo-operator
+$ ansible-galaxy collection install -r requirements.yml
 ```
-
 Modify `roles/Foo/tasks/main.yml` with desired Ansible logic. For this example
 we will create and delete a namespace with the switch of a variable:
 ```yaml
 ---
-- name: set test namespace to {{ state }}
-  k8s:
+- name: set example-memcached namespace to {{ state }}
+  community.kubernetes.k8s:
     api_version: v1
     kind: Namespace
+    name: example-memcached
     state: "{{ state }}"
   ignore_errors: true
 ```
@@ -96,7 +113,7 @@ PLAY [localhost] ***************************************************************
 TASK [Gathering Facts] *********************************************************************
 ok: [localhost]
 
-Task [Foo : set test namespace to present]
+Task [Foo : set example-memcached namespace to present]
 changed: [localhost]
 
 PLAY RECAP *********************************************************************************
@@ -107,11 +124,11 @@ localhost                  : ok=2    changed=1    unreachable=0    failed=0
 Check that the namespace was created:
 ```bash
 $ kubectl get namespace
-NAME          STATUS    AGE
-default       Active    28d
-kube-public   Active    28d
-kube-system   Active    28d
-test          Active    3s
+NAME          	           STATUS    AGE
+default       	           Active    28d
+kube-public   		   Active    28d
+kube-system   	           Active    28d
+example-memcached          Active    3s
 ```
 
 Rerun the playbook setting `state` to `absent`:
@@ -125,7 +142,7 @@ PLAY [localhost] ***************************************************************
 TASK [Gathering Facts] *********************************************************************
 ok: [localhost]
 
-Task [Foo : set test namespace to absent]
+Task [Foo : set example-memcached namespace to absent]
 changed: [localhost]
 
 PLAY RECAP *********************************************************************************
@@ -186,40 +203,28 @@ annotations:
 
 Once a developer is comfortable working with the above workflow, it will be
 beneficial to test the logic inside of an operator. To accomplish this, we can
-use `operator-sdk up local` from the top-level directory of our project. The
-`up local` command reads from `./watches.yaml` and uses `~/.kube/config` to
+use `operator-sdk run --local` from the top-level directory of our project. The
+`run --local` command reads from `./watches.yaml` and uses `~/.kube/config` to
 communicate with a Kubernetes cluster just as the `k8s` modules do. This
 section assumes the developer has read the [Ansible Operator user
 guide][ansible_operator_user_guide] and has the proper dependencies installed.
 
-Since `up local` reads from `./watches.yaml`, there are a couple options
-available to the developer. If `role` is left alone (by default
-`/opt/ansible/roles/<name>`) the developer must copy the role over to
-`/opt/ansible/roles` from the operator directly. This is cumbersome because
-changes will not be reflected from the current directory. It is recommended
-that the developer instead change the `role` field to point to the current
-directory and simply comment out the existing line:
-```yaml
-- version: v1alpha1
-  group: foo.example.com
-  kind: Foo
-  #  role: /opt/ansible/roles/Foo
-  role: /home/user/foo-operator/Foo
-```
+**NOTE:** You can customize the roles path by setting the environment variable `ANSIBLE_ROLES_PATH` or using the flag `ansible-roles-path`. Note that, if the role not be found in the 
+customized path informed in `ANSIBLE_ROLES_PATH` then, the operator will look for it in the `{{current directory}}/roles`.   
 
 Create a Custom Resource Definition (CRD) and proper Role-Based Access Control
 (RBAC) definitions for resource Foo. `operator-sdk` auto-generates these files
 inside of the `deploy` folder:
 ```bash
-$ kubectl create -f deploy/crds/foo_v1alpha1_foo_crd.yaml
+$ kubectl create -f deploy/crds/foo.example.com_foos_crd.yaml
 $ kubectl create -f deploy/service_account.yaml
 $ kubectl create -f deploy/role.yaml
 $ kubectl create -f deploy/role_binding.yaml
 ```
 
-Run the `up local` command:
+Run the `run --local` command:
 ```bash
-$ operator-sdk up local
+$ operator-sdk run --local
 INFO[0000] Go Version: go1.10.3
 INFO[0000] Go OS/Arch: linux/amd64
 INFO[0000] operator-sdk Version: 0.0.6+git
@@ -248,14 +253,14 @@ Create a Custom Resource instance of Foo with default var `state` set to
 $ kubectl create -f deploy/cr.yaml
 ```
 
-Check that namespace `test` was created:
+Check that namespace `example-memcached` was created:
 ```bash
 $ kubectl get namespace
-NAME          STATUS    AGE
-default       Active    28d
-kube-public   Active    28d
-kube-system   Active    28d
-test          Active    3s
+NAME          	           STATUS    AGE
+default       		   Active    28d
+kube-public   		   Active    28d
+kube-system   		   Active    28d
+example-memcached          Active    3s
 ```
 
 Modify `deploy/cr.yaml` to set `state` to `absent`:
@@ -306,7 +311,7 @@ $ sed -i "" 's|REPLACE_IMAGE|quay.io/example/foo-operator:v0.0.1|g' deploy/opera
 Deploy the foo-operator:
 
 ```sh
-$ kubectl create -f deploy/crds/foo_v1alpha1_foo_crd.yaml # if CRD doesn't exist already
+$ kubectl create -f deploy/crds/foo.example.com_foos_crd.yaml # if CRD doesn't exist already
 $ kubectl create -f deploy/service_account.yaml
 $ kubectl create -f deploy/role.yaml
 $ kubectl create -f deploy/role_binding.yaml
@@ -323,18 +328,26 @@ foo-operator       1         1         1            1           1m
 
 #### Viewing the Ansible logs
 
-The `foo-operator` deployment creates a Pod with two containers, `operator` and `ansible`.
-The `ansible` container exists only to expose the standard Ansible stdout logs that most Ansible
-users will be familiar with. In order to see the logs from a particular container, you can run
+In order to see the logs from a particular you can run:
 
 ```sh
-kubectl logs deployment/foo-operator -c ansible
-kubectl logs deployment/foo-operator -c operator
+kubectl logs deployment/foo-operator 
 ```
 
-The `ansible` logs contain all of the information about the Ansible run and will make it much easier to debug issues within your Ansible tasks,
-whereas the `operator` logs will contain much more detailed information about the Ansible Operator's internals and interface with Kubernetes.
+The logs contain the information about the Ansible run and will make it much easier to debug issues within your Ansible tasks. 
+Note that the logs will contain much more detailed information about the Ansible Operator's internals and interface with Kubernetes as well.
 
+Also, you can use the environment variable `ANSIBLE_DEBUG_LOGS` set as `True` to check the full Ansible result in the logs in order to be able to debug it. 
+
+**Example**
+
+In the `deploy/operator.yaml`:
+```yaml
+...
+- name: ANSIBLE_DEBUG_LOGS
+  value: "True"
+...
+```
 
 ## Custom Resource Status Management
 The operator will automatically update the CR's `status` subresource with
@@ -363,29 +376,54 @@ status:
     type: Running
 ```
 
-Ansible Operator also allows you as the developer to supply custom status
-values with the [k8s_status][k8s_status_module] Ansible Module. This allows the
-developer to update the `status` from within Ansible with any key/value pair as
-desired. By default, Ansible Operator will always include the generic Ansible
-run output as shown above. If you would prefer your application *not* update
-the status with Ansible output and would prefer to track the status manually
-from your application, then simply update the watches file with `manageStatus`:
+Ansible Operator also allows you as the developer to supply custom
+status values with the `k8s_status` Ansible Module, which is included in
+[operator_sdk util collection](https://galaxy.ansible.com/operator_sdk/util).
+
+This allows the developer to update the `status` from within Ansible
+with any key/value pair as desired. By default, Ansible Operator will
+always include the generic Ansible run output as shown above. If you
+would prefer your application *not* update the status with Ansible
+output and would prefer to track the status manually from your
+application, then simply update the watches file with `manageStatus`:
+
 ```yaml
 - version: v1
   group: api.example.com
   kind: Foo
-  role: /opt/ansible/roles/Foo
+  role: Foo
   manageStatus: false
 ```
 
-To update the `status` subresource with key `foo` and value `bar`, `k8s_status`
-can be used as shown:
+The simplest way to invoke the `k8s_status` module is to
+use its fully qualified collection name (fqcn). To update the
+`status` subresource with key `foo` and value `bar`, `k8s_status` can be
+used as shown:
+
 ```yaml
-- k8s_status:
+- operator_sdk.util.k8s_status:
     api_version: app.example.com/v1
     kind: Foo
     name: "{{ meta.name }}"
     namespace: "{{ meta.namespace }}"
+    status:
+      foo: bar
+```
+
+Collections can also be declared in the role's `meta/main.yml`, which is
+included for new scaffolded ansible operators.
+
+```yaml
+collections:
+  - operator_sdk.util
+```
+
+Declaring collections in the role meta allows you to invoke the
+`k8s_status` module directly.
+
+```yaml
+- k8s_status:
+    <snip>
     status:
       foo: bar
 ```
@@ -414,30 +452,6 @@ Please look over the following sections for help debugging an Ansible Operator:
 * [View the Ansible logs](../user-guide.md#view-the-ansible-logs)
 * [Additional Ansible debug](../user-guide.md#additional-ansible-debug)
 * [Testing Ansible Operators with Molecule](testing_guide.md#testing-ansible-operators-with-molecule)
-
-### Using k8s_status Ansible module with `up local`
-This section covers the required steps to using the `k8s_status` Ansible module
-with `operator-sdk up local`. If you are unfamiliar with managing status from
-the Ansible Operator, see the [proposal for user-driven status
-management][manage_status_proposal].
-
-If your operator takes advantage of the `k8s_status` Ansible module and you are
-interested in testing the operator with `operator-sdk up local`, then it is
-imperative that the module is installed in a location that Ansible expects.
-This is done with the `library` configuration option for Ansible. For our
-example, we will assume the user is placing third-party Ansible modules in
-`/usr/share/ansible/library`.
-
-To install the `k8s_status` module, first set `ansible.cfg` to search in
-`/usr/share/ansible/library` for installed Ansible modules:
-```bash
-$ echo "library=/usr/share/ansible/library/" >> /etc/ansible/ansible.cfg
-```
-
-Add `k8s_status.py` to `/usr/share/ansible/library/`:
-```bash
-$ wget https://raw.githubusercontent.com/fabianvf/ansible-k8s-status-module/master/k8s_status.py -O /usr/share/ansible/library/k8s_status.py
-```
 
 ## Extra vars sent to Ansible
 The extra vars that are sent to Ansible are managed by the operator. The `spec`
@@ -468,10 +482,10 @@ The structure passed to Ansible as extra vars is:
   "message": "Hello world 2",
   "new_parameter": "newParam",
   "_app_example_com_database": {
-     <Full CRD>
+     <Full CR>
    },
   "_app_example_com_database_spec": {
-     <Full CRD .spec>
+     <Full CR .spec>
    },
 }
 ```
@@ -485,7 +499,6 @@ operator. The `meta` fields can be accesses via dot notation in Ansible as so:
 ```
 
 [k8s_ansible_module]:https://docs.ansible.com/ansible/2.6/modules/k8s_module.html
-[k8s_status_module]:https://github.com/fabianvf/ansible-k8s-status-module
 [openshift_restclient_python]:https://github.com/openshift/openshift-restclient-python
 [ansible_operator_user_guide]:../user-guide.md
 [manage_status_proposal]:../../proposals/ansible-operator-status.md

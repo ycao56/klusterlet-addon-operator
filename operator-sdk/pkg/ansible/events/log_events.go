@@ -16,11 +16,12 @@ package events
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/operator-framework/operator-sdk/pkg/ansible/runner/eventapi"
 
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	logf "sigs.k8s.io/controller-runtime/pkg/runtime/log"
+	logf "sigs.k8s.io/controller-runtime/pkg/log"
 )
 
 // LogLevel - Levelt for the logging to take place.
@@ -67,10 +68,12 @@ func (l loggingEventHandler) Handle(ident string, u *unstructured.Unstructured, 
 
 		if e.Event == eventapi.EventPlaybookOnTaskStart && !setFactAction && !debugAction {
 			logger.Info("[playbook task]", "EventData.Name", e.EventData["name"])
+			l.logAnsibleStdOut(e)
 			return
 		}
 		if e.Event == eventapi.EventRunnerOnOk && debugAction {
 			logger.Info("[playbook debug]", "EventData.TaskArgs", e.EventData["task_args"])
+			l.logAnsibleStdOut(e)
 			return
 		}
 		if e.Event == eventapi.EventRunnerOnFailed {
@@ -82,6 +85,7 @@ func (l loggingEventHandler) Handle(ident string, u *unstructured.Unstructured, 
 				errKVs = append(errKVs, "EventData.FailedTaskPath", taskPath)
 			}
 			logger.Error(errors.New("[playbook task failed]"), "", errKVs...)
+			l.logAnsibleStdOut(e)
 			return
 		}
 	}
@@ -89,6 +93,19 @@ func (l loggingEventHandler) Handle(ident string, u *unstructured.Unstructured, 
 	// log everything else for the 'Everything' LogLevel
 	if l.LogLevel == Everything {
 		logger.Info("", "EventData", e.EventData)
+		l.logAnsibleStdOut(e)
+	}
+}
+
+// logAnsibleStdOut will print in the logs the Ansible Task Output formatted
+func (l loggingEventHandler) logAnsibleStdOut(e eventapi.JobEvent) {
+	if len(e.StdOut) > 0 {
+		fmt.Printf("\n--------------------------- Ansible Task StdOut -------------------------------\n")
+		if e.Event != eventapi.EventPlaybookOnTaskStart {
+			fmt.Printf("\n TASK [%v] ******************************** \n", e.EventData["task"])
+		}
+		fmt.Println(e.StdOut)
+		fmt.Printf("\n-------------------------------------------------------------------------------\n")
 	}
 }
 

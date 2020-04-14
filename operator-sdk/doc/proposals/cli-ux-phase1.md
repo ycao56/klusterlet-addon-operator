@@ -1,25 +1,33 @@
-# User Experience CLI Improvements | Phase 1
+# User Experience CLI Improvements | Phase 1 Proposal for Operator SDK
 
 Implementation Owner: @joelanford
 
-Status: Draft
+> Status: **implementable**
 
-[Background](#Background)
-
-[Goal](#Goal)
-
-[Use cases](#Use_cases)
-
-[Proposed CLI commands](#Proposed_CLI_commands)
-
-[References](#References)
+- [Background](#background)
+- [Goal](#goal)
+- [Use cases](#use-cases)
+- [Proposed CLI commands](#proposed-cli-commands)
+  - [`operator-sdk alpha`](#operator-sdk-alpha)
+  - [`operator-sdk alpha olm init`](#operator-sdk-alpha-olm-init)
+    - [OCP/OKD](#ocpokd)
+    - [Upstream Kubernetes](#upstream-kubernetes)
+    - [Flags for `olm init`](#flags-for-olm-init)
+  - [`operator-sdk alpha olm up`](#operator-sdk-alpha-olm-up)
+    - [Prerequisites](#prerequisites)
+    - [Flags for `olm up`](#flags-for-olm-up)
+    - [Resources](#resources)
+- [References](#references)
+  - [Operator SDK](#operator-sdk)
+  - [Operator Registry](#operator-registry)
+  - [Operator Lifecycle Manager](#operator-lifecycle-manager)
 
 ## Background
 
 The SDK CLI is one of the primary tools in the Operator Framework for operator developers and
 deployers. However, the current user experience (UX) leaves a lot to be desired. Currently, the
 tools and documentation that help a user create, develop, test, package, run, and publish an
-operator are spread among many different repositories, making for a steep learning curve for 
+operator are spread among many different repositories, making for a steep learning curve for
 newcomers.
 
 ## Goal
@@ -73,7 +81,7 @@ Different clusters install OLM in different namespaces. Since `olm up` may need 
 #### Prerequisites
 
 1. The operator container image referenced by the CSV is available to the cluster.
-2. An operator bundle on disk (created by `operator-sdk olm-catalog gen-csv`).
+2. An operator bundle on disk (created by `operator-sdk generate csv`).
 
 #### Flags for `olm up`
 
@@ -95,7 +103,7 @@ OLM uses Kubernetes APIs to learn about the set of operators that are available 
 | `OperatorGroup` | Tells OLM which namespaces the operator will have RBAC permissions for. We'll configure it based on the `--install-mode` and `--namespace` flags. |
 | `Subscription`  | Tells OLM to manage installation and upgrade of an operator in the namespace in which the `Subscription` is created. We'll create it based on the value of the `--namespace` flag. |
 
-**Open questions:** 
+**Open questions:**
 1. When the user aborts the process, should we handle cleanup for any of the InstallPlan, CSV, CRD, and CR resources? Which of these will be automatically garbage-collected?
 
 ## References
@@ -125,6 +133,5 @@ OLM uses Kubernetes APIs to learn about the set of operators that are available 
 [registry_manifest_format]: https://github.com/operator-framework/operator-registry#manifest-format
 
 [olm_github]: https://github.com/operator-framework/operator-lifecycle-manager
-[olm_arch]: https://github.com/operator-framework/operator-lifecycle-manager/blob/master/Documentation/design/architecture.md
-[olm_install_modes]: https://github.com/operator-framework/operator-lifecycle-manager/blob/master/Documentation/design/operatorgroups.md#installmodes-and-supported-operatorgroups
-
+[olm_arch]: https://github.com/operator-framework/operator-lifecycle-manager/blob/master/doc/design/architecture.md
+[olm_install_modes]: https://github.com/operator-framework/operator-lifecycle-manager/blob/master/doc/design/operatorgroups.md#installmodes-and-supported-operatorgroups

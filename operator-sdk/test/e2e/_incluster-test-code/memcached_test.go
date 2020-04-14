@@ -65,7 +65,7 @@ func TestMemcached(t *testing.T) {
 	})
 }
 
-func memcachedLeaderTest(t *testing.T, f *framework.Framework, ctx *framework.TestCtx) error {
+func memcachedLeaderTest(t *testing.T, f *framework.Framework, ctx *framework.Context) error {
 	namespace, err := ctx.GetNamespace()
 	if err != nil {
 		return err
@@ -137,17 +137,13 @@ func verifyLeader(t *testing.T, namespace string, f *framework.Framework, labels
 	owner := owners[0]
 
 	// get operator pods
-	pods := v1.PodList{}
-	opts := client.ListOptions{Namespace: namespace}
-	for k, v := range labels {
-		if err := opts.SetLabelSelector(fmt.Sprintf("%s=%s", k, v)); err != nil {
-			return nil, fmt.Errorf("failed to set list label selector: (%v)", err)
-		}
+	pods := &v1.PodList{}
+	opts := []client.ListOption{
+		client.InNamespace(namespace),
+		client.MatchingLabels(labels),
+		client.MatchingFields{"status.phase": "Running"},
 	}
-	if err := opts.SetFieldSelector("status.phase=Running"); err != nil {
-		t.Fatalf("Failed to set list field selector: (%v)", err)
-	}
-	err = f.Client.List(goctx.TODO(), &opts, &pods)
+	err = f.Client.List(goctx.TODO(), pods, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -164,7 +160,7 @@ func verifyLeader(t *testing.T, namespace string, f *framework.Framework, labels
 	return nil, fmt.Errorf("did not find operator pod that was referenced by configmap")
 }
 
-func memcachedScaleTest(t *testing.T, f *framework.Framework, ctx *framework.TestCtx, fromReplicas, toReplicas int) error {
+func memcachedScaleTest(t *testing.T, f *framework.Framework, ctx *framework.Context, fromReplicas, toReplicas int) error {
 	name := "example-memcached"
 	namespace, err := ctx.GetNamespace()
 	if err != nil {
@@ -181,7 +177,7 @@ func memcachedScaleTest(t *testing.T, f *framework.Framework, ctx *framework.Tes
 			Size: int32(fromReplicas),
 		},
 	}
-	// use TestCtx's create helper to create the object and add a cleanup function for the new object
+	// use Context's create helper to create the object and add a cleanup function for the new object
 	err = f.Client.Create(goctx.TODO(), exampleMemcached, &framework.CleanupOptions{TestContext: ctx, Timeout: cleanupTimeout, RetryInterval: cleanupRetryInterval})
 	if err != nil {
 		return fmt.Errorf("could no create CR: %v", err)
@@ -215,13 +211,15 @@ func memcachedScaleTest(t *testing.T, f *framework.Framework, ctx *framework.Tes
 
 func MemcachedLocal(t *testing.T) {
 	// get global framework variables
-	ctx := framework.NewTestCtx(t)
+	ctx := framework.NewContext(t)
 	defer ctx.Cleanup()
 	namespace, err := ctx.GetNamespace()
 	if err != nil {
 		t.Fatal(err)
 	}
-	cmd := exec.Command("operator-sdk", "up", "local", "--namespace="+namespace)
+	cmd := exec.Command("operator-sdk", "run",
+		"--local",
+		"--namespace="+namespace)
 	stderr, err := os.Create("stderr.txt")
 	if err != nil {
 		t.Fatalf("Failed to create stderr.txt: %v", err)
@@ -255,13 +253,19 @@ func MemcachedLocal(t *testing.T) {
 	}
 
 	if err = memcachedScaleTest(t, framework.Global, ctx, 3, 4); err != nil {
+		file, fileErr := ioutil.ReadFile("stderr.txt")
+		if fileErr != nil {
+			t.Logf("Failed to read operator logs after test failure: %v", fileErr)
+		} else {
+			t.Logf("Operator Logs: %s", string(file))
+		}
 		t.Fatal(err)
 	}
 }
 
 func MemcachedCluster(t *testing.T) {
 	// get global framework variables
-	ctx := framework.NewTestCtx(t)
+	ctx := framework.NewContext(t)
 	defer ctx.Cleanup()
 
 	err := ctx.InitializeClusterResources(&framework.CleanupOptions{TestContext: ctx, Timeout: cleanupTimeout, RetryInterval: cleanupRetryInterval})
@@ -301,7 +305,7 @@ func MemcachedCluster(t *testing.T) {
 	t.Log("Completed memcached custom resource metrics test")
 }
 
-func memcachedMetricsTest(t *testing.T, f *framework.Framework, ctx *framework.TestCtx) error {
+func memcachedMetricsTest(t *testing.T, f *framework.Framework, ctx *framework.Context) error {
 	namespace, err := ctx.GetNamespace()
 	if err != nil {
 		return err
@@ -311,7 +315,7 @@ func memcachedMetricsTest(t *testing.T, f *framework.Framework, ctx *framework.T
 	s := v1.Service{}
 	err = f.Client.Get(goctx.TODO(), types.NamespacedName{Name: fmt.Sprintf("%s-metrics", operatorName), Namespace: namespace}, &s)
 	if err != nil {
-		return fmt.Errorf("could not get metrics Service: (%v)", err)
+		return fmt.Errorf("could not get metrics Service: %v", err)
 	}
 	if len(s.Spec.Selector) == 0 {
 		return fmt.Errorf("no labels found in metrics Service")
@@ -333,10 +337,9 @@ func memcachedMetricsTest(t *testing.T, f *framework.Framework, ctx *framework.T
 	if err != nil {
 		return fmt.Errorf("failed to lint metrics: %v", err)
 	}
-	// TODO(lili): Change to 0, when we upgrade to 1.14.
-	// currently there is a problem with one of the metrics in upstream Kubernetes:
-	// `workqueue_longest_running_processor_microseconds`.
-	// This has been fixed in 1.14 release.
+
+	// TODO(joelanford): Change to 0, when we upgrade from kubernetes-1.15.
+	// This is fixed in kubernetes-1.16+.
 	if len(problems) > 1 {
 		return fmt.Errorf("found problems with metrics: %#+v", problems)
 	}
@@ -344,7 +347,7 @@ func memcachedMetricsTest(t *testing.T, f *framework.Framework, ctx *framework.T
 	return nil
 }
 
-func memcachedOperatorMetricsTest(t *testing.T, f *framework.Framework, ctx *framework.TestCtx) error {
+func memcachedOperatorMetricsTest(t *testing.T, f *framework.Framework, ctx *framework.Context) error {
 	namespace, err := ctx.GetNamespace()
 	if err != nil {
 		return err
@@ -353,7 +356,7 @@ func memcachedOperatorMetricsTest(t *testing.T, f *framework.Framework, ctx *fra
 	// TODO(lili): Make port a constant in internal/scaffold/cmd.go.
 	response, err := getMetrics(t, f, map[string]string{"name": operatorName}, namespace, "8686")
 	if err != nil {
-		return fmt.Errorf("failed to lint metrics: %v", err)
+		return fmt.Errorf("failed to get metrics: %v", err)
 	}
 	// Make sure metrics are present
 	if len(response) == 0 {
@@ -417,21 +420,17 @@ func memcachedOperatorMetricsTest(t *testing.T, f *framework.Framework, ctx *fra
 	return nil
 }
 
-func getMetrics(t *testing.T, f *framework.Framework, label map[string]string, ns, port string) ([]byte, error) {
+func getMetrics(t *testing.T, f *framework.Framework, labels map[string]string, ns, port string) ([]byte, error) {
 	// Get operator pod
-	pods := v1.PodList{}
-	opts := client.InNamespace(ns)
-	for k, v := range label {
-		if err := opts.SetLabelSelector(fmt.Sprintf("%s=%s", k, v)); err != nil {
-			return nil, fmt.Errorf("failed to set list label selector: (%v)", err)
-		}
+	pods := &v1.PodList{}
+	opts := []client.ListOption{
+		client.InNamespace(ns),
+		client.MatchingLabels(labels),
+		client.MatchingFields{"status.phase": "Running"},
 	}
-	if err := opts.SetFieldSelector("status.phase=Running"); err != nil {
-		return nil, fmt.Errorf("failed to set list field selector: (%v)", err)
-	}
-	err := f.Client.List(goctx.TODO(), opts, &pods)
+	err := f.Client.List(goctx.TODO(), pods, opts...)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get pods: (%v)", err)
+		return nil, fmt.Errorf("failed to get pods: %v", err)
 	}
 
 	podName := ""
@@ -441,13 +440,13 @@ func getMetrics(t *testing.T, f *framework.Framework, label map[string]string, n
 		podName = pods.Items[0].Name
 	} else if numPods > 1 {
 		// If we got more than one pod, get leader pod name.
-		leader, err := verifyLeader(t, ns, f, label)
+		leader, err := verifyLeader(t, ns, f, labels)
 		if err != nil {
 			return nil, err
 		}
 		podName = leader.Name
 	} else {
-		return nil, fmt.Errorf("failed to get operator pod: could not select any pods with selector %v", label)
+		return nil, fmt.Errorf("failed to get operator pod: could not select any pods with selector %v", labels)
 	}
 	// Pod name must be there, otherwise we cannot read metrics data via pod proxy.
 	if podName == "" {
