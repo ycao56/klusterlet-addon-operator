@@ -145,7 +145,6 @@ spec:
         effect: NoSchedule
 
 
-      enableServiceLinks: true
       hostIPC: true
       hostNetwork: true
       hostPID: true
