@@ -39,10 +39,10 @@ spec:
         imagePullPolicy: "{{ .Values.subscription.image.pullPolicy }}"
         env:
           - name: WATCH_NAMESPACE
-            value: ""
           - name: POD_NAME
             valueFrom:
               fieldRef:
+                apiVersion: v1
                 fieldPath: metadata.name
           - name: OPERATOR_NAME
             value: "subscription-controller"
