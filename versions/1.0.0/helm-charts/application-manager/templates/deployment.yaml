@@ -31,7 +31,11 @@ spec:
       serviceAccountName: {{ template "application-manager.fullname" . }}
       containers:
       - name: subscription-controller
-        image: "{{ .Values.subscription.image.repository }}:{{ .Values.subscription.image.tag }}"
+        {{- if .Values.imageShaDigests.multicluster_operators_subscription }}
+        image: "{{ .Values.subscription.image.repository }}/{{ .Values.subscription.image.name }}@{{ .Values.imageShaDigests.multicluster_operators_subscription }}"
+        {{- else }}
+        image: "{{ .Values.subscription.image.repository }}/{{ .Values.subscription.image.name }}:{{ .Values.subscription.image.tag }}{{ .Values.subscription.image.tagPostfix }}"
+        {{- end }}
         imagePullPolicy: "{{ .Values.subscription.image.pullPolicy }}"
         env:
           - name: WATCH_NAMESPACE

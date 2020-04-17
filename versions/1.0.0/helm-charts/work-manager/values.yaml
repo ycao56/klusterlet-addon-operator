@@ -24,7 +24,8 @@ userImpersonation: false
 workManager:
   enabled: true
   image:
-    repository: ibmcom/mcm-klusterlet
+    repository: quay.io/open-cluster-management
+    name: mcm-klusterlet
     tag: 3.2.0
     pullPolicy: IfNotPresent
 
@@ -56,3 +57,6 @@ resources:
 imagePullSecret: null
 
 logLevel: 5
+
+imageShaDigests:
+  fake: "fake"

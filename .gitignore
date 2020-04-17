@@ -4,6 +4,7 @@
 .vscode
 OPENSOURCE.check
 .DS_Store
+kind_kubeconfig.yaml
 
 # Folders
 .build-docker

@@ -10,7 +10,8 @@ clusterName: null
 clusterNamespace: null
 
 image:
-  repository: ibmcom/mcm-operator
+  repository: quay.io/open-cluster-management
+  name: mcm-operator
   tag: 3.2.0
   pullPolicy: IfNotPresent
 
@@ -36,3 +37,6 @@ resources:
     memory: 256Mi
 
 logLevel: 5
+
+imageShaDigests:
+  fake: "fake"

@@ -5,7 +5,8 @@
 # US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
 
 image:
-  repository: ibmcom/minio
+  repository: quay.io/open-cluster-management
+  name: minio
   tag: RELEASE.2019-04-09T01-22-30Z.2
   pullPolicy: IfNotPresent
 
@@ -33,3 +34,6 @@ tolerations:
   key: node.kubernetes.io/unreachable
   operator: Exists
 affinity: {}
+
+imageShaDigests:
+  fake: "fake"

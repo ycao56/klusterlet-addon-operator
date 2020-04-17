@@ -44,7 +44,11 @@ spec:
               - 'true'
       containers:
       - name: cis-crawler
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        {{- if .Values.imageShaDigests.cis_crawler }}
+        image: "{{ .Values.image.repository }}/{{ .Values.image.name }}@{{ .Values.imageShaDigests.cis_crawler }}"
+        {{- else }}
+        image: "{{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}{{ .Values.image.tagPostfix }}"
+        {{- end }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         env:
         - name: VAAAS_URL

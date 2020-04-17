@@ -2,10 +2,13 @@
 ###############################################################################
 # Copyright (c) 2020 Red Hat, Inc.
 ###############################################################################
-# set -x
-# set -e
-DOCKER_IMAGE=$1
+# set -x #To trace
+
+export DOCKER_IMAGE=$1
 KIND_CONFIGS=build/kind-config
+KIND_KUBECONFIG="${PROJECT_DIR}/kind_kubeconfig.yaml"
+export KUBECONFIG=${KIND_KUBECONFIG}
+export PULL_SECRET=multicloud-image-pull-secret
 
 
 set_linux_arch () {
@@ -53,7 +56,6 @@ install_kind () {
     fi
 }
 
-
 # Wait until the cluster is imported by checking the hub side
 # Parameter: KinD Config File
 wait_installed() {
@@ -100,7 +102,7 @@ run_test() {
 
   #export context to kubeconfig
   # export KUBECONFIG=$(mktemp /tmp/kubeconfigXXXX)
-  kind export kubeconfig --name=test-cluster
+  kind export kubeconfig --name=test-cluster --kubeconfig ${KIND_KUBECONFIG}
 
   #Load image into cluster
   kind load docker-image $DOCKER_IMAGE --name=test-cluster
@@ -119,7 +121,7 @@ run_test() {
   fi
 
   #Create the namespace
-  kubectl create ns multicluster-endpoint
+  kubectl apply -f ${PROJECT_DIR}/deploy/namespace.yaml
 
   #Install all CRs
   for file in `ls deploy/crs/multicloud.ibm.com_*_cr.yaml`; do kubectl apply -f $file; done
@@ -139,24 +141,24 @@ run_test() {
   kubectl create secret generic klusterlet-bootstrap -n multicluster-endpoint --from-file=kubeconfig=$tmpKUBECONFIG
 
   #Create the docker secret for quay.io
-  kubectl create secret docker-registry multicloud-image-pull-secret \
+  kubectl create secret docker-registry $PULL_SECRET \
       --docker-server=quay.io/open-cluster-management \
-      --docker-username=open-cluster-management+multiclusterhubdeploy \
-      --docker-password=CWI8K93KBWJNSTIQPBZFN2HDAYQNQOGN4R06QRCFFDQGHZ2IREM9NF5B83DU9C1U \
+      --docker-username=$DOCKER_USER \
+      --docker-password=$DOCKER_PASS \
       -n multicluster-endpoint
+  
+  for dir in overlays/test/* ; do
+    echo "Executing test "$dir
+    kubectl apply -k $dir
+    kubectl patch deployment endpoint-component-operator -n multicluster-endpoint -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"endpoint-component-operator\",\"image\":\"${DOCKER_IMAGE}\"}]}}}}"
+    #Wait if all helm-charts are installed
+    wait_installed $CONFIG_FILE
+    _timeout=$?
+   if [ $_timeout != 0 ]; then
+     break
+   fi
+  done
 
-  #Deploy the operator
-  kubectl apply -f deploy/service_account.yaml
-  kubectl apply -f deploy/role.yaml
-  kubectl apply -f deploy/role_binding.yaml
-
-  tmpOperator=$(mktemp /tmp/operatorXXXX)
-  sed s,REPLACE_IMAGE,$DOCKER_IMAGE, deploy/operator.yaml > $tmpOperator
-  kubectl apply -f $tmpOperator
-
-  #Wait if all helm-charts are installed
-  wait_installed $CONFIG_FILE
-  _timeout=$?
   #Delete cluster
 	kind delete cluster --name=test-cluster
   echo "====================== END of config $CONFIG_FILE ======================"

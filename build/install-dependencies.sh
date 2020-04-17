@@ -14,7 +14,7 @@ export GO111MODULE=off
 
 if ! which ossc > /dev/null; then
 	# do a get in a tmp dir to avoid local go.mod update
-	cd $(mktemp -d) && GOSUMDB=off go get -u github.com/open-cluster-management/go-ossc/ossc
+	(cd $(mktemp -d) && GOSUMDB=off go get -u github.com/open-cluster-management/go-ossc/ossc)
 fi
 
 # Build tools

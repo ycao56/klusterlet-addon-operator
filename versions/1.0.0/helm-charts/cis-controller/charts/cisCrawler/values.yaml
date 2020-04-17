@@ -17,10 +17,14 @@ cisCrawler:
   enabled: true
   crawlInterval: 86400
   image:
-    repository: "ibmcom/cis-crawler"
+    repository: "quay.io/open-cluster-management"
+    name: cis-crawler
     tag: "latest"
   resources:
     requests:
       memory: 64Mi
     limits:
       memory: 512Mi
+
+imageShaDigests:
+  fake: "fake"

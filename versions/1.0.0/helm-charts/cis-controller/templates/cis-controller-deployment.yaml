@@ -28,7 +28,11 @@ spec:
       serviceAccountName: {{ template "cisController.fullname" . }}-sa
       containers:
       - name: cis-controller
-        image: "{{ .Values.cisController.image.repository }}:{{ .Values.cisController.image.tag }}"
+        {{- if .Values.imageShaDigests.cis_controller }}
+        image: "{{ .Values.cisController.image.repository }}/{{ .Values.cisController.image.name }}@{{ .Values.imageShaDigests.cis_controller }}"
+        {{- else }}
+        image: "{{ .Values.cisController.image.repository }}/{{ .Values.cisController.image.name }}:{{ .Values.cisController.image.tag }}{{ .Values.cisController.image.tagPostfix }}"
+        {{- end }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         command: ["./bin/manager"]
         args: ["-cos-url", "$(CIS_COS_URL)", "-update-frequency", "$(UPDATE_FREQUENCY)", "-parent-event", "$(PARENT_EVENT)"]

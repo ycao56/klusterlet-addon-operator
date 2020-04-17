@@ -37,7 +37,11 @@ spec:
       serviceAccountName: {{ template "service-registry.fullname" . }}
       containers:
       - name: serviceregistry-dns
-        image: "{{ .Values.coredns.image.repository }}:{{ .Values.coredns.image.tag }}"
+        {{- if .Values.imageShaDigests.coredns }}
+        image: "{{ .Values.coredns.image.repository }}/{{ .Values.coredns.image.name }}@{{ .Values.imageShaDigests.coredns }}"
+        {{- else }}
+        image: "{{ .Values.coredns.image.repository }}/{{ .Values.coredns.image.name }}:{{ .Values.coredns.image.tag }}{{ .Values.coredns.image.tagPostfix }}"
+        {{- end }}
         imagePullPolicy: {{ .Values.coredns.image.pullPolicy }}
         resources:
           {{- toYaml .Values.coredns.resources | nindent 10 }}

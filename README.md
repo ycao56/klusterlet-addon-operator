@@ -78,7 +78,9 @@ To add new configuration, copy one of the existing config and change the `nodes.
 
 To run the test call depending on the kube version the test must run on:
 
-- `make component/test/functional`
+- `make component/test/functional` # To create kind clusters and run the gingko tests on them
+- `make fonctional-test-full`      # To build the image, then create kind clusters and run the gingko tests on them
+- `make functional-test`           # To simply run the gingko tests
 
 ## Add a component into the test
 

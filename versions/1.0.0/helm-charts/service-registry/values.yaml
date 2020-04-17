@@ -20,7 +20,8 @@ istioServiceEntryRegistryNamespace: ""
 
 serviceRegistry:
   image:
-    repository: ibmcom/mcm-service-registry
+    repository: quay.io/open-cluster-management
+    name: mcm-service-registry
     tag: 3.2.0
     pullPolicy: IfNotPresent
 
@@ -54,3 +55,6 @@ resources:
 imagePullSecret: null
 
 logLevel: 5
+
+imageShaDigests:
+  fake: "fake"

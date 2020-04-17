@@ -42,7 +42,11 @@ spec:
       containers:
       {{- if .Values.workManager.enabled }}
       - name: work-manager
-        image: "{{ .Values.workManager.image.repository }}:{{ .Values.workManager.image.tag }}"
+        {{- if .Values.imageShaDigests.multicloud_manager }}
+        image: "{{ .Values.workManager.image.repository }}/{{ .Values.workManager.image.name }}@{{ .Values.imageShaDigests.multicloud_manager }}"
+        {{- else }}
+        image: "{{ .Values.workManager.image.repository }}/{{ .Values.workManager.image.name }}:{{ .Values.workManager.image.tag }}{{ .Values.workManager.image.tagPostfix }}"
+        {{- end }}
         imagePullPolicy: {{ .Values.workManager.image.pullPolicy }}
         securityContext:
           allowPrivilegeEscalation: false

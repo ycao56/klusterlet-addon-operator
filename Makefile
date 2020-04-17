@@ -102,3 +102,6 @@ delete-cluster:
 	kubectl config unset current-context; \
 	kubectl config delete-context kind-test-cluster; \
 	kind delete cluster --name=test-cluster
+
+.PHONY: functional-test-full
+functional-test-full: build component/test/functional

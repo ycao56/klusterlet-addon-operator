@@ -13,7 +13,8 @@ clusterNamespace: null
 deployedOnHub: false
 
 image:
-  repository: ibmcom/mcm-compliance
+  repository: quay.io/open-cluster-management
+  name: mcm-compliance
   tag: 3.2.0
   pullPolicy: IfNotPresent
 
@@ -38,3 +39,5 @@ logLevel: 5
 
 postDeleteJobServiceAccount: null
 
+imageShaDigests:
+  fake: "fake"

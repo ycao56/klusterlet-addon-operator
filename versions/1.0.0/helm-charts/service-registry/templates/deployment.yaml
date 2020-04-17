@@ -39,7 +39,11 @@ spec:
       serviceAccountName: {{ template "service-registry.fullname" . }}
       containers:
       - name: serviceregistry
-        image: "{{ .Values.serviceRegistry.image.repository }}:{{ .Values.serviceRegistry.image.tag }}"
+        {{- if .Values.imageShaDigests.multicloud_manager }}
+        image: "{{ .Values.serviceRegistry.image.repository }}/{{ .Values.serviceRegistry.image.name }}@{{ .Values.imageShaDigests.multicloud_manager }}"
+        {{- else }}
+        image: "{{ .Values.serviceRegistry.image.repository }}/{{ .Values.serviceRegistry.image.name }}:{{ .Values.serviceRegistry.image.tag }}{{ .Values.serviceRegistry.image.tagPostfix }}"
+        {{- end }}
         imagePullPolicy: {{ .Values.serviceRegistry.image.pullPolicy }}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}

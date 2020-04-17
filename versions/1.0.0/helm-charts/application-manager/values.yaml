@@ -11,13 +11,15 @@ clusterNamespace: null
 
 deployable:
   image:
-    repository: quay.io/open-cluster-management/multicluster-operators-deployable
+    repository: quay.io/open-cluster-management
+    name: multicluster-operators-deployable
     tag: 1.0.0
     pullPolicy: IfNotPresent
 
 subscription:
   image:
-    repository: quay.io/open-cluster-management/multicluster-operators-subscription
+    repository: quay.io/open-cluster-management
+    name: multicluster-operators-subscription
     tag: 1.0.0
     pullPolicy: IfNotPresent
 
@@ -36,3 +38,6 @@ resources:
     memory: 128Mi
   limits:
     memory: 2Gi
+
+imageShaDigests:
+  fake: "fake"

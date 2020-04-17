@@ -19,7 +19,11 @@ spec:
       serviceAccountName: {{ template "cisController.fullname" . }}-sa
       containers:
       - name: drishti-cis
-        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        {{- if .Values.imageShaDigests.drishti_cis }}
+        image: "{{ .Values.image.repository }}/{{ .Values.image.name }}@{{ .Values.imageShaDigests.drishti_cis }}"
+        {{- else }}
+        image: "{{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}{{ .Values.image.tagPostfix }}"
+        {{- end }}
         imagePullPolicy: "{{ .Values.image.pullPolicy }}"
         command: ["./bin/drishti-cis"]
         args: ["-cos", "$(CIS_COS_URL)", "-frequency", "$(CIS_CHECK_FREQUENCY)", "-version", "$(K8S_VERSION)"]

@@ -1,0 +1,11 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: endpoint-component-operator
+  namespace: multicluster-endpoint
+spec:
+  template:
+    spec:
+      imagePullSecrets:
+      - name: multicloud-image-pull-secret
+         

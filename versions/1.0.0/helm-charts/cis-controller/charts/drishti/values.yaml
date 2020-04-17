@@ -11,7 +11,8 @@ image:
     enabled: false
     name: regcred
   name: "drishti-cis"
-  repository: "ibmcom/drishti-cis"
+  repository: "quay.io/open-cluster-management"
+  name: drishti-cis
   tag: "latest"
 
 tolerations:
@@ -24,3 +25,6 @@ drishti:
   image:
     repository: "ibmcom/drishti-cis"
     tag: "latest"
+
+imageShaDigests:
+  fake: "fake"

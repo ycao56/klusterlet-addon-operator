@@ -14,7 +14,8 @@ clusterName: null
 clusterNamespace: null
 
 image:
-  repository: ibmcom/search-collector
+  repository: quay.io/open-cluster-management
+  name: search-collector
   tag: 3.3.0
   pullPolicy: IfNotPresent
 
@@ -35,3 +36,6 @@ tolerations:
   effect: "NoSchedule"
 
 imagePullSecrets: null
+
+imageShaDigests:
+  fake: "fake"
