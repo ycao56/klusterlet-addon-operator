@@ -43,7 +43,7 @@ cleanBucket() {
       age=${BUCKET#*:}
       if checkBucketExists $bucket_name ; then
         echo "Clean bucket '$bucket_name' and preserve data within '$age' days "
-        /usr/bin/mc -C /mcconf rm --recursive --insecure --dangerous --force --older-than=$age cisminio/$bucket_name/icp:{{ .Values.clusterIP }}:{{ .Values.cluster_external_https_port}}/
+        /usr/bin/mc -C /mcconf rm --recursive --insecure --dangerous --force --older-than=$age cisminio/$bucket_name
       else
         echo "Bucket '$bucket_name' is not exists."
       fi

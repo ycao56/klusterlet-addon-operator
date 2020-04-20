@@ -78,6 +78,8 @@ spec:
             mountPath: /etc/vacos/
           - name: scratch
             mountPath: /tmp
+          - mountPath: /etc/cisCerts/
+            name: ca
 
       volumes:
       - hostPath:
@@ -94,6 +96,13 @@ spec:
       - name: {{ template "cisController.fullname" . }}-secret
         secret:
           secretName: "{{ template "cisController.fullname" . }}-secret"
+      - name: ca
+        secret:
+          defaultMode: 420
+          items:
+          - key: ca.crt
+            path: ca.cert
+          secretName: {{ template "minio.fullname" . }}-tls-cert
 
       tolerations:
       - effect: NoSchedule

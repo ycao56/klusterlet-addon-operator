@@ -36,9 +36,10 @@ Create a default fully qualified app name for minio cleaner.
 Generate certificates for minio
 */}}
 {{- define "cisController.gen-certs" -}}
-{{- $altNames := list ( printf "%s.%s" (include "cisController.fullname" .) .Release.Namespace ) ( printf "%s.%s.svc" (include "cisController.fullname" .) .Release.Namespace ) -}}
-{{- $ca := genCA "custom-metrics-ca" 365 -}}
-{{- $cert := genSignedCert ( include "cisController.fullname" . ) nil $altNames 365 $ca -}}
+{{- $altNames := list ( printf "%s.%s" (include "minio.fullname" .) .Release.Namespace ) ( printf "%s.%s.svc" (include "minio.fullname" .) .Release.Namespace )  (printf "%s" (include "minio.fullname" .)) -}}
+{{- $ca := genCA "cis-ctrl-ca" 365 -}}
+{{- $cert := genSignedCert ( include "minio.fullname" . ) nil $altNames 365 $ca -}}
+ca.crt: {{ $ca.Cert | b64enc }}
 tls.crt: {{ $cert.Cert | b64enc }}
 tls.key: {{ $cert.Key | b64enc }}
 {{- end -}}

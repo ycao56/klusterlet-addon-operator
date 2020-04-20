@@ -82,6 +82,8 @@ spec:
           readOnly: true
         - mountPath: /tmp
           name: scratch
+        - mountPath: /etc/cisCerts/
+          name: ca
 
         resources:
 {{ toYaml .Values.cisController.resources | indent 10 }}
@@ -108,3 +110,10 @@ spec:
           name: "{{ template "cisController.fullname" . }}-controller-config"
       - name: scratch 
         emptyDir: {}
+      - name: ca
+        secret:
+          defaultMode: 420
+          items:
+          - key: ca.crt
+            path: ca.cert
+          secretName: {{ template "minio.fullname" . }}-tls-cert
