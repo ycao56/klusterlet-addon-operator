@@ -1,0 +1,35 @@
+# Licensed Materials - Property of IBM
+# IBM Confidential
+# OCO Source Materials
+# (C) Copyright IBM Corporation 2020 All Rights Reserved
+# The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
+
+# apiVersion: certmanager.k8s.io/v1alpha1
+# kind: Issuer
+# metadata:
+#  labels:
+#    app: "{{ template "cisController.fullname" . }}"
+#    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+#    component: "{{ .Values.cisController.name }}"
+#    heritage: "{{ .Release.Service }}"
+#    release: "{{ .Release.Name }}"
+#  name: "{{ template "cisController.fullname" . }}-issuer"
+# spec:
+#   ca:
+#     secretName: "{{ template "cisController.fullname" . }}-ca-cert"
+
+apiVersion: v1
+kind: Secret
+type: kubernetes.io/tls
+metadata:
+  name: {{ template "minio.fullname" . }}-tls-cert
+  labels:
+    app: "{{ template "cisController.fullname" . }}"
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  annotations:
+    "helm.sh/hook": "pre-install"
+    "helm.sh/hook-delete-policy": "before-hook-creation"
+data:
+{{ ( include "cisController.gen-certs" . ) | indent 2 }}

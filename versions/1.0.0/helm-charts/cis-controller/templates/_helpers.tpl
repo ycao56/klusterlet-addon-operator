@@ -43,3 +43,104 @@ ca.crt: {{ $ca.Cert | b64enc }}
 tls.crt: {{ $cert.Cert | b64enc }}
 tls.key: {{ $cert.Key | b64enc }}
 {{- end -}}
+
+{{/*
+Create a default fully qualified app name for cisCrawler.
+*/}}
+{{- define "cisCrawler.fullname" -}}
+{{- if .Values.fullnameOverride -}}
+{{- printf "%s-%s" .Values.fullnameOverride "crawler" | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- if .Values.global.fullnameOverride -}}
+{{- printf "%s-%s" .Values.global.fullnameOverride "crawler" | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- $name := default "cis-crawler" .Values.nameOverride -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create a default fully qualified app name for cisMasterCrawler.
+*/}}
+{{- define "cisCrawlerMaster.fullname" -}}
+{{- if .Values.fullnameOverride -}}
+{{- printf "%s-%s" .Values.fullnameOverride "crawler-master" | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- if .Values.global.fullnameOverride -}}
+{{- printf "%s-%s" .Values.global.fullnameOverride "crawler-master" | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- $name := default "cis-crawler-master" .Values.nameOverride -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create a default fully qualified app name for cisWorkerCrawler.
+*/}}
+{{- define "cisCrawlerWorker.fullname" -}}
+{{- if .Values.fullnameOverride -}}
+{{- printf "%s-%s" .Values.fullnameOverride "crawler-worker" | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- if .Values.global.fullnameOverride -}}
+{{- printf "%s-%s" .Values.global.fullnameOverride "crawler-worker" | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- $name := default "cis-crawler-worker" .Values.nameOverride -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create a default fully qualified app name for cisWorkerCrawler on OCP 3.11.
+*/}}
+{{- define "cisCrawlerCompute.fullname" -}}
+{{- if .Values.fullnameOverride -}}
+{{- printf "%s-%s" .Values.fullnameOverride "crawler-compute" | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- if .Values.global.fullnameOverride -}}
+{{- printf "%s-%s" .Values.global.fullnameOverride "crawler-compute" | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- $name := default "cis-crawler-compute" .Values.nameOverride -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "drishti.fullname" -}}
+{{- if .Values.fullnameOverride -}}
+{{- printf "%s-%s" .Values.fullnameOverride "drishti" | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- if .Values.global.fullnameOverride -}}
+{{- printf "%s-%s" .Values.global.fullnameOverride "drishti" | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- $name := default .Chart.Name .Values.nameOverride -}}
+{{- printf "%s-%s"  .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Expand the name of the chart.
+*/}}
+{{- define "minio.name" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Create a default fully qualified app name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+{{- define "minio.fullname" -}}
+{{- if .Values.fullnameOverride -}}
+{{- printf "%s-%s" .Values.fullnameOverride "minio" | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- if .Values.global.fullnameOverride -}}
+{{- printf "%s-%s" .Values.global.fullnameOverride "minio" | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- $name := default .Chart.Name .Values.nameOverride -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}

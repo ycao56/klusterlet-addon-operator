@@ -3,15 +3,13 @@
 # @ Copyright IBM Corporation 2016, 2018 All Rights Reserved
 # US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
 
----
-
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: {{ template "cisCrawlerWorker.fullname" . }}
+  name: {{ template "cisCrawlerMaster.fullname" . }}
   labels:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    app: {{ template "cisCrawlerWorker.fullname" . }}
+    app: {{ template "cisCrawlerMaster.fullname" . }}
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 spec:
@@ -23,14 +21,14 @@ spec:
     type: RollingUpdate
   selector:
     matchLabels:
-      app: {{ template "cisCrawlerWorker.fullname" . }}
+      app: {{ template "cisCrawlerMaster.fullname" . }}
   template:
     metadata:
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
         seccomp.security.alpha.kubernetes.io/allowedProfileNames: docker/default
       labels:
-        app: {{ template "cisCrawlerWorker.fullname" . }}
+        app: {{ template "cisCrawlerMaster.fullname" . }}
     spec:
       serviceAccountName: {{ template "cisController.fullname" . }}-sa
       affinity:
@@ -38,16 +36,16 @@ spec:
          requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
           - matchExpressions:
-            - key: node-role.kubernetes.io/worker
+            - key: node-role.kubernetes.io/master
               operator: In
               values:
               - ''
       containers:
       - name: cis-crawler
         {{- if .Values.imageShaDigests.cis_crawler }}
-        image: "{{ .Values.image.repository }}/{{ .Values.image.name }}@{{ .Values.imageShaDigests.cis_crawler }}"
+        image: "{{ .Values.cisCrawler.image.repository }}/{{ .Values.cisCrawler.image.name }}@{{ .Values.imageShaDigests.cis_crawler }}"
         {{- else }}
-        image: "{{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}{{ .Values.image.tagPostfix }}"
+        image: "{{ .Values.cisCrawler.image.repository }}/{{ .Values.cisCrawler.image.name }}:{{ .Values.cisCrawler.image.tag }}{{ .Values.cisCrawler.image.tagPostfix }}"
         {{- end }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         env:
@@ -69,7 +67,7 @@ spec:
         - name: FEATURES
           valueFrom:
             configMapKeyRef:
-              name: "{{ template "cisCrawler.fullname" . }}-config"
+              name: "{{ template "cisCrawler.fullname" . }}-config" 
               key: FEATURES
         - name: CRAWLER_LOGLEVEL
           valueFrom:
@@ -80,9 +78,9 @@ spec:
           valueFrom:
             fieldRef:
               apiVersion: v1
-              fieldPath: spec.nodeName
+              fieldPath: spec.nodeName 
         - name: EXTRA_METADATA
-          value: '{"hostType":"worker"}'
+          value: '{"hostType":"master"}'
         resources:
 {{ toYaml .Values.cisCrawler.resources | indent 10 }}
 
@@ -120,7 +118,7 @@ spec:
           name: confuse-lib
           readOnly: true
         - mountPath: /etc/crawler/config_known_fpath
-          subPath: config_known_fpath
+          subPath: config_known_fpath 
           name: "{{ template "cisCrawler.fullname" . }}-config"
 
       tolerations:
