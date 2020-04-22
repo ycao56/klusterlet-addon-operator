@@ -41,7 +41,7 @@ deps: init component/init
 # TODO look into adding yamllint; doesn't like operator-sdk generated files
 .PHONY: check
 # ## Runs a set of required checks
-check: ossccheck
+check: ossccheck copyright-check
 
 .PHONY: ossccheck
 ossccheck:
@@ -55,6 +55,7 @@ ossc:
 ## Builds operator binary inside of an image
 build: component/build
 
+.PHONY: copyright-check
 copyright-check:
 	./build/copyright-check.sh $(TRAVIS_BRANCH)
 
