@@ -37,12 +37,8 @@ spec:
       serviceAccountName: {{ template "service-registry.fullname" . }}
       containers:
       - name: serviceregistry-dns
-        {{- if .Values.imageShaDigests.coredns }}
-        image: "{{ .Values.coredns.image.repository }}/{{ .Values.coredns.image.name }}@{{ .Values.imageShaDigests.coredns }}"
-        {{- else }}
-        image: "{{ .Values.coredns.image.repository }}/{{ .Values.coredns.image.name }}:{{ .Values.coredns.image.tag }}{{ .Values.coredns.image.tagPostfix }}"
-        {{- end }}
-        imagePullPolicy: {{ .Values.coredns.image.pullPolicy }}
+        image: "{{ .Values.global.imageOverrides.coredns }}"
+        imagePullPolicy: {{ .Values.global.imagePullPolicy }}
         resources:
           {{- toYaml .Values.coredns.resources | nindent 10 }}
         args: [ "-conf", "/etc/coredns/Corefile" ]
@@ -85,9 +81,9 @@ spec:
               path: Corefile
             - key: svcregistry.db
               path: svcregistry.db
-      {{- if .Values.imagePullSecret }}
+      {{- if .Values.global.imagePullSecret }}
       imagePullSecrets:
-      - name: "{{ .Values.imagePullSecret }}"
+      - name: "{{ .Values.global.imagePullSecret }}"
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

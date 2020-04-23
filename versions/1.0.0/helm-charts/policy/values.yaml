@@ -12,12 +12,6 @@ clusterNamespace: null
 
 deployedOnHub: false
 
-image:
-  repository: quay.io/open-cluster-management
-  name: mcm-compliance
-  tag: 3.2.0
-  pullPolicy: IfNotPresent
-
 resources:
   requests:
     memory: 128Mi
@@ -34,10 +28,12 @@ tolerations:
   value: "infra"
   effect: "NoSchedule"
 
-imagePullSecret: null
 logLevel: 5
 
 postDeleteJobServiceAccount: null
 
-imageShaDigests:
-  fake: "fake"
+global: 
+  imagePullPolicy: Always 
+  imagePullSecret: null
+  imageOverrides: 
+    mcm_compliance: quay.io/open-cluster-management/mcm-compliance:3.2.0

@@ -15,3 +15,9 @@ spec:
   connectionManager: test-connmgr
   fullnameOverride: test-connmgr
   bootstrapConfig: {}
+  global:
+    imagePullPolicy: IfNotPresent
+    imagePullSecret: ""
+    imageOverrides:
+      multicloud_manager: "fakerepo/multicloud-manager:3.2.0"
+    

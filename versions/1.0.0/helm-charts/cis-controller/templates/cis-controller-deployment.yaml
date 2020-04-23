@@ -28,12 +28,8 @@ spec:
       serviceAccountName: {{ template "cisController.fullname" . }}-sa
       containers:
       - name: cis-controller
-        {{- if .Values.imageShaDigests.cis_controller }}
-        image: "{{ .Values.cisController.image.repository }}/{{ .Values.cisController.image.name }}@{{ .Values.imageShaDigests.cis_controller }}"
-        {{- else }}
-        image: "{{ .Values.cisController.image.repository }}/{{ .Values.cisController.image.name }}:{{ .Values.cisController.image.tag }}{{ .Values.cisController.image.tagPostfix }}"
-        {{- end }}
-        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        image: "{{ .Values.global.imageOverrides.cis_controller }}"
+        imagePullPolicy: {{ .Values.global.imagePullPolicy }}
         command: ["./bin/manager"]
         args: ["-cos-url", "$(CIS_COS_URL)", "-update-frequency", "$(UPDATE_FREQUENCY)", "-parent-event", "$(PARENT_EVENT)"]
         livenessProbe:
@@ -95,9 +91,9 @@ spec:
       tolerations:
 {{ toYaml .Values.tolerations | indent 6 }}
     {{- end }}
-    {{- if .Values.imagePullSecret }}
+    {{- if .Values.global.imagePullSecret }}
       imagePullSecrets:
-      - name: {{ .Values.imagePullSecret }}
+      - name: {{ .Values.global.imagePullSecret }}
     {{- end }}
 
       volumes:

@@ -42,12 +42,8 @@ spec:
               - ''
       containers:
       - name: cis-crawler
-        {{- if .Values.imageShaDigests.cis_crawler }}
-        image: "{{ .Values.cisCrawler.image.repository }}/{{ .Values.cisCrawler.image.name }}@{{ .Values.imageShaDigests.cis_crawler }}"
-        {{- else }}
-        image: "{{ .Values.cisCrawler.image.repository }}/{{ .Values.cisCrawler.image.name }}:{{ .Values.cisCrawler.image.tag }}{{ .Values.cisCrawler.image.tagPostfix }}"
-        {{- end }}
-        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        image: "{{ .Values.global.imageOverrides.cis_crawler }}"
+        imagePullPolicy: {{ .Values.global.imagePullPolicy }}
         env:
         - name: VAAAS_URL
           valueFrom:

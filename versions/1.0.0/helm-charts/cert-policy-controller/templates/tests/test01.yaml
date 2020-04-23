@@ -26,11 +26,7 @@ spec:
     runAsNonRoot: {{ .Values.securityContext.pod.runAsNonRoot }}  
   containers:
   - name: {{ .Release.Name }}-test-cm-health
-    {{- if .Values.imageShaDigests.cert_policy_controller }}
-    image: "{{ .Values.image.repository }}/{{ .Values.image.name }}@{{ .Values.imageShaDigests.cert_policy_controller }}"
-    {{- else }}
-    image: "{{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}{{ .Values.image.tagPostfix }}"
-    {{- end }}
+    image: "{{ .Values.global.imageOverrides.cert_policy_controller }}"
     command: ["sh", "-c", "echo cert-policy-controller-tests"]
     resources:
       requests:

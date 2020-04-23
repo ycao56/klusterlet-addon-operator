@@ -19,12 +19,8 @@ spec:
       serviceAccountName: {{ template "cisController.fullname" . }}-sa
       containers:
       - name: drishti-cis
-        {{- if .Values.imageShaDigests.drishti_cis }}
-        image: "{{ .Values.drishti.image.repository }}/{{ .Values.drishti.image.name }}@{{ .Values.imageShaDigests.drishti_cis }}"
-        {{- else }}
-        image: "{{ .Values.drishti.image.repository }}/{{ .Values.drishti.image.name }}:{{ .Values.drishti.image.tag }}{{ .Values.drishti.image.tagPostfix }}"
-        {{- end }}
-        imagePullPolicy: "{{ .Values.drishti.imagePullPolicy }}"
+        image: "{{ .Values.global.imageOverrides.drishti_cis }}"
+        imagePullPolicy: "{{ .Values.global.imagePullPolicy }}"
         command: ["./bin/drishti-cis"]
         args: ["-cos", "$(CIS_COS_URL)", "-frequency", "$(CIS_CHECK_FREQUENCY)", "-version", "$(K8S_VERSION)"]
         livenessProbe:

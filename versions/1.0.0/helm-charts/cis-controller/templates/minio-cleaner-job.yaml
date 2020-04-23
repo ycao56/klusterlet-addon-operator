@@ -25,12 +25,8 @@ spec:
           serviceAccountName: {{ template "cisController.fullname" . }}-sa
           containers:
           - name: cleaner
-            {{- if .Values.imageShaDigests.img_minio_mc }}
-            image: "{{ .Values.minioCleaner.image.repository }}/{{ .Values.minioCleaner.image.name }}@{{ .Values.imageShaDigests.img_minio_mc }}"
-            {{- else }}
-            image: "{{ .Values.minioCleaner.image.repository }}/{{ .Values.minioCleaner.image.name }}:{{ .Values.minioCleaner.image.tag }}{{ .Values.minioCleaner.image.tagPostfix }}"
-            {{- end }}
-            imagePullPolicy: "{{ .Values.minioCleaner.image.pullPolicy }}"
+            image: "{{ .Values.global.imageOverrides.img_minio_mc }}"
+            imagePullPolicy: "{{ .Values.global.imagePullPolicy }}"
             command: ["/bin/sh", "/cis/clean.sh"]
             resources:
 {{ toYaml .Values.minioCleaner.resources | indent 14 }}
@@ -75,7 +71,7 @@ spec:
           tolerations:
 {{ toYaml .Values.tolerations | indent 10 }}
         {{- end }}
-        {{- if .Values.imagePullSecret }}
+        {{- if .Values.global.imagePullSecret }}
           imagePullSecrets:
-          - name: {{ .Values.imagePullSecret }}
+          - name: {{ .Values.global.imagePullSecret }}
         {{- end }}

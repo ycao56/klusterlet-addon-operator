@@ -14,3 +14,10 @@ spec:
   clusterNamespace: test
   connectionManager: test-connmgr
   fullnameOverride: certpolicyctrl-test
+  global:
+    imagePullPolicy: IfNotPresent
+    imagePullSecret: ""
+    imageOverrides:
+      cert_policy_controller: "fakerepo/cert-policy-controller:3.5.0"
+
+

@@ -1,44 +1,10 @@
-imagePullSecret:
-  __metadata:
-    label: "Image Pull Secret"
-    description: "The secret required to pull images."
-    type: "string"
-    required: false
 replicas:
   __metadata:
     label: "Replicas"
     description: "The number of controllers to create"
     type: "number"
     required: true
-image:
-  __metadata:
-    label: "Image Settings"
-    description: "Specify the image used to run in this deployment"
-  repository:
-    __metadata:
-      label: "Repository"
-      description: "Image repository"
-      type: "string"
-      required: true
-  tag:
-    __metadata:
-      label: "Tag"
-      description: "Image tag"
-      type: "string"
-      required: true
-  pullPolicy:
-    __metadata:
-      label: "Pull Policy"
-      description: "The policy used by Kubernetes to retrieve the image for this deployment."
-      type: "string"
-      required: true
-      options:
-      - label: "Never"
-        value: "Never"
-      - label: "IfNotPresent"
-        value: "IfNotPresent"
-      - label: "Always"
-        value: "Always"
+    
 args:
   __metadata:
     label: "Command-line Arguments"
@@ -134,3 +100,40 @@ serviceAccount:
       description: "The name of the service account to use if the controller doesn't create its own"
       type: "string"
       required: true
+
+global:
+  __metadata:
+    label: "Global Chart Settings"
+    description: "Global values for iam policy controller chart"
+  imagePullPolicy:
+    __metadata:
+      label: "iam policy controller Image Pull Policy"
+      description:  "Image Pull Policy for iam Policy Controller"
+      type: "string"
+      required: false
+      options:
+      - label: "IfNotPresent"
+        value: "IfNotPresent"
+      - label: "Always"
+        value: "Always"
+      - label: "Never"
+        value: "Never"
+  imagePullSecret:
+    __metadata:
+      label: "Image Pull Secrets"
+      description: "Any secrets required to pull iam policy controller images."
+      type: "string"
+      required: false
+  imageOverrides:
+    __metadata:
+    name: "imageOverrides"
+    label: "Image Overrides"
+    description: "Image Overrides"
+    cert_policy_controller:
+      __metadata:
+        name: "iam_policy_controller"
+        label: "iam_policy_controller"
+        description: "Image override for iam_policy_controller"
+        type: "string"
+        immutable: false
+        required: false

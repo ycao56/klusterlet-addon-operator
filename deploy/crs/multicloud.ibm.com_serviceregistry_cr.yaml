@@ -14,6 +14,11 @@ spec:
   clusterNamespace: test
   connectionManager: test-connmgr
   fullnameOverride: svcreg-test
-  serviceRegistry: 
-    image: {}
-  coredns: {}
+  global:
+    imagePullPolicy: IfNotPresent
+    imagePullSecret: ""
+    imageOverrides:
+      coredns: "fakerepo/coredns:1.2.6.1"
+      multicloud_manager: "fakerepo/multicloud-manager:3.2.0"
+
+

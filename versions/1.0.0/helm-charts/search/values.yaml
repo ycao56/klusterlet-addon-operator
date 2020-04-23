@@ -13,12 +13,6 @@ deployedOnHub: false
 clusterName: null
 clusterNamespace: null
 
-image:
-  repository: quay.io/open-cluster-management
-  name: search-collector
-  tag: 3.3.0
-  pullPolicy: IfNotPresent
-
 resources:
   requests:
     memory: 128Mi
@@ -35,7 +29,8 @@ tolerations:
   value: "infra"
   effect: "NoSchedule"
 
-imagePullSecrets: null
-
-imageShaDigests:
-  fake: "fake"
+global: 
+  imagePullPolicy: Always 
+  imagePullSecret: null
+  imageOverrides: 
+    search_collector: quay.io/open-cluster-management/search-collector:3.3.0

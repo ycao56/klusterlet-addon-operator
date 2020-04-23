@@ -14,3 +14,8 @@ spec:
   clusterNamespace: test
   connectionManager: test-connmgr
   fullnameOverride: policyctrl-test
+  global:
+    imagePullPolicy: IfNotPresent
+    imagePullSecret: ""
+    imageOverrides:
+      mcm_compliance: "fakerepo/mcm-compliance:3.2.0"

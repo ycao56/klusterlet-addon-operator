@@ -18,18 +18,7 @@ plugins: "kube-service"
 istioIngressGateway: ""
 istioServiceEntryRegistryNamespace: ""
 
-serviceRegistry:
-  image:
-    repository: quay.io/open-cluster-management
-    name: mcm-service-registry
-    tag: 3.2.0
-    pullPolicy: IfNotPresent
-
 coredns:
-  image:
-    repository: ibmcom/coredns
-    tag: 1.2.6.1
-    pullPolicy: IfNotPresent
   resources:
     requests:
       memory: 70Mi
@@ -52,9 +41,11 @@ resources:
   limits:
     memory: 256Mi
 
-imagePullSecret: null
-
 logLevel: 5
 
-imageShaDigests:
-  fake: "fake"
+global: 
+  imagePullPolicy: Always 
+  imagePullSecret: null
+  imageOverrides: 
+    coredns: quay.io/open-cluster-management/coredns:1.2.6.1
+    multicloud_manager: quay.io/open-cluster-management/multicloud-manager:3.2.0

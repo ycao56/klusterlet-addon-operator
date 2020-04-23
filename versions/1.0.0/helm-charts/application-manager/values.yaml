@@ -9,20 +9,6 @@ connectionManager: null
 clusterName: null
 clusterNamespace: null
 
-deployable:
-  image:
-    repository: quay.io/open-cluster-management
-    name: multicluster-operators-deployable
-    tag: 1.0.0
-    pullPolicy: IfNotPresent
-
-subscription:
-  image:
-    repository: quay.io/open-cluster-management
-    name: multicluster-operators-subscription
-    tag: 1.0.0
-    pullPolicy: IfNotPresent
-
 nodeSelector: {}
 
 affinity: {}
@@ -39,5 +25,9 @@ resources:
   limits:
     memory: 2Gi
 
-imageShaDigests:
-  fake: "fake"
+global: 
+  imagePullPolicy: Always 
+  imagePullSecret: null
+  imageOverrides: 
+    multicluster_operators_deployable: quay.io/open-cluster-management/multicluster-operators-deployable:1.0.0
+    multicluster_operators_subscription: quay.io/open-cluster-management/multicluster-operators-subscription:1.0.0

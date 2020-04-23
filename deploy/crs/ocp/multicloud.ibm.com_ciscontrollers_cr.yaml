@@ -15,3 +15,14 @@ spec:
   clusterNamespace: test
   connectionManager: test-connmgr
   fullnameOverride: iam-test
+  global:
+    imagePullPolicy: IfNotPresent
+    imagePullSecret: ""
+    imageOverrides:
+      cis_controller: "fakerepo/cis-controller:3.6.0"
+      drishti_cis: "fakerepo/drishti-cis:3.4.0"
+      cis_crawler: "fakerepo/cis-crawler:3.6.0"
+      img_minio: "fakerepo/img-minio:RELEASE.2019-04-09T01-22-30Z.3"
+      img_minio_mc: "fakerepo/img-minio-mc:RELEASE.2019-04-03T17-59-57Z.3"
+
+

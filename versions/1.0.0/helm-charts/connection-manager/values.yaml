@@ -9,12 +9,6 @@ replicas: 1
 clusterName: null
 clusterNamespace: null
 
-image:
-  repository: quay.io/open-cluster-management
-  name: mcm-operator
-  tag: 3.2.0
-  pullPolicy: IfNotPresent
-
 bootstrapConfig:
   hubSecret: kube-system/klusterlet-bootstrap
 
@@ -28,8 +22,6 @@ tolerations:
   value: "infra"
   effect: "NoSchedule"
 
-imagePullSecret: null
-
 resources:
   requests:
     memory: 128Mi
@@ -38,5 +30,8 @@ resources:
 
 logLevel: 5
 
-imageShaDigests:
-  fake: "fake"
+global: 
+  imagePullPolicy: Always 
+  imagePullSecret: null
+  imageOverrides: 
+    multicloud_manager: quay.io/open-cluster-management/multicloud-manager:3.2.0

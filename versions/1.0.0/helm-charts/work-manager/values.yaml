@@ -23,11 +23,6 @@ userImpersonation: false
 
 workManager:
   enabled: true
-  image:
-    repository: quay.io/open-cluster-management
-    name: mcm-klusterlet
-    tag: 3.2.0
-    pullPolicy: IfNotPresent
 
 # klusterlet proxy related configuration
 service:
@@ -54,9 +49,11 @@ resources:
   limits:
     memory: 512Mi
 
-imagePullSecret: null
 
 logLevel: 5
 
-imageShaDigests:
-  fake: "fake"
+global: 
+  imagePullPolicy: Always 
+  imagePullSecret: null
+  imageOverrides: 
+    multicloud_manager: quay.io/open-cluster-management/multicloud-manager:3.2.0 

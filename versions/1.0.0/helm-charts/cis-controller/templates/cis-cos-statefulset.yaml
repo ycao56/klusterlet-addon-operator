@@ -47,18 +47,14 @@ spec:
       tolerations:
 {{ toYaml .Values.tolerations | indent 6 }}
     {{- end }}
-    {{- if .Values.imagePullSecret }}
+    {{- if .Values.global.imagePullSecret }}
       imagePullSecrets:
-      - name: {{ .Values.imagePullSecret }}
+      - name: {{ .Values.global.imagePullSecret }}
     {{- end }}
       containers:
       - name: {{ template "minio.name" . }}-server
-        {{- if .Values.imageShaDigests.img_minio }}
-        image: "{{ .Values.minio.image.repository }}/{{ .Values.minio.image.name }}@{{ .Values.imageShaDigests.img_minio }}"
-        {{- else }}
-        image: "{{ .Values.minio.image.repository }}/{{ .Values.minio.image.name }}:{{ .Values.minio.image.tag }}{{ .Values.minio.image.tagPostfix }}"
-        {{- end }}
-        imagePullPolicy: "{{ .Values.imagePullPolicy }}"
+        image: "{{ .Values.global.imageOverrides.img_minio }}"
+        imagePullPolicy: "{{ .Values.global.imagePullPolicy }}"
         args:
         - -C
         - /minio/.minio

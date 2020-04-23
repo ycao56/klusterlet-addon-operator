@@ -26,10 +26,6 @@ tolerations:
 cisCrawler:
   enabled: true
   crawlInterval: 86400
-  image:
-    repository: "quay.io/open-cluster-management"
-    name: cis-crawler
-    tag: "3.6.0"
   resources:
     requests:
       memory: 64Mi
@@ -38,10 +34,6 @@ cisCrawler:
 
 minio:
   replicas: 1
-  image:
-    repository: "quay.io/open-cluster-management"
-    name: img-minio
-    tag: "RELEASE.2019-04-09T01-22-30Z.3"
   resources:
     requests:
       memory: 256Mi
@@ -55,15 +47,6 @@ minio:
 drishti:
   config:
     cloud_env: "openshift"
-  image:
-    name: "drishti-cis"
-    repository: "quay.io/open-cluster-management"
-    name: drishti-cis
-    tag: "3.4.0"
-    pullPolicy: IfNotPresent
-    pullSecret:
-      enabled: false
-      name: regcred
   tolerations:
   - key: "dedicated"
     operator: "Exists"
@@ -74,11 +57,6 @@ minioCleaner:
 # The buckets name with survival time
   preserve_buckets: ciscos-host:180d cis-k8s:180d
   schedule: "59 23 * * *"
-  image:
-    repository: "quay.io/open-cluster-management"
-    name: img-minio-mc
-    tag: "RELEASE.2019-04-03T17-59-57Z.3"
-    pullPolicy: "IfNotPresent"
   resources:
     requests:
       memory: "128Mi"
@@ -87,16 +65,18 @@ minioCleaner:
 
 cisController:
   name: cis-controller
-  image:
-    repository: "quay.io/open-cluster-management"
-    name: cis-controller
-    tag: "3.6.0"
-    pullPolicy: "IfNotPresent"
   resources:
     requests:
       memory: "256Mi"
     limits:
       memory: 512Mi
 
-imageShaDigests:
-  fake: "fake"
+global: 
+  imagePullPolicy: Always 
+  imagePullSecret: null
+  imageOverrides: 
+    cis_controller: quay.io/open-cluster-management/cis-controller:3.6.0
+    drishti_cis: quay.io/open-cluster-management/drishti-cis:3.4.0
+    cis_crawler: quay.io/open-cluster-management/cis-crawler:3.6.0
+    img_minio: quay.io/open-cluster-management/img-minio:RELEASE.2019-04-09T01-22-30Z.3
+    img_minio_mc: quay.io/open-cluster-management/img-minio-mc:RELEASE.2019-04-03T17-59-57Z.3

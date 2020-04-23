@@ -21,3 +21,9 @@ spec:
     type: Ingress
   service: 
     type: ClusterIP
+  global:
+    imagePullPolicy: IfNotPresent
+    imagePullSecret: ""
+    imageOverrides:
+      multicloud_manager: "fakerepo/multicloud-manager:3.2.0 "
+

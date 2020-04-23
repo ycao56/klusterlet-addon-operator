@@ -1,10 +1,4 @@
-imagePullSecret: ""
 replicas: 1
-image:
-  repository: quay.io/open-cluster-management
-  name: cert-policy-controller
-  tag: 3.5.0
-  pullPolicy: IfNotPresent
 args:
   frequency: 60
   verbosity: 0
@@ -30,5 +24,9 @@ tolerations:
 serviceAccount:
   create: true
 
-imageShaDigests:
-  fake: "fake"
+global: 
+  imagePullPolicy: Always 
+  imagePullSecret: null
+  imageOverrides: 
+    cert_policy_controller: quay.io/open-cluster-management/cert-policy-controller:3.5.0
+    

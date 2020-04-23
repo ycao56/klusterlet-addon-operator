@@ -42,12 +42,8 @@ spec:
       containers:
       {{- if .Values.workManager.enabled }}
       - name: work-manager
-        {{- if .Values.imageShaDigests.multicloud_manager }}
-        image: "{{ .Values.workManager.image.repository }}/{{ .Values.workManager.image.name }}@{{ .Values.imageShaDigests.multicloud_manager }}"
-        {{- else }}
-        image: "{{ .Values.workManager.image.repository }}/{{ .Values.workManager.image.name }}:{{ .Values.workManager.image.tag }}{{ .Values.workManager.image.tagPostfix }}"
-        {{- end }}
-        imagePullPolicy: {{ .Values.workManager.image.pullPolicy }}
+        image: "{{ .Values.global.imageOverrides.multicloud_manager }}"
+        imagePullPolicy: {{ .Values.global.imagePullPolicy }}
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -108,9 +104,9 @@ spec:
         - name: klusterlet-config
           secret:
             secretName: {{ .Values.connectionManager }}-hub-kubeconfig
-      {{- if .Values.imagePullSecret }}
+      {{- if .Values.global.imagePullSecret }}
       imagePullSecrets:
-      - name: "{{ .Values.imagePullSecret }}"
+      - name: "{{ .Values.global.imagePullSecret }}"
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

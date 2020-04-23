@@ -44,12 +44,8 @@ spec:
       serviceAccountName: {{ template "connection-manager.fullname" . }}
       containers:
       - name: operator
-        {{- if .Values.imageShaDigests.multicloud_manager }}
-        image: "{{ .Values.image.repository }}/{{ .Values.image.name }}@{{ .Values.imageShaDigests.multicloud_manager }}"
-        {{- else }}
-        image: "{{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}{{ .Values.image.tagPostfix }}"
-        {{- end }}
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        image: "{{ .Values.global.imageOverrides.multicloud_manager }}"
+        imagePullPolicy: {{ .Values.global.imagePullPolicy }}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
         args:
@@ -72,9 +68,9 @@ spec:
           capabilities:
             drop:
               - ALL
-      {{- if .Values.imagePullSecret }}
+      {{- if .Values.global.imagePullSecret }}
       imagePullSecrets:
-      - name: "{{ .Values.imagePullSecret }}"
+      - name: "{{ .Values.global.imagePullSecret }}"
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

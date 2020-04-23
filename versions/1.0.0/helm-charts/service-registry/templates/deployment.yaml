@@ -39,12 +39,8 @@ spec:
       serviceAccountName: {{ template "service-registry.fullname" . }}
       containers:
       - name: serviceregistry
-        {{- if .Values.imageShaDigests.multicloud_manager }}
-        image: "{{ .Values.serviceRegistry.image.repository }}/{{ .Values.serviceRegistry.image.name }}@{{ .Values.imageShaDigests.multicloud_manager }}"
-        {{- else }}
-        image: "{{ .Values.serviceRegistry.image.repository }}/{{ .Values.serviceRegistry.image.name }}:{{ .Values.serviceRegistry.image.tag }}{{ .Values.serviceRegistry.image.tagPostfix }}"
-        {{- end }}
-        imagePullPolicy: {{ .Values.serviceRegistry.image.pullPolicy }}
+        image: "{{ .Values.global.imageOverrides.multicloud_manager }}"
+        imagePullPolicy: {{ .Values.global.imagePullPolicy }}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
         livenessProbe: null
@@ -84,9 +80,9 @@ spec:
         - name: klusterlet-config
           secret:
             secretName: {{ .Values.connectionManager }}-hub-kubeconfig
-      {{- if .Values.imagePullSecret }}
+      {{- if .Values.global.imagePullSecret }}
       imagePullSecrets:
-      - name: "{{ .Values.imagePullSecret }}"
+      - name: "{{ .Values.global.imagePullSecret }}"
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
