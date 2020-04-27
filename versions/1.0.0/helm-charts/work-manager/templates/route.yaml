@@ -18,7 +18,7 @@ metadata:
     heritage: {{ .Release.Service }}
   name: {{ template "work-manager.fullname" . }}
 spec:
-  host: {{ .Values.ingress.host }}
+  host: "{{ .Values.ingress.host }}"
   tls:
     termination: passthrough
   to:
