@@ -10,15 +10,16 @@
 ###############################################################################
 # PARAMETERS
 # $1 - Final image name and tag to be produced
-
-# maybe bring this back when we're doing multi arch builds
-# this builds the base helm operator image
-$BUILD_DIR/build-helm-operator-image.sh
+CURR_FOLDER_PATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
 echo "Building operator"
 echo "--IMAGE: $DOCKER_IMAGE"
 echo "--TAG: $DOCKER_BUILD_TAG"
-operator-sdk build $DOCKER_IMAGE:$DOCKER_BUILD_TAG --image-build-args "$DOCKER_BUILD_OPTS"
+echo DOCKER_BUILD_OPTS: $DOCKER_BUILD_OPTS
+docker build "$CURR_FOLDER_PATH/../" \
+$DOCKER_BUILD_OPTS \
+-t $DOCKER_IMAGE:$DOCKER_BUILD_TAG \
+-f "$CURR_FOLDER_PATH/Dockerfile"
 
 if [ ! -z "$1" ]; then
     echo "Retagging image as $1"

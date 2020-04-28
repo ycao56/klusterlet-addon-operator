@@ -1,2 +1,3 @@
-https://hub.docker.com/_/quay.io/operator-framework/helm-operator,v0.16.0
+https://hub.docker.com/_/openshift/origin-release,golang-1.13
+https://hub.docker.com/_/registry.access.redhat.com/ubi8/ubi-minimal,8.1-398
 https://hub.docker.com/_/registry.access.redhat.com/ubi8/ubi-minimal,latest

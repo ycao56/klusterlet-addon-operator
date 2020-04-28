@@ -10,3 +10,7 @@ kind_kubeconfig.yaml
 .build-docker
 build-harness
 build-harness-extensions
+
+!vbh/.build-harness-vendorized
+!vbh/build-harness
+!vbh/build-harness-extensions 
