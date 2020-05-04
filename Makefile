@@ -119,3 +119,6 @@ delete-cluster:
 
 .PHONY: functional-test-full
 functional-test-full: build component/test/functional
+
+.PHONY: functional-test-full-no-build
+functional-test-full-no-build: build component/test/functional

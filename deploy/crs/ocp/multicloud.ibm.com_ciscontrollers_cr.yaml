@@ -14,7 +14,7 @@ spec:
   clusterName: test
   clusterNamespace: test
   connectionManager: test-connmgr
-  fullnameOverride: iam-test
+  fullnameOverride: cis-test
   global:
     imagePullPolicy: IfNotPresent
     imagePullSecret: ""
