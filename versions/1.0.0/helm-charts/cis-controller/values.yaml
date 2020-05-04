@@ -3,9 +3,6 @@
 # @ Copyright IBM Corporation 2019 All Rights Reserved
 # US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
 
-global:
-  fullnameOverride: endpoint-cisctrl
-
 imagePullPolicy: IfNotPresent
 # imagePullSecret: myregistrykey
 
@@ -72,6 +69,7 @@ cisController:
       memory: 512Mi
 
 global: 
+  fullnameOverride: endpoint-cisctrl
   imagePullPolicy: Always 
   imagePullSecret: null
   imageOverrides: 
