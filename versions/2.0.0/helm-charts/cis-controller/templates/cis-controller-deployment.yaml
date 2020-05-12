@@ -1,0 +1,115 @@
+# Licensed Materials - Property of IBM
+# 5737-E67
+# @ Copyright IBM Corporation 2019 All Rights Reserved
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "cisController.fullname" . }}-controller
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    app: {{ template "cisController.fullname" . }}
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "cisController.fullname" . }}
+  template:
+    metadata:
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ''
+        seccomp.security.alpha.kubernetes.io/allowedProfileNames: docker/default
+      labels:
+        app: {{ template "cisController.fullname" . }}
+    spec:
+      serviceAccountName: {{ template "cisController.fullname" . }}-sa
+      containers:
+      - name: cis-controller
+        image: "{{ .Values.global.imageOverrides.cis_controller }}"
+        imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+        command: ["./bin/manager"]
+        args: ["-cos-url", "$(CIS_COS_URL)", "-update-frequency", "$(UPDATE_FREQUENCY)", "-parent-event", "$(PARENT_EVENT)"]
+        livenessProbe:
+          exec:
+            command:
+            - pgrep
+            - manager
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+        readinessProbe:
+          exec:
+            command: ["sh", "-c", "exec echo start cis-controller"]
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+
+        env:
+        - name: CIS_COS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ template "cisController.fullname" . }}-controller-config"
+              key: CIS_COS_URL
+        - name: UPDATE_FREQUENCY
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ template "cisController.fullname" . }}-controller-config"
+              key: UPDATE_FREQUENCY
+        - name: PARENT_EVENT
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ template "cisController.fullname" . }}-controller-config"
+              key: PARENT_EVENT
+        - name: CIS_SCORE
+          value: "/etc/cis_risk_score.yaml"
+        volumeMounts:
+        - mountPath: /etc/ciscos
+          name: cos-secrets
+          readOnly: true
+        - mountPath: /etc/cis_risk_score.yaml
+          subPath: cis_risk_score.yaml
+          name: "{{ template "cisController.fullname" . }}-controller-config"
+          readOnly: true
+        - mountPath: /tmp
+          name: scratch
+        - mountPath: /etc/cisCerts/
+          name: ca
+
+        resources:
+{{ toYaml .Values.cisController.resources | indent 10 }}
+    {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
+    {{- if .Values.tolerations }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 6 }}
+    {{- end }}
+    {{- if .Values.global.imagePullSecret }}
+      imagePullSecrets:
+      - name: {{ .Values.global.imagePullSecret }}
+    {{- end }}
+
+      volumes:
+      - name: cos-secrets
+        secret:
+          defaultMode: 420
+          secretName: {{ template "cisController.fullname" . }}-secret
+      - name: "{{ template "cisController.fullname" . }}-controller-config"
+        configMap:
+          name: "{{ template "cisController.fullname" . }}-controller-config"
+      - name: scratch 
+        emptyDir: {}
+      - name: ca
+        secret:
+          defaultMode: 420
+          items:
+          - key: ca.crt
+            path: ca.cert
+          secretName: {{ template "minio.fullname" . }}-tls-cert

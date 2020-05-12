@@ -26,7 +26,7 @@ spec:
           image: REPLACE_IMAGE
           imagePullPolicy: IfNotPresent
           args: 
-          - "--watches-file=/opt/helm/versions/1.0.0/watches.yaml"
+          - "--watches-file=/opt/helm/versions/2.0.0/watches.yaml"
           env:
             - name: WATCH_NAMESPACE
               value: ""

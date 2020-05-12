@@ -1,0 +1,79 @@
+# Licensed Materials - Property of IBM
+# IBM Confidential
+# OCO Source Materials
+# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
+# The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
+
+{{- if .Values.enabled }}
+{{- if (not (.Values.deployedOnHub))}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "search.fullname" . }}
+  labels:
+    app: {{ template "search.name" . }}
+    chart: {{ template "search.chart" . }}
+    component: "mcm-search"
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    connectionManager: {{ .Values.connectionManager }}
+    mcm.ibm.com/globalview: "true"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "search.name" . }}
+      component: "mcm-search"
+      release: {{ .Release.Name }}
+      heritage: {{ .Release.Service }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "search.name" . }}
+        component: "mcm-search"
+        controller: "operator"
+        release: {{ .Release.Name }}
+        chart: {{ template "search.chart" . }}
+        heritage: {{ .Release.Service }}
+    spec:
+      serviceAccountName: {{ template "search.fullname" . }}
+      containers:
+      - name: collector
+        image: "{{ .Values.global.imageOverrides.search_collector }}"
+        imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+        env:
+        - name: CLUSTER_NAME
+          value: {{ .Values.clusterName }}
+        - name: CLUSTER_NAMESPACE
+          value: {{ .Values.clusterNamespace }}
+        - name: HUB_CONFIG
+          value: /hubconfig/kubeconfig
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        livenessProbe: null
+        readinessProbe: null
+        volumeMounts:
+        - name: hub-config
+          mountPath: /hubconfig
+      volumes:
+      - name: hub-config
+        secret:
+          secretName: {{ .Values.connectionManager }}-hub-kubeconfig
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- if .Values.global.imagePullSecret }}
+      imagePullSecrets:
+      - name: "{{ .Values.global.imagePullSecret }}"
+      {{- end }}
+{{- end }}
+{{- end }}

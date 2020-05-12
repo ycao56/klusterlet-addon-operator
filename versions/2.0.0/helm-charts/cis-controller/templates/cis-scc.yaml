@@ -1,0 +1,34 @@
+{{- if .Values.ocp -}}
+
+kind: SecurityContextConstraints
+apiVersion: security.openshift.io/v1
+metadata:
+  name: {{ template "cisController.fullname" . }}-scc
+allowHostDirVolumePlugin: true
+allowHostIPC: true
+allowHostNetwork: true
+allowHostPID: true
+allowHostPorts: true
+allowPrivilegeEscalation: true
+allowPrivilegedContainer: true
+allowedCapabilities:
+- '*'
+allowedUnsafeSysctls:
+- '*'
+defaultAddCapabilities: []
+requiredDropCapabilities: []
+readOnlyRootFilesystem: false
+# allowedProcMountTypes: runtime/default
+priority: 1
+runAsUser:
+  type: RunAsAny
+seLinuxContext:
+  type: RunAsAny
+seccompProfiles:
+- '*'
+users:
+- system:serviceaccount:{{ .Release.Namespace }}:{{ template "cisController.fullname" . }}-sa
+volumes:
+- '*'
+
+{{- end -}}

@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ template "drishti.fullname" . }}"
+  labels:
+    app: "{{ template "drishti.fullname" . }}"
+  annotations:
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames: docker/default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "{{ template "drishti.fullname" . }}"
+  template:
+    metadata:
+      labels:
+        app: "{{ template "drishti.fullname" . }}"
+    spec:
+      serviceAccountName: {{ template "cisController.fullname" . }}-sa
+      containers:
+      - name: drishti-cis
+        image: "{{ .Values.global.imageOverrides.drishti_cis }}"
+        imagePullPolicy: "{{ .Values.global.imagePullPolicy }}"
+        command: ["./bin/drishti-cis"]
+        args: ["-cos", "$(CIS_COS_URL)", "-frequency", "$(CIS_CHECK_FREQUENCY)", "-version", "$(K8S_VERSION)"]
+        livenessProbe:
+          exec:
+            command:
+            - pgrep
+            - drishti-cis
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+        readinessProbe:
+          exec:
+            command: ["sh", "-c", "exec echo start drishti-cis"]
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        securityContext:
+          privileged: true
+          readOnlyRootFilesystem: true
+        env:
+          - name: CIS_COS_URL
+            valueFrom:
+              configMapKeyRef:
+                name: "{{ template "drishti.fullname" . }}-config"
+                key: CIS_COS_URL
+          - name: CIS_CHECK_FREQUENCY
+            valueFrom:
+              configMapKeyRef:
+                name: "{{ template "drishti.fullname" . }}-config"
+                key: CIS_CHECK_FREQUENCY
+          - name: K8S_VERSION
+            valueFrom:
+              configMapKeyRef:
+                name: "{{ template "drishti.fullname" . }}-config"
+                key: K8S_VERSION
+        resources:
+          requests:
+            memory: 256Mi
+          limits:
+            memory: 512Mi
+
+        volumeMounts:
+          - mountPath: "/mnt"
+            name: mntdir
+          - mountPath: "/dev/fuse"
+            name: fuse
+          - mountPath: "/var/run"
+            name: shared-data
+          - name: {{ template "cisController.fullname" . }}-secret
+            mountPath: /etc/ciscos/
+          - name: {{ template "cisController.fullname" . }}-secret
+            mountPath: /etc/vacos/
+          - name: scratch
+            mountPath: /tmp
+          - mountPath: /etc/cisCerts/
+            name: ca
+
+      volumes:
+      - hostPath:
+          path: "/dev/fuse"
+        name: fuse
+      - name: mntdir
+        emptyDir: {}
+      - name: shared-data
+        emptyDir: {}
+      - name: shared-vol
+        emptyDir: {}
+      - name: scratch
+        emptyDir: {}
+      - name: {{ template "cisController.fullname" . }}-secret
+        secret:
+          secretName: "{{ template "cisController.fullname" . }}-secret"
+      - name: ca
+        secret:
+          defaultMode: 420
+          items:
+          - key: ca.crt
+            path: ca.cert
+          secretName: {{ template "minio.fullname" . }}-tls-cert
+
+      tolerations:
+      - effect: NoSchedule
+        key: dedicated
+        operator: Exists
+      - key: "CriticalAddonsOnly"
+        operator: "Exists"

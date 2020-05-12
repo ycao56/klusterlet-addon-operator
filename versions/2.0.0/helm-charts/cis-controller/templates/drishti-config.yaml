@@ -1,0 +1,24 @@
+# Licensed Materials - Property of IBM
+# 5737-E67
+# @ Copyright IBM Corporation 2019. All Rights Reserved.
+# US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: "{{ template "drishti.fullname" . }}"
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    component: "{{ .Values.drishti.name }}"
+    heritage: "{{ .Release.Service }}"
+    release: "{{ .Release.Name }}"
+  name: "{{ template "drishti.fullname" . }}-config"
+data:
+  CIS_COS_URL: "{{ template "cisController.fullname" . }}-minio:9000"
+  CIS_CHECK_FREQUENCY: "86400"
+{{- if (eq "openshift" .Values.config.cloud_env) }}
+  K8S_VERSION: "ocp-3.11"
+{{- else }}
+  K8S_VERSION: {{ .Values.config.cloud_env }}
+{{- end }}
+

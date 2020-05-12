@@ -1,0 +1,35 @@
+# Licensed Materials - Property of IBM
+# IBM Confidential
+# OCO Source Materials
+# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
+# The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
+
+{{- if .Values.enabled }}
+{{- if eq .Values.ingress.type "Ingress" }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    ingress.kubernetes.io/ssl-passthrough: "true"
+  name: {{ template "work-manager.fullname" . }}
+  labels:
+    name: {{ template "work-manager.fullname" . }}
+    app: {{ template "work-manager.name" . }}
+    chart: {{ template "work-manager.chart" . }}
+    release: {{ .Release.Name }}
+    component: "work-manager"
+    heritage: {{ .Release.Service }}
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          serviceName: {{ template "work-manager.fullname" . }}
+          servicePort: 443
+  {{- if .Values.ingress.host }}
+    host: {{ .Values.ingress.host }}
+  {{- else }}
+    host: {{ .Values.clusterName }}.klusterlet.mcm
+  {{- end }}
+{{- end }}
+{{- end }}

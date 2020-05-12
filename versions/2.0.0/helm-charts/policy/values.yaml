@@ -1,0 +1,39 @@
+# Licensed Materials - Property of IBM
+# IBM Confidential
+# OCO Source Materials
+# (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
+# The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
+
+enabled: true
+connectionManager: null
+
+clusterName: null
+clusterNamespace: null
+
+deployedOnHub: false
+
+resources:
+  requests:
+    memory: 128Mi
+  limits:
+    memory: 256Mi
+
+nodeSelector: {}
+
+affinity: {}
+
+tolerations:
+- key: "dedicated"
+  operator: "Equal"
+  value: "infra"
+  effect: "NoSchedule"
+
+logLevel: 5
+
+postDeleteJobServiceAccount: null
+
+global: 
+  imagePullPolicy: Always 
+  imagePullSecret: null
+  imageOverrides: 
+    mcm_compliance: quay.io/open-cluster-management/mcm-compliance:3.2.0

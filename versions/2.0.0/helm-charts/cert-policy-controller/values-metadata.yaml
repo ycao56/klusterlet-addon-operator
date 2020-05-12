@@ -1,0 +1,149 @@
+replicas:
+  __metadata:
+    label: "Replicas"
+    description: "The number of controllers to create"
+    type: "number"
+    required: true
+
+args:
+  __metadata:
+    label: "Command-line Arguments"
+    description: "The command line arguments for the controller program."
+  frequency:
+    __metadata:
+      label: "Update Frequency"
+      description: "How often (in seconds) the controller checks for and updates policies."
+      required: false
+      type: "number"
+  verbosity:
+    __metadata:
+      label: "Verbosity"
+      description: "The level of verbosity you want the logs of this deployment to be. The higher the level, the more verbose the logs will be."
+      required: true
+      type: "number"
+  defaultDuration:
+    __metadata:
+      label: "Default Duration"
+      description: "The default minimum duration that a certificate must be greater than to be compliant if a duration on a policy is not specified. Must be in golang's time format."
+      required: false
+      type: "string"
+
+securityContext:
+  __metadata:
+    label: "Security Context"
+    description: "The security context used for the certificate policy controller pod."
+  pod:
+    __metadata:
+      label: "Pod"
+      description: "Security context at the pod level"
+    runAsUser:
+      __metadata:
+        label: "Run As User"
+        description: "Specifies which user to run as within the container."
+        type: "string"
+        required: true
+    runAsNonRoot:
+      __metadata:
+        label: "Run As Non-Root"
+        description: "If true, then the user in the running container must be a non-root user."
+        type: "boolean"
+        required: true
+  container:
+    __metadata:
+      label: "Container"
+      description: "Security context at the container level, overrides the pod level securityContext"
+    allowPrivilegeEscalation:
+      __metadata:
+        label: "Allow Privilege Escalation"
+        description: "Allows the user running in the container to gain root privileges if set to true."
+        type: "boolean"
+        required: true
+    runAsUser:
+      __metadata:
+        label: "Run As User"
+        description: "Specifies which user to run as within the container."
+        type: "string"
+        required: true
+    readOnlyRootFilesystem:
+      __metadata:
+        label: "Read Only Root Filesystem"
+        description: "If true, only allows reading from the root directory (no writes or executions)."
+        type: "boolean"
+        required: true
+    runAsNonRoot:
+      __metadata:
+        label: "Run As Non-Root"
+        description: "If true, then the user in the running container must be a non-root user."
+        type: "boolean"
+        required: true
+    privileged:
+      __metadata:
+        label: "Privileged"
+        description: "If true, allows the container to be privileged, false doesn't allow it to be privileged."
+        type: "boolean"
+        required: true
+
+nodeSelector:
+  __metadata:
+    label: "Node Selector"
+    description: "The node this controller will run on."
+
+tolerations:
+  __metadata:
+    label: "Tolerations"
+    description: "When specified, tolerates any taint that matches the triple <key, value, effect>."
+    type: "string"
+    required: false
+
+serviceAccount:
+  __metadata:
+    label: "Service Account"
+    description: "Service account options for cert-policy-controller."
+  create:
+    __metadata:
+      label: "Create"
+      description: "If true, has cert-policy-controller create its own service account"
+      type: "boolean"
+      required: true
+  name:
+    __metadata:
+      label: "Name"
+      description: "The name of the service account to use if the controller doesn't create its own"
+      type: "string"
+      required: true
+global:
+  __metadata:
+    label: "Global Chart Settings"
+    description: "Global values for cert-manager chart"
+  imagePullPolicy:
+    __metadata:
+      label: "Cert policy controller Image Pull Policy"
+      description:  "Image Pull Policy for Cert Policy Controller"
+      type: "string"
+      required: false
+      options:
+      - label: "IfNotPresent"
+        value: "IfNotPresent"
+      - label: "Always"
+        value: "Always"
+      - label: "Never"
+        value: "Never"
+  imagePullSecret:
+    __metadata:
+      label: "Image Pull Secrets"
+      description: "Any secrets required to pull cert-manager images."
+      type: "string"
+      required: false
+  imageOverrides:
+    __metadata:
+    name: "imageOverrides"
+    label: "Image Overrides"
+    description: "Image Overrides"
+    cert_policy_controller:
+      __metadata:
+        name: "cert_policy_controller"
+        label: "cert_policy_controller"
+        description: "Image override for cert_policy_controller"
+        type: "string"
+        immutable: false
+        required: false
