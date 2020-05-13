@@ -32,11 +32,6 @@
       watchDependentResources: false
     - version: v1beta1
       group: multicloud.ibm.com
-      kind: ServiceRegistry
-      chart: /opt/helm/versions/2.0.0/helm-charts/service-registry
-      watchDependentResources: false
-    - version: v1beta1
-      group: multicloud.ibm.com
       kind: ApplicationManager
       chart: /opt/helm/versions/2.0.0/helm-charts/application-manager
       watchDependentResources: false

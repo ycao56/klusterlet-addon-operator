@@ -10,6 +10,17 @@ KIND_KUBECONFIG="${PROJECT_DIR}/kind_kubeconfig.yaml"
 export KUBECONFIG=${KIND_KUBECONFIG}
 export PULL_SECRET=multicloud-image-pull-secret
 
+if [ -z $DOCKER_USER ]; then
+   echo "DOCKER_USER is not defined!"
+   exit 1
+fi
+if [ -z $DOCKER_PASS ]; then
+   echo "DOCKER_PASS is not defined!"
+   exit 1
+fi
+
+
+
 
 set_linux_arch () {
     local _arch=$(uname -m)
@@ -97,7 +108,7 @@ run_test() {
   #Delete cluster
 	kind delete cluster --name=test-cluster
 
-  # Create cluster 
+  # Create cluster
   kind create cluster --name=test-cluster --config $CONFIG_FILE
 
   #export context to kubeconfig
@@ -146,7 +157,7 @@ run_test() {
       --docker-username=$DOCKER_USER \
       --docker-password=$DOCKER_PASS \
       -n multicluster-endpoint
-  
+
   for dir in overlays/test/* ; do
     echo "Executing test "$dir
     kubectl apply -k $dir

@@ -1,4 +1,4 @@
-# endpoint component operator
+# endpoint component operator 
 
 A HELM operator built with [operator-sdk](https://github.com/operator-framework/operator-sdk) used to deploy management components on remote clusters
 
@@ -61,6 +61,11 @@ The [endpoint-operator](https://github.com/open-cluster-management/endpoint-oper
 
 ## Build and publish a personal build to scratch artifactory
 
+- `export GITHUB_USER=<GITHUB_USER>`
+- `export GITHUB_TOKEN=<GITHUB_TOKEN>`
+- `export DOCKER_USER=<Docker username>`
+- `export DOCKER_PASS=<Docker password>`
+
 - `make init`
 - `make operator:build`
 - `make docker:tag`
@@ -68,7 +73,7 @@ The [endpoint-operator](https://github.com/open-cluster-management/endpoint-oper
 
 ## Run functional test
 
-The implemented funcitonal tests deploy the endpoint-component-operator in KinD v0.7.0.
+The implemented functional tests deploy the endpoint-component-operator in KinD v0.7.0.
 
 The kind configuration file are located in the [build/kind-config](build/kind-config).
 
@@ -78,9 +83,8 @@ To add new configuration, copy one of the existing config and change the `nodes.
 
 To run the test call depending on the kube version the test must run on:
 
-- `make component/test/functional` # To create kind clusters and run the gingko tests on them
-- `make fonctional-test-full`      # To build the image, then create kind clusters and run the gingko tests on them
-- `make functional-test`           # To simply run the gingko tests
+- `make functional-test-full`      # To build the image, then create kind clusters and run the gingko tests on them.  (Ideal for someone new to the repo and wanting to test changes)
+- `make component/test/functional` # To create kind clusters and run the gingko tests on them (image already built)
 
 ## Add a component into the test
 
