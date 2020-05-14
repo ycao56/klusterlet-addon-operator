@@ -5,19 +5,18 @@
 # The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
 
 apiVersion: agent.open-cluster-management.io/v1beta1
-kind: CertManager
+kind: IAMPolicyController
 metadata:
-  name: cert-manager
+  name: iampolicycontroller
+  namespace: klusterlet
 spec:
-  fullnameOverride: klusterlet-certmgr
-  hostNetwork: false
-  serviceAccount:
-    create: true
-    name: null
-  clusterResourceNamespace: klusterlet
-  image:
-    repository: ibmcom/icp-cert-manager-controller
-    tag: 0.7.0.1
-    pullPolicy: IfNotPresent
-  policy-controller:
-    enabled: false
+  ocp: true
+  clusterName: test
+  clusterNamespace: test
+  connectionManager: test-connmgr
+  fullnameOverride: iam-test
+  global:
+    imagePullPolicy: IfNotPresent
+    imagePullSecret: ""
+    imageOverrides:
+      iam_policy_controller: "fakerepo/iam-policy-controller:1.0.0"

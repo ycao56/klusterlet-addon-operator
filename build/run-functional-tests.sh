@@ -19,9 +19,6 @@ if [ -z $DOCKER_PASS ]; then
    exit 1
 fi
 
-
-
-
 set_linux_arch () {
     local _arch=$(uname -m)
     if [ "$_arch" == "x86_64" ]; then
@@ -78,9 +75,9 @@ wait_installed() {
     while [ $_max_nb_loop -gt 0 ]
     do
         if [ $ocp_env ]; then
-        _result=$(for file in `ls deploy/crs/multicloud.ibm.com_*_cr.yaml deploy/crs/ocp/multicloud.ibm.com_*_cr.yaml`; do kubectl get -f $file -o=jsonpath="{.metadata.name}{' '}{.status.conditions[?(@.reason=='InstallSuccessful')].reason}{'\n'}"; done)
+        _result=$(for file in `ls deploy/crs/agent.open-cluster-management.io_*_cr.yaml deploy/crs/ocp/agent.open-cluster-management.io_*_cr.yaml`; do kubectl get -f $file -o=jsonpath="{.metadata.name}{' '}{.status.conditions[?(@.reason=='InstallSuccessful')].reason}{'\n'}"; done)
         else
-        _result=$(for file in `ls deploy/crs/multicloud.ibm.com_*_cr.yaml deploy/crs/non-ocp/multicloud.ibm.com_*_cr.yaml`; do kubectl get -f $file -o=jsonpath="{.metadata.name}{' '}{.status.conditions[?(@.reason=='InstallSuccessful')].reason}{'\n'}"; done)
+        _result=$(for file in `ls deploy/crs/agent.open-cluster-management.io_*_cr.yaml deploy/crs/non-ocp/agent.open-cluster-management.io_*_cr.yaml`; do kubectl get -f $file -o=jsonpath="{.metadata.name}{' '}{.status.conditions[?(@.reason=='InstallSuccessful')].reason}{'\n'}"; done)
         fi
         _result_exit_code=$?
         _result_not_success=$(echo "$_result" | grep -v "InstallSuccessful")
@@ -97,7 +94,7 @@ wait_installed() {
     done
     echo "====================== ERROR with config $CONFIG_FILE ==================="
     echo "Timeout: Herlm charts deployment failed after "$_timeout_seconds" seconds"
-    for cr in $_result_not_success; do kubectl get $cr $cr -n multicluster-endpoint -o=jsonpath="{.metadata.name}{','}{.status.conditions[*].message}{'\n'}"; done
+    for cr in $_result_not_success; do kubectl get $cr $cr -n klusterlet -o=jsonpath="{.metadata.name}{','}{.status.conditions[*].message}{'\n'}"; done
     return 1
 }
 
@@ -119,7 +116,7 @@ run_test() {
   kind load docker-image $DOCKER_IMAGE --name=test-cluster
 
   #Apply all crds
-  for file in `ls deploy/crds/multicloud.ibm.com_*_crd.yaml`; do kubectl apply -f $file; done
+  for file in `ls deploy/crds/agent.open-cluster-management.io_*_crd.yaml`; do kubectl apply -f $file; done
 
   #Try to apply the securitycontextconstraints
   ocp_env=0
@@ -135,13 +132,13 @@ run_test() {
   kubectl apply -f ${PROJECT_DIR}/deploy/namespace.yaml
 
   #Install all CRs
-  for file in `ls deploy/crs/multicloud.ibm.com_*_cr.yaml`; do kubectl apply -f $file; done
+  for file in `ls deploy/crs/agent.open-cluster-management.io_*_cr.yaml`; do kubectl apply -f $file; done
 
   #Install CRs depending if it is an OCP env or not
   if [ $ocp_env == 1 ]; then
-    for file in `ls deploy/crs/ocp/multicloud.ibm.com_*_cr.yaml`; do kubectl apply -f $file; done
+    for file in `ls deploy/crs/ocp/agent.open-cluster-management.io_*_cr.yaml`; do kubectl apply -f $file; done
   else
-    for file in `ls deploy/crs/non-ocp/multicloud.ibm.com_*_cr.yaml`; do kubectl apply -f $file; done
+    for file in `ls deploy/crs/non-ocp/agent.open-cluster-management.io_*_cr.yaml`; do kubectl apply -f $file; done
   fi
 
   #Configure kubectl
@@ -149,19 +146,19 @@ run_test() {
   kind export kubeconfig --kubeconfig $tmpKUBECONFIG --name=test-cluster
 
   #Create a generic klusterlet-bootstrap
-  kubectl create secret generic klusterlet-bootstrap -n multicluster-endpoint --from-file=kubeconfig=$tmpKUBECONFIG
+  kubectl create secret generic klusterlet-bootstrap -n klusterlet --from-file=kubeconfig=$tmpKUBECONFIG
 
   #Create the docker secret for quay.io
   kubectl create secret docker-registry $PULL_SECRET \
       --docker-server=quay.io/open-cluster-management \
       --docker-username=$DOCKER_USER \
       --docker-password=$DOCKER_PASS \
-      -n multicluster-endpoint
-
+      -n klusterlet
+  
   for dir in overlays/test/* ; do
     echo "Executing test "$dir
     kubectl apply -k $dir
-    kubectl patch deployment endpoint-component-operator -n multicluster-endpoint -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"endpoint-component-operator\",\"image\":\"${DOCKER_IMAGE}\"}]}}}}"
+    kubectl patch deployment klusterlet-component-operator -n klusterlet -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"klusterlet-component-operator\",\"image\":\"${DOCKER_IMAGE}\"}]}}}}"
     #Wait if all helm-charts are installed
     wait_installed $CONFIG_FILE
     _timeout=$?

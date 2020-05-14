@@ -1,5 +1,0 @@
-Certificate Policy Controller has been deployed successfully!
-
-In order to check the compliance of your system based on its certificates, you will need to create a CertPolicy spec.
-
-More information about GRC Policies can be found in our documentation.

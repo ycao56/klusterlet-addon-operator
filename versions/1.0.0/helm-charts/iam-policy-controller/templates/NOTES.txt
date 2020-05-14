@@ -1,4 +1,0 @@
-IBM IAM Policy Controller {{ .Chart.Version }} has been deployed successfully!
-
-More information about GRC Policies can be found in our documentation:
-https://www.ibm.com/support/knowledgecenter/en/SSBS6K_4.1.0/

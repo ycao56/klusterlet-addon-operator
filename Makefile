@@ -11,7 +11,7 @@ export PROJECT_DIR            = $(shell 'pwd')
 export BUILD_DIR              = $(PROJECT_DIR)/build
 export COMPONENT_SCRIPTS_PATH = $(BUILD_DIR)
 
-export IMAGE_DESCRIPTION  = Endpoint_Component_Operator
+export IMAGE_DESCRIPTION  = Klusterlet_Component_Operator
 export DOCKER_FILE        = $(BUILD_DIR)/Dockerfile
 export DOCKER_REGISTRY   ?= quay.io
 export DOCKER_NAMESPACE  ?= open-cluster-management
@@ -92,11 +92,11 @@ operator\:run:
 
 .PHONY: utils/crds/install
 utils/crds/install:
-	for file in `ls deploy/crds/multicloud.ibm.com_*_crd.yaml`; do kubectl apply -f $$file; done
+	for file in `ls deploy/crds/agent.open-cluster-management.io_*_crd.yaml`; do kubectl apply -f $$file; done
 
 .PHONY: utils/crds/uninstall
 utils/crds/uninstall:
-	for file in `ls deploy/crds/multicloud.ibm.com_*_crd.yaml`; do kubectl delete -f $$file; done
+	for file in `ls deploy/crds/agent.open-cluster-management.io_*_crd.yaml`; do kubectl delete -f $$file; done
 
 .PHONY: utils\:charts\:versions
 utils\:charts\:versions:

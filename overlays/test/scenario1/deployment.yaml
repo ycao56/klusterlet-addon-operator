@@ -1,8 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: endpoint-component-operator
-  namespace: multicluster-endpoint
+  name: klusterlet-component-operator
+  namespace: klusterlet
 spec:
   template:
     spec:

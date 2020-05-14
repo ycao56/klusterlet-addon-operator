@@ -6,42 +6,42 @@
 
 ---
     - version: v1beta1
-      group: multicloud.ibm.com
+      group: agent.open-cluster-management.io
       kind: CertPolicyController
       chart: /opt/helm/versions/2.0.0/helm-charts/cert-policy-controller
       watchDependentResources: false
     - version: v1beta1
-      group: multicloud.ibm.com
+      group: agent.open-cluster-management.io
       kind: ConnectionManager
       chart: /opt/helm/versions/2.0.0/helm-charts/connection-manager
       watchDependentResources: false
     - version: v1beta1
-      group: multicloud.ibm.com
+      group: agent.open-cluster-management.io
       kind: WorkManager
       chart: /opt/helm/versions/2.0.0/helm-charts/work-manager
       watchDependentResources: false
     - version: v1beta1
-      group: multicloud.ibm.com
+      group: agent.open-cluster-management.io
       kind: PolicyController
       chart: /opt/helm/versions/2.0.0/helm-charts/policy
       watchDependentResources: false
     - version: v1beta1
-      group: multicloud.ibm.com
+      group: agent.open-cluster-management.io
       kind: SearchCollector
       chart: /opt/helm/versions/2.0.0/helm-charts/search
       watchDependentResources: false
     - version: v1beta1
-      group: multicloud.ibm.com
+      group: agent.open-cluster-management.io
       kind: ApplicationManager
       chart: /opt/helm/versions/2.0.0/helm-charts/application-manager
       watchDependentResources: false
     - version: v1beta1
-      group: multicloud.ibm.com
+      group: agent.open-cluster-management.io
       kind: IAMPolicyController
       chart: /opt/helm/versions/2.0.0/helm-charts/iam-policy-controller
       watchDependentResources: false
     - version: v1beta1
-      group: multicloud.ibm.com
+      group: agent.open-cluster-management.io
       kind: CISController
       chart: /opt/helm/versions/2.0.0/helm-charts/cis-controller
       watchDependentResources: false
