@@ -29,5 +29,4 @@ global:
   imagePullPolicy: Always 
   imagePullSecret: null
   imageOverrides: 
-    multicluster_operators_deployable: quay.io/open-cluster-management/multicluster-operators-deployable:1.0.0
     multicluster_operators_subscription: quay.io/open-cluster-management/multicluster-operators-subscription:1.0.0

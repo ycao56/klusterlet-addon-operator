@@ -18,6 +18,5 @@ spec:
     imagePullPolicy: IfNotPresent
     imagePullSecret: ""
     imageOverrides:
-      multicluster_operators_deployable: "fakerepo/multicluster-operators-deployable:1.0.0"
       multicluster_operators_subscription: "fakerepo/multicluster-operators-subscription:1.0.0"
 
