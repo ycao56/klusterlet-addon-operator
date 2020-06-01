@@ -36,4 +36,7 @@ global:
   imagePullPolicy: Always 
   imagePullSecret: null
   imageOverrides: 
-    mcm_compliance: quay.io/open-cluster-management/mcm-compliance:3.2.0
+    governance_policy_spec_sync: quay.io/open-cluster-management/governance-policy-spec-sync:latest-dev
+    governance_policy_status_sync: quay.io/open-cluster-management/governance-policy-status-sync:latest-dev
+    governance_policy_template_sync: quay.io/open-cluster-management/governance-policy-template-sync:latest-dev
+    config_policy_controller: quay.io/open-cluster-management/config-policy-controller:latest-dev

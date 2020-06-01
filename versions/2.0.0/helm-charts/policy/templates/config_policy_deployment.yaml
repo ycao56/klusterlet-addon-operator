@@ -8,11 +8,11 @@
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: {{ template "policy.fullname" . }}
+  name: {{ template "policy.fullname" . }}-config-policy
   labels:
-    app: {{ template "policy.name" . }}
+    app: {{ template "policy.name" . }}-config-policy
     chart: {{ template "policy.chart" . }}
-    component: "compliance"
+    component: "governance"
     release: {{ .Release.Name }}
     controller: "operator"
     heritage: {{ .Release.Service }}
@@ -21,14 +21,14 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ template "policy.name" . }}
-      component: "compliance"
+      app: {{ template "policy.name" . }}-config-policy
+      component: "governance"
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ template "policy.name" . }}
-        component: "compliance"
+        app: {{ template "policy.name" . }}-config-policy
+        component: "governance"
         controller: "operator"
         release: {{ .Release.Name }}
         heritage: {{ .Release.Service }}
@@ -36,38 +36,23 @@ spec:
     spec:
       serviceAccountName: {{ template "policy.fullname" . }}
       containers:
-      - name: policy-controller
-        image: "{{ .Values.global.imageOverrides.mcm_compliance }}"
+      - name: config-policy-controller
+        image: "{{ .Values.global.imageOverrides.config_policy_controller }}"
         imagePullPolicy: "{{ .Values.global.imagePullPolicy }}"
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
-        command: ["policy-controller"]
-        args:
-          - "-logtostderr=true"
-          - "--watch-ns={{ .Values.clusterNamespace }}"
-          - "--cluster-name={{ .Values.clusterName }}"
-          - "-v={{ .Values.logLevel }}"
+        command: ["config-policy-controller"]
+        env:
+          - name: WATCH_NAMESPACE
+            value: {{ .Values.clusterNamespace }}
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: OPERATOR_NAME
+            value: "config-policy-ctrl"
         livenessProbe: null
         readinessProbe: null
-      {{- if not (.Values.deployedOnHub) }}
-      - name: sync-controller
-        image: "{{ .Values.global.imageOverrides.mcm_compliance }}"
-        imagePullPolicy: "{{ .Values.global.imagePullPolicy }}"
-        resources:
-          {{- toYaml .Values.resources | nindent 10 }}
-        command: ["sync-controller"]
-        args:
-          - "--remote-kubeconfig=/var/run/klusterlet/kubeconfig"
-          - "--watch-ns={{ .Values.clusterNamespace }}"
-          - "--klusterlet-ns={{ .Release.Namespace }}"
-          - "-logtostderr=true"
-          - "-v={{ .Values.logLevel }}"
-        livenessProbe: null
-        readinessProbe: null
-        volumeMounts:
-          - name: klusterlet-config
-            mountPath: /var/run/klusterlet
-      {{- end }}
       volumes:
         - name: klusterlet-config
           secret:
