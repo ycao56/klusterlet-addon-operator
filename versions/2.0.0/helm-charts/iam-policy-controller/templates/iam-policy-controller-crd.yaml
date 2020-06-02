@@ -8,9 +8,9 @@ metadata:
     chart: {{ template "iamPolicyController.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-  name: iampolicies.iam.policies.ibm.com
+  name: iampolicies.policy.open-cluster-management.io
 spec:
-  group: iam.policies.ibm.com
+  group: policy.open-cluster-management.io
   names:
     kind: IamPolicy
     plural: iampolicies

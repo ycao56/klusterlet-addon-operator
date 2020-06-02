@@ -43,7 +43,7 @@ rules:
   - update
   - patch
 - apiGroups:
-  - policies.ibm.com
+  - policy.open-cluster-management.io
   resources:
   - certificatepolicies
   verbs:
@@ -55,7 +55,7 @@ rules:
   - patch
   - delete
 - apiGroups:
-  - policies.ibm.com
+  - policy.open-cluster-management.io
   resources:
   - certificatepolicies/status
   verbs:

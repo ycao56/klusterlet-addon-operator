@@ -4,9 +4,9 @@ metadata:
   creationTimestamp: null
   labels:
     controller-tools.k8s.io: "1.0"
-  name: cispolicies.policies.ibm.com
+  name: cispolicies.policy.open-cluster-management.io
 spec:
-  group: policies.ibm.com
+  group: policy.open-cluster-management.io
   names:
     kind: CisPolicy
     plural: cispolicies

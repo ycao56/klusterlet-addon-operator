@@ -1,7 +1,7 @@
 replicas: 1
 
 args:
-  frequency: 60
+  frequency: 30
   verbosity: 0
 
 ocp: true

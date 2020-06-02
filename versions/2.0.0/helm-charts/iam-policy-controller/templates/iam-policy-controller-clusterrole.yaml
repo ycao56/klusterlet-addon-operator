@@ -51,7 +51,7 @@ rules:
   verbs:
   - list
 - apiGroups:
-  - iam.policies.ibm.com
+  - policy.open-cluster-management.io
   resources:
   - iampolicies
   verbs:
@@ -63,7 +63,7 @@ rules:
   - patch
   - delete
 - apiGroups:
-  - iam.policies.ibm.com
+  - policy.open-cluster-management.io
   resources:
   - iampolicies/status
   verbs:
