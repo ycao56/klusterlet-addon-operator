@@ -15,13 +15,9 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 rules:
-- apiGroups:
-  - '*'
-  resources:
-  - '*'
+- apiGroups: ["*"]
+  resources: ["*"]
   verbs:
-  - '*'
-- nonResourceURLs:
-  - '*'
-  verbs:
-  - '*'
+  - get
+  - list
+  - watch
