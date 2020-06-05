@@ -16,7 +16,8 @@ ENV GO111MODULE=on
 
 RUN GOFLAGS="" bash ./build/build-helm-operator-bin.sh
 
-FROM registry.access.redhat.com/ubi8/ubi-minimal:8.1-398
+FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
+RUN microdnf update
 
 ARG REMOTE_SOURCE
 ARG REMOTE_SOURCE_DIR
