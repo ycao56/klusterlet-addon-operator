@@ -54,6 +54,15 @@ spec:
             command: ["sh", "-c", "exec echo start certificate-policy-controller"]
           initialDelaySeconds: 10
           timeoutSeconds: 2
+        env:
+        - name: WATCH_NAMESPACE
+          value: ""
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: OPERATOR_NAME
+          value: {{ include "controller.fullname" . }}
         resources:
           limits:
             memory: "300Mi"

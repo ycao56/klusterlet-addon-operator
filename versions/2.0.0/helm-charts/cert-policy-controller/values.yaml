@@ -28,5 +28,5 @@ global:
   imagePullPolicy: Always 
   imagePullSecret: null
   imageOverrides: 
-    cert_policy_controller: quay.io/open-cluster-management/cert-policy-controller:3.5.0
+    cert_policy_controller: quay.io/open-cluster-management/cert-policy-controller:3.6.0
     
