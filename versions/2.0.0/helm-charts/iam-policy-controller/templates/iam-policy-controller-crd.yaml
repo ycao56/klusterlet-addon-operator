@@ -64,7 +64,7 @@ spec:
             compliant:
               type: string
           type: object
-  version: v1alpha1
+  version: v1
   additionalPrinterColumns:
     - JSONPath: .status.conditions[?(@.type=="Ready")].status
       name: Ready

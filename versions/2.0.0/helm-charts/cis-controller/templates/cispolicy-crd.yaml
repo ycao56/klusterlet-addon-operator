@@ -59,7 +59,7 @@ spec:
                 this file'
               type: object
           type: object
-  version: v1alpha1
+  version: v1
 status:
   acceptedNames:
     kind: ""
