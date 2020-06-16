@@ -79,6 +79,9 @@ spec:
             value: "governance-policy-status-sync"
         livenessProbe: null
         readinessProbe: null
+        volumeMounts:
+          - name: klusterlet-config
+            mountPath: /var/run/klusterlet
       - name: template-sync
         image: "{{ .Values.global.imageOverrides.governance_policy_template_sync }}"
         imagePullPolicy: "{{ .Values.global.imagePullPolicy }}"
