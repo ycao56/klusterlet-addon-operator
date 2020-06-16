@@ -34,7 +34,6 @@ spec:
         image: "{{ .Values.global.imageOverrides.cert_policy_controller }}"
         imagePullPolicy: {{ .Values.global.imagePullPolicy }}
         args:
-        - --v={{ .Values.args.verbosity }}
         {{- if .Values.args.frequency }}
         - --update-frequency={{ .Values.args.frequency }}
         {{- end }}
