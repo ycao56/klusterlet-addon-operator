@@ -9,6 +9,6 @@ kind: PolicyController
 metadata:
   name: policy-controller
 spec:
-  connectionManager: CONNECTION_MANAGER_RELEASE
+  hubKubeconfigSecret: CONNECTION_MANAGER_RELEASE
   clusterName: CLUSTER_NAME
   clusterNamespace: CLUSTER_NAMESPACE

@@ -4,16 +4,15 @@
 # (C) Copyright IBM Corporation 2016, 2019 All Rights Reserved
 # The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
 
-apiVersion: agent.open-cluster-management.io/v1beta1
+apiVersion: agent.open-cluster-management.io/v1
 kind: CISController
 metadata:
   name: ciscontroller
   namespace: klusterlet
 spec:
-  ocp: true
   clusterName: test
   clusterNamespace: test
-  connectionManager: test-connmgr
+  hubKubeconfigSecret: test-hub-kubeconfig
   fullnameOverride: cis-test
   global:
     imagePullPolicy: IfNotPresent

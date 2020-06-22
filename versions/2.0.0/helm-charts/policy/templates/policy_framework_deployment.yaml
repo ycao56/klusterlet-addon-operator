@@ -16,7 +16,7 @@ metadata:
     release: {{ .Release.Name }}
     controller: "operator"
     heritage: {{ .Release.Service }}
-    connectionManager: {{ .Values.connectionManager }}
+    hubKubeconfigSecret: {{ .Values.hubKubeconfigSecret }}
 spec:
   replicas: 1
   selector:
@@ -36,7 +36,7 @@ spec:
     spec:
       serviceAccountName: {{ template "policy.fullname" . }}
       containers:
-      {{- if not (.Values.deployedOnHub) }}
+      {{- if not (or (.Capabilities.APIVersions.Has "multiclusterhubs.operators.open-cluster-management.io/v1") (.Capabilities.APIVersions.Has "multiclusterhubs.operators.open-cluster-management.io/v1beta1")) }}
       - name: spec-sync
         image: "{{ .Values.global.imageOverrides.governance_policy_spec_sync }}"
         imagePullPolicy: "{{ .Values.global.imagePullPolicy }}"
@@ -102,7 +102,7 @@ spec:
       volumes:
         - name: klusterlet-config
           secret:
-            secretName: {{ .Values.connectionManager }}-hub-kubeconfig
+            secretName: {{ .Values.hubKubeconfigSecret }}
       {{- if .Values.global.imagePullSecret }}
       imagePullSecrets:
       - name: "{{ .Values.global.imagePullSecret }}"

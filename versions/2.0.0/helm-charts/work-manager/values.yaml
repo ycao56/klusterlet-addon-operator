@@ -10,14 +10,12 @@
 
 enabled: true
 
-connectionManager: null
+hubKubeconfigSecret: null
 
 clusterName: null
 clusterNamespace: null
 
 clusterLabels: {}
-
-deployedOnHub: false
 
 userImpersonation: false
 
@@ -26,12 +24,7 @@ workManager:
 
 # klusterlet proxy related configuration
 service:
-  type: ClusterIP
-
-ingress:
-  type: None
-  host: null
-  port: null
+  type: LoadBalancer
 
 nodeSelector: {}
 
@@ -56,4 +49,4 @@ global:
   imagePullPolicy: Always 
   imagePullSecret: null
   imageOverrides: 
-    multicloud_manager: quay.io/open-cluster-management/multicloud-manager:3.2.0 
+    multicloud_manager: quay.io/open-cluster-management/multicloud-manager:3.2.0

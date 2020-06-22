@@ -6,8 +6,6 @@
 imagePullPolicy: IfNotPresent
 # imagePullSecret: myregistrykey
 
-ocp: true
-
 caCertIssuer: null
 issuerKind: ClusterIssuer
   
@@ -18,7 +16,6 @@ tolerations:
 - key: "dedicated"
   operator: "Exists"
   effect: "NoSchedule"
-
 
 cisCrawler:
   enabled: true

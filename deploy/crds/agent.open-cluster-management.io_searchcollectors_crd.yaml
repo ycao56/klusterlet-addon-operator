@@ -37,9 +37,6 @@ spec:
             clusterNamespace:
               minLength: 1
               type: string
-            connectionManager:
-              minLength: 1
-              type: string
             fullnameOverride:
               minLength: 1
               type: string
@@ -57,17 +54,20 @@ spec:
                 imagePullSecret:
                   type: string
               type: object
+            hubKubeconfigSecret:
+              minLength: 1
+              type: string
           required:
           - clusterName
           - clusterNamespace
-          - connectionManager
           - fullnameOverride
+          - hubKubeconfigSecret
           type: object
         status:
           description: SearchCollectorStatus defines the observed state of SearchCollector
           type: object
-  version: v1beta1
+  version: v1
   versions:
-  - name: v1beta1
+  - name: v1
     served: true
     storage: true

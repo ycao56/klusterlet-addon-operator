@@ -74,11 +74,7 @@ wait_installed() {
     _max_nb_loop=$(($_timeout_seconds/$_interval_seconds))
     while [ $_max_nb_loop -gt 0 ]
     do
-        if [ $ocp_env ]; then
-        _result=$(for file in `ls deploy/crs/agent.open-cluster-management.io_*_cr.yaml deploy/crs/ocp/agent.open-cluster-management.io_*_cr.yaml`; do kubectl get -f $file -o=jsonpath="{.metadata.name}{' '}{.status.conditions[?(@.reason=='InstallSuccessful')].reason}{'\n'}"; done)
-        else
-        _result=$(for file in `ls deploy/crs/agent.open-cluster-management.io_*_cr.yaml deploy/crs/non-ocp/agent.open-cluster-management.io_*_cr.yaml`; do kubectl get -f $file -o=jsonpath="{.metadata.name}{' '}{.status.conditions[?(@.reason=='InstallSuccessful')].reason}{'\n'}"; done)
-        fi
+        _result=$(for file in `ls deploy/crs/agent.open-cluster-management.io_*_cr.yaml`; do kubectl get -f $file -o=jsonpath="{.metadata.name}{' '}{.status.conditions[?(@.reason=='InstallSuccessful')].reason}{'\n'}"; done)
         _result_exit_code=$?
         _result_not_success=$(echo "$_result" | grep -v "InstallSuccessful")
         if [ $? == 0 ] || [ $_result_exit_code != 0 ] ; then
@@ -96,6 +92,27 @@ wait_installed() {
     echo "Timeout: Herlm charts deployment failed after "$_timeout_seconds" seconds"
     for cr in $_result_not_success; do kubectl get $cr $cr -n klusterlet -o=jsonpath="{.metadata.name}{','}{.status.conditions[*].message}{'\n'}"; done
     return 1
+}
+
+check_ocp_install(){
+    echo "checking route installation: kubectl get route -n klusterlet"
+    kubectl get route -l component=work-manager -n klusterlet
+    _not_installed_route=1
+    if [ $(kubectl get route -l component=work-manager -n klusterlet | wc -l)  -gt 1 ]; then
+      echo "route installed correctly"
+      _not_installed_route=0
+    fi
+    _not_installed_scc=1
+    echo "checking scc installation"
+    kubectl get securitycontextconstraints -n klusterlet
+    if [ $(kubectl get securitycontextconstraints -n klusterlet | wc -l) -gt 2 ]; then
+      echo "scc installed correctly"
+      _not_installed_scc=0
+    fi
+    if [ $_not_installed_route != 0 ] || [ $_not_installed_scc != 0 ]; then
+      return 1
+    fi
+    return 0
 }
 
 #Create a cluster with as parameter the KinD config file and run the test
@@ -124,6 +141,7 @@ run_test() {
   if [ $? == 0 ]; then
     ocp_env=1
     echo "This is an OCP-like environment"
+    kubectl apply -f deploy/crds/fake_route.openshift.io_route_crd.yaml
   else
     echo "This is not an OCP-like environment"
   fi
@@ -133,13 +151,6 @@ run_test() {
 
   #Install all CRs
   for file in `ls deploy/crs/agent.open-cluster-management.io_*_cr.yaml`; do kubectl apply -f $file; done
-
-  #Install CRs depending if it is an OCP env or not
-  if [ $ocp_env == 1 ]; then
-    for file in `ls deploy/crs/ocp/agent.open-cluster-management.io_*_cr.yaml`; do kubectl apply -f $file; done
-  else
-    for file in `ls deploy/crs/non-ocp/agent.open-cluster-management.io_*_cr.yaml`; do kubectl apply -f $file; done
-  fi
 
   #Configure kubectl
   tmpKUBECONFIG=$(mktemp /tmp/kubeconfigXXXX)
@@ -162,15 +173,27 @@ run_test() {
     #Wait if all helm-charts are installed
     wait_installed $CONFIG_FILE
     _timeout=$?
-   if [ $_timeout != 0 ]; then
-     break
-   fi
+    if [ $_timeout != 0 ]; then
+      break
+    fi
+    _installed_failed=0
+    #Check detailed installed resources
+    if [ $ocp_env != 0 ]; then
+      check_ocp_install
+      _installed_failed=$?
+      if [ $_installed_failed != 0 ]; then
+        break
+      fi
+    fi
   done
 
   #Delete cluster
 	kind delete cluster --name=test-cluster
   echo "====================== END of config $CONFIG_FILE ======================"
   if [ $_timeout != 0 ]; then
+    return 1
+  fi
+  if [ $_installed_failed != 0 ]; then
     return 1
   fi
 }

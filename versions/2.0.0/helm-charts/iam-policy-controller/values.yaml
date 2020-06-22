@@ -4,8 +4,6 @@ args:
   frequency: 30
   verbosity: 0
 
-ocp: true
-
 securityContext:
   privileged: false
   allowPrivilegeEscalation: false

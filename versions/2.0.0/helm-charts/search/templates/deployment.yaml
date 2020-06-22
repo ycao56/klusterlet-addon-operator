@@ -5,7 +5,7 @@
 # The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
 
 {{- if .Values.enabled }}
-{{- if (not (.Values.deployedOnHub))}}
+{{- if (not (or (.Capabilities.APIVersions.Has "multiclusterhubs.operators.open-cluster-management.io/v1") (.Capabilities.APIVersions.Has "multiclusterhubs.operators.open-cluster-management.io/v1beta1")))}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -13,24 +13,23 @@ metadata:
   labels:
     app: {{ template "search.name" . }}
     chart: {{ template "search.chart" . }}
-    component: "mcm-search"
+    component: "search"
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-    connectionManager: {{ .Values.connectionManager }}
     mcm.ibm.com/globalview: "true"
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: {{ template "search.name" . }}
-      component: "mcm-search"
+      component: "search"
       release: {{ .Release.Name }}
       heritage: {{ .Release.Service }}
   template:
     metadata:
       labels:
         app: {{ template "search.name" . }}
-        component: "mcm-search"
+        component: "search"
         controller: "operator"
         release: {{ .Release.Name }}
         chart: {{ template "search.chart" . }}
@@ -58,7 +57,7 @@ spec:
       volumes:
       - name: hub-config
         secret:
-          secretName: {{ .Values.connectionManager }}-hub-kubeconfig
+          secretName: {{ .Values.hubKubeconfigSecret }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}

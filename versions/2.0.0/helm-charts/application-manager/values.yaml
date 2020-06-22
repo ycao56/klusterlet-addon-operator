@@ -4,7 +4,7 @@
 
 enabled: true
 
-connectionManager: null
+hubKubeconfigSecret: null
 
 clusterName: null
 clusterNamespace: null

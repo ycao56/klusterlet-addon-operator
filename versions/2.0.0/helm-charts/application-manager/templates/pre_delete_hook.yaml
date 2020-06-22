@@ -1,9 +1,9 @@
 {{- if .Values.enabled }}
-{{- if (not (.Values.deployedOnHub))}}
+{{- if (not (or (.Capabilities.APIVersions.Has "multiclusterhubs.operators.open-cluster-management.io/v1") (.Capabilities.APIVersions.Has "multiclusterhubs.operators.open-cluster-management.io/v1beta1")))}}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: "{{ template "application-manager.fullname" . }}-postdelete"
+  name: "{{ template "application-manager.fullname" . }}-predelete"
   labels:
     app: {{ template "application-manager.name" . }}
     chart: {{ template "application-manager.chart" . }}
@@ -19,7 +19,7 @@ metadata:
 spec:
   template:
     metadata:
-      name: "{{ template "application-manager.fullname" . }}-postdelete"
+      name: "{{ template "application-manager.fullname" . }}-predelete"
       labels:
         app: {{ template "application-manager.name" . }}
         component: "application-manager"
@@ -30,7 +30,7 @@ spec:
       restartPolicy: Never
       serviceAccountName: {{ template "application-manager.fullname" . }}
       containers:
-      - name: post-delete-job
+      - name: pre-delete-job
         image: "{{ .Values.global.imageOverrides.multicluster_operators_subscription }}"
         imagePullPolicy: "{{ .Values.global.imagePullPolicy }}"
         command: ["uninstall-crd"]

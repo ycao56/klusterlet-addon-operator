@@ -6,9 +6,7 @@
 
 enabled: true
 
-connectionManager: null
-
-deployedOnHub: false
+hubKubeconfigSecret: null
 
 clusterName: null
 clusterNamespace: null

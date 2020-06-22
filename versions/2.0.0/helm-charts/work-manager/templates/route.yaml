@@ -5,7 +5,7 @@
 # The source code for this program is not published or otherwise divested of its trade secrets, irrespective of what has been deposited with the U.S. Copyright Office.
 
 {{- if .Values.enabled }}
-{{- if eq .Values.ingress.type "Route" }}
+{{- if .Capabilities.APIVersions.Has "route.openshift.io/v1" }}
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
@@ -18,7 +18,7 @@ metadata:
     heritage: {{ .Release.Service }}
   name: {{ template "work-manager.fullname" . }}
 spec:
-  host: "{{ .Values.ingress.host }}"
+  host: ""
   tls:
     termination: passthrough
   to:

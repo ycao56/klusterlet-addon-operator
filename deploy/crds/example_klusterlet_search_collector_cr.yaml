@@ -9,7 +9,7 @@ kind: SearchCollector
 metadata:
   name: search-collector
 spec:
-  connectionManager: CONNECTION_MANAGER_RELEASE
+  hubKubeconfigSecret: HUB_KUBECONFIG_SECRET
 
   clusterName: CLUSTER_NAME
   clusterNamespace: CLUSTER_NAMESPACE

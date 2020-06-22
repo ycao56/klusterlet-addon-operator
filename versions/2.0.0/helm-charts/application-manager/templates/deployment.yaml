@@ -9,7 +9,6 @@ metadata:
     component: "application-manager"
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-    connectionManager: {{ .Values.connectionManager }}
 spec:
   replicas: 1
   revisionHistoryLimit: 2
@@ -89,7 +88,7 @@ spec:
       volumes:
         - name: klusterlet-config
           secret:
-            secretName: {{ .Values.connectionManager }}-hub-kubeconfig
+            secretName: {{ .Values.hubKubeconfigSecret }}
       {{- if .Values.global.imagePullSecret }}
       imagePullSecrets:
       - name: "{{ .Values.global.imagePullSecret }}"

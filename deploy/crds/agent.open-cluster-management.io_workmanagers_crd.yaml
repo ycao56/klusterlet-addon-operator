@@ -41,9 +41,6 @@ spec:
             clusterNamespace:
               minLength: 1
               type: string
-            connectionManager:
-              minLength: 1
-              type: string
             fullnameOverride:
               minLength: 1
               type: string
@@ -61,50 +58,21 @@ spec:
                 imagePullSecret:
                   type: string
               type: object
-            ingress:
-              description: WorkManagerIngress defines ingress configuration for WorkManager
-              properties:
-                host:
-                  type: string
-                port:
-                  type: string
-                type:
-                  enum:
-                  - Ingress
-                  - Route
-                  - None
-                  type: string
-              required:
-              - host
-              - port
-              - type
-              type: object
-            service:
-              description: WorkManagerService defines service integration parameters
-              properties:
-                type:
-                  enum:
-                  - ClusterIP
-                  - NodePort
-                  - LoadBalancer
-                  type: string
-              required:
-              - type
-              type: object
+            hubKubeconfigSecret:
+              minLength: 1
+              type: string
           required:
           - clusterLabels
           - clusterName
           - clusterNamespace
-          - connectionManager
           - fullnameOverride
-          - ingress
-          - service
+          - hubKubeconfigSecret
           type: object
         status:
           description: WorkManagerStatus defines the observed state of WorkManager
           type: object
-  version: v1beta1
+  version: v1
   versions:
-  - name: v1beta1
+  - name: v1
     served: true
     storage: true
