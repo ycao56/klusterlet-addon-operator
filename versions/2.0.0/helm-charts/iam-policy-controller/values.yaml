@@ -12,6 +12,8 @@ securityContext:
 
 nodeSelector: {}
 
+clusterNamespace: ""
+
 tolerations:
 - effect: NoSchedule
   key: dedicated
@@ -22,8 +24,8 @@ tolerations:
   key: node.kubernetes.io/not-ready
   operator: Exists
 
-global: 
-  imagePullPolicy: Always 
+global:
+  imagePullPolicy: Always
   imagePullSecret: null
-  imageOverrides: 
+  imageOverrides:
     iam_policy_controller: quay.io/open-cluster-management/iam-policy-controller:1.0.0

@@ -48,6 +48,15 @@ spec:
             command: ["sh", "-c", "exec echo start iam-policy-controller"]
           initialDelaySeconds: 10
           timeoutSeconds: 2
+        env:
+        - name: WATCH_NAMESPACE
+          value: {{ .Values.clusterNamespace }}
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: OPERATOR_NAME
+          value: {{ template "iamPolicyController.fullname" . }}
         resources:
           limits:
             memory: "300Mi"
