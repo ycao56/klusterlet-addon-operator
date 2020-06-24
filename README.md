@@ -20,7 +20,7 @@ go version go1.12.17 darwin/amd64
 ```
 -->
 
-- Must have [operator-sdk](https://github.com/operator-framework/operator-sdk) v0.16.0 installed
+- Must have [operator-sdk](https://github.com/operator-framework/operator-sdk) v0.18.1 installed
 
 ```shell
 # can be installed with the following command

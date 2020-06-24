@@ -15,17 +15,18 @@
 package e2e
 
 import (
+	"context"
 	"io/ioutil"
 	"reflect"
 	"testing"
-
-	framework "github.com/operator-framework/operator-sdk/pkg/test"
-	tlsutil "github.com/operator-framework/operator-sdk/pkg/tls"
 
 	v1 "k8s.io/api/core/v1"
 	apiErrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+
+	framework "github.com/operator-framework/operator-sdk/pkg/test"
+	tlsutil "github.com/operator-framework/operator-sdk/pkg/tls"
 )
 
 var (
@@ -84,23 +85,24 @@ func init() {
 func TestBothAppAndCATLSAssetsExist(t *testing.T) {
 	ctx := framework.NewContext(t)
 	defer ctx.Cleanup()
-	namespace, err := ctx.GetNamespace()
+	namespace, err := ctx.GetOperatorNamespace()
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	f := framework.Global
-	appSecret, err := f.KubeClient.CoreV1().Secrets(namespace).Create(appSecret)
+	createOpts := metav1.CreateOptions{}
+	appSecret, err := f.KubeClient.CoreV1().Secrets(namespace).Create(context.TODO(), appSecret, createOpts)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	caConfigMap, err := f.KubeClient.CoreV1().ConfigMaps(namespace).Create(caConfigMap)
+	caConfigMap, err := f.KubeClient.CoreV1().ConfigMaps(namespace).Create(context.TODO(), caConfigMap, createOpts)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	caSecret, err := f.KubeClient.CoreV1().Secrets(namespace).Create(caSecret)
+	caSecret, err := f.KubeClient.CoreV1().Secrets(namespace).Create(context.TODO(), caSecret, createOpts)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -129,13 +131,13 @@ func TestBothAppAndCATLSAssetsExist(t *testing.T) {
 func TestOnlyAppSecretExist(t *testing.T) {
 	ctx := framework.NewContext(t)
 	defer ctx.Cleanup()
-	namespace, err := ctx.GetNamespace()
+	namespace, err := ctx.GetOperatorNamespace()
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	f := framework.Global
-	_, err = f.KubeClient.CoreV1().Secrets(namespace).Create(appSecret)
+	_, err = f.KubeClient.CoreV1().Secrets(namespace).Create(context.TODO(), appSecret, metav1.CreateOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -155,17 +157,17 @@ func TestOnlyAppSecretExist(t *testing.T) {
 func TestOnlyCAExist(t *testing.T) {
 	ctx := framework.NewContext(t)
 	defer ctx.Cleanup()
-	namespace, err := ctx.GetNamespace()
+	namespace, err := ctx.GetOperatorNamespace()
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	f := framework.Global
-	_, err = f.KubeClient.CoreV1().ConfigMaps(namespace).Create(caConfigMap)
+	_, err = f.KubeClient.CoreV1().ConfigMaps(namespace).Create(context.TODO(), caConfigMap, metav1.CreateOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = f.KubeClient.CoreV1().Secrets(namespace).Create(caSecret)
+	_, err = f.KubeClient.CoreV1().Secrets(namespace).Create(context.TODO(), caSecret, metav1.CreateOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -184,7 +186,7 @@ func TestOnlyCAExist(t *testing.T) {
 func TestNoneOfCaAndAppSecretExist(t *testing.T) {
 	ctx := framework.NewContext(t)
 	defer ctx.Cleanup()
-	namespace, err := ctx.GetNamespace()
+	namespace, err := ctx.GetOperatorNamespace()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -206,7 +208,7 @@ func TestNoneOfCaAndAppSecretExist(t *testing.T) {
 func TestCustomCA(t *testing.T) {
 	ctx := framework.NewContext(t)
 	defer ctx.Cleanup()
-	namespace, err := ctx.GetNamespace()
+	namespace, err := ctx.GetOperatorNamespace()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -227,13 +229,13 @@ func TestCustomCA(t *testing.T) {
 	verifyAppSecret(t, appSecret, namespace)
 
 	// ensure caConfigMap does not exist in k8s cluster.
-	_, err = framework.Global.KubeClient.CoreV1().Secrets(namespace).Get(caConfigMapAndSecretName, metav1.GetOptions{})
+	_, err = f.KubeClient.CoreV1().Secrets(namespace).Get(context.TODO(), caConfigMapAndSecretName, metav1.GetOptions{})
 	if !apiErrors.IsNotFound(err) {
 		t.Fatal(err)
 	}
 
 	// ensure caConfigMap does not exist in k8s cluster.
-	_, err = framework.Global.KubeClient.CoreV1().Secrets(namespace).Get(caConfigMapAndSecretName, metav1.GetOptions{})
+	_, err = f.KubeClient.CoreV1().Secrets(namespace).Get(context.TODO(), caConfigMapAndSecretName, metav1.GetOptions{})
 	if !apiErrors.IsNotFound(err) {
 		t.Fatal(err)
 	}
@@ -252,7 +254,8 @@ func verifyCASecret(t *testing.T, caSecret *v1.Secret, namespace string) {
 	}
 
 	// check if caConfigMap exists in k8s cluster.
-	caSecretFromCluster, err := framework.Global.KubeClient.CoreV1().Secrets(namespace).Get(caConfigMapAndSecretName,
+	caSecretFromCluster, err := framework.Global.KubeClient.CoreV1().Secrets(namespace).Get(context.TODO(),
+		caConfigMapAndSecretName,
 		metav1.GetOptions{})
 	if err != nil {
 		t.Fatal(err)
@@ -277,7 +280,8 @@ func verifyCaConfigMap(t *testing.T, caConfigMap *v1.ConfigMap, namespace string
 
 	// check if caConfigMap exists in k8s cluster.
 	caConfigMapFromCluster, err :=
-		framework.Global.KubeClient.CoreV1().ConfigMaps(namespace).Get(caConfigMapAndSecretName, metav1.GetOptions{})
+		framework.Global.KubeClient.CoreV1().ConfigMaps(namespace).
+			Get(context.TODO(), caConfigMapAndSecretName, metav1.GetOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -306,7 +310,8 @@ func verifyAppSecret(t *testing.T, appSecret *v1.Secret, namespace string) {
 	}
 
 	// check if appSecret exists in k8s cluster.
-	appSecretFromCluster, err := framework.Global.KubeClient.CoreV1().Secrets(namespace).Get(appSecretName,
+	appSecretFromCluster, err := framework.Global.KubeClient.CoreV1().Secrets(namespace).Get(context.TODO(),
+		appSecretName,
 		metav1.GetOptions{})
 	if err != nil {
 		t.Fatal(err)
