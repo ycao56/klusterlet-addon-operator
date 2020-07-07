@@ -35,8 +35,4 @@
       kind: IAMPolicyController
       chart: /opt/helm/versions/2.0.0/helm-charts/iam-policy-controller
       watchDependentResources: false
-    - version: v1
-      group: agent.open-cluster-management.io
-      kind: CISPolicyController
-      chart: /opt/helm/versions/2.0.0/helm-charts/cis-controller
-      watchDependentResources: false
+

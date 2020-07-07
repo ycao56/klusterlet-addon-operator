@@ -105,7 +105,7 @@ check_ocp_install(){
     _not_installed_scc=1
     echo "checking scc installation"
     kubectl get securitycontextconstraints -n klusterlet
-    if [ $(kubectl get securitycontextconstraints -n klusterlet | wc -l) -gt 2 ]; then
+    if [ $(kubectl get securitycontextconstraints -n klusterlet | wc -l) -gt 1 ]; then
       echo "scc installed correctly"
       _not_installed_scc=0
     fi
