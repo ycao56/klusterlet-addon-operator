@@ -8,31 +8,31 @@
     - version: v1
       group: agent.open-cluster-management.io
       kind: CertPolicyController
-      chart: /opt/helm/versions/2.0.0/helm-charts/cert-policy-controller
+      chart: /opt/helm/versions/2.1.0/helm-charts/cert-policy-controller
       watchDependentResources: false
     - version: v1
       group: agent.open-cluster-management.io
       kind: WorkManager
-      chart: /opt/helm/versions/2.0.0/helm-charts/work-manager
+      chart: /opt/helm/versions/2.1.0/helm-charts/work-manager
       watchDependentResources: false
     - version: v1
       group: agent.open-cluster-management.io
       kind: PolicyController
-      chart: /opt/helm/versions/2.0.0/helm-charts/policy
+      chart: /opt/helm/versions/2.1.0/helm-charts/policy
       watchDependentResources: false
     - version: v1
       group: agent.open-cluster-management.io
       kind: SearchCollector
-      chart: /opt/helm/versions/2.0.0/helm-charts/search
+      chart: /opt/helm/versions/2.1.0/helm-charts/search
       watchDependentResources: false
     - version: v1
       group: agent.open-cluster-management.io
       kind: ApplicationManager
-      chart: /opt/helm/versions/2.0.0/helm-charts/application-manager
+      chart: /opt/helm/versions/2.1.0/helm-charts/application-manager
       watchDependentResources: false
     - version: v1
       group: agent.open-cluster-management.io
       kind: IAMPolicyController
-      chart: /opt/helm/versions/2.0.0/helm-charts/iam-policy-controller
+      chart: /opt/helm/versions/2.1.0/helm-charts/iam-policy-controller
       watchDependentResources: false
 
