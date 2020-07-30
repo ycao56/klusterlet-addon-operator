@@ -33,7 +33,7 @@ COPY --from=builder $REMOTE_SOURCE_DIR/app/build/bin/entrypoint /usr/local/bin/e
 COPY --from=builder $REMOTE_SOURCE_DIR/app/build/bin/user_setup /usr/local/bin/user_setup
 
 # install charts
-COPY --from=builder $REMOTE_SOURCE_DIR/app/versions/ ${HOME}/versions
+COPY --from=builder $REMOTE_SOURCE_DIR/app/helm-charts/ ${HOME}/helm-charts
 
 RUN /usr/local/bin/user_setup
 

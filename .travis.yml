@@ -29,10 +29,16 @@ jobs:
         - make component/init
         - make check
         - make component/build
-        - make component/test/functional
         - make component/push
         - echo "TRAVIS_EVENT_TYPE = $TRAVIS_EVENT_TYPE"
         - make security/scans
+
+    - stage: functional-test
+      name: "Run functional-test"
+      script:
+        - if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then export COMPONENT_TAG_EXTENSION="-PR${TRAVIS_PULL_REQUEST}-${TRAVIS_COMMIT}"; fi;
+        - make component/test/functional
+
     - stage: release-ff
       name: "Push commits to current release branch"
       if: type = push AND branch =~ /^master$/

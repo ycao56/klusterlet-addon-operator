@@ -98,18 +98,9 @@ utils/crds/install:
 utils/crds/uninstall:
 	for file in `ls deploy/crds/agent.open-cluster-management.io_*_crd.yaml`; do kubectl delete -f $$file; done
 
-.PHONY: utils\:charts\:versions
-utils\:charts\:versions:
-	ls versions
-
-.PHONY: utils/charts/version
-utils/charts/version:
-	ln -sfn versions/$$version/watches.yaml watches.yaml
-	ln -sfn versions/$$version/helm-charts helm-charts
-
 .PHONY: utils/link/setup
 utils/link/setup:
-	sudo ln -sfn $$PWD/versions /opt/helm
+	sudo ln -sfn $$PWD/helm-charts /opt/helm
 
 .PHONY: delete-cluster
 delete-cluster:
