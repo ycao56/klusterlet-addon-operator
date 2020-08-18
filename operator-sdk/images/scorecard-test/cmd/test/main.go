@@ -20,11 +20,12 @@ import (
 	"log"
 	"os"
 
+	scapiv1alpha3 "github.com/operator-framework/api/pkg/apis/scorecard/v1alpha3"
 	apimanifests "github.com/operator-framework/api/pkg/manifests"
 
-	scorecard "github.com/operator-framework/operator-sdk/internal/scorecard/alpha"
-	"github.com/operator-framework/operator-sdk/internal/scorecard/alpha/tests"
-	scapiv1alpha2 "github.com/operator-framework/operator-sdk/pkg/apis/scorecard/v1alpha2"
+	registryutil "github.com/operator-framework/operator-sdk/internal/registry"
+	"github.com/operator-framework/operator-sdk/internal/scorecard"
+	"github.com/operator-framework/operator-sdk/internal/scorecard/tests"
 )
 
 // this is the scorecard test binary that ultimately executes the
@@ -43,26 +44,31 @@ func main() {
 	}
 
 	// Read the pod's untar'd bundle from a well-known path.
-	cfg, err := apimanifests.GetBundleFromDir(scorecard.PodBundleRoot)
+	bundle, err := apimanifests.GetBundleFromDir(scorecard.PodBundleRoot)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	var result scapiv1alpha2.ScorecardTestResult
+	metadata, _, err := registryutil.FindBundleMetadata(scorecard.PodBundleRoot)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	var result scapiv1alpha3.TestStatus
 
 	switch entrypoint[0] {
 	case tests.OLMBundleValidationTest:
-		result = tests.BundleValidationTest(scorecard.PodBundleRoot)
+		result = tests.BundleValidationTest(scorecard.PodBundleRoot, metadata)
 	case tests.OLMCRDsHaveValidationTest:
-		result = tests.CRDsHaveValidationTest(cfg)
+		result = tests.CRDsHaveValidationTest(bundle)
 	case tests.OLMCRDsHaveResourcesTest:
-		result = tests.CRDsHaveResourcesTest(cfg)
+		result = tests.CRDsHaveResourcesTest(bundle)
 	case tests.OLMSpecDescriptorsTest:
-		result = tests.SpecDescriptorsTest(cfg)
+		result = tests.SpecDescriptorsTest(bundle)
 	case tests.OLMStatusDescriptorsTest:
-		result = tests.StatusDescriptorsTest(cfg)
+		result = tests.StatusDescriptorsTest(bundle)
 	case tests.BasicCheckSpecTest:
-		result = tests.CheckSpecTest(cfg)
+		result = tests.CheckSpecTest(bundle)
 	default:
 		result = printValidTests()
 	}
@@ -76,8 +82,9 @@ func main() {
 }
 
 // printValidTests will print out full list of test names to give a hint to the end user on what the valid tests are
-func printValidTests() (result scapiv1alpha2.ScorecardTestResult) {
-	result.State = scapiv1alpha2.FailState
+func printValidTests() scapiv1alpha3.TestStatus {
+	result := scapiv1alpha3.TestResult{}
+	result.State = scapiv1alpha3.FailState
 	result.Errors = make([]string, 0)
 	result.Suggestions = make([]string, 0)
 
@@ -89,5 +96,7 @@ func printValidTests() (result scapiv1alpha2.ScorecardTestResult) {
 		tests.OLMStatusDescriptorsTest,
 		tests.BasicCheckSpecTest)
 	result.Errors = append(result.Errors, str)
-	return result
+	return scapiv1alpha3.TestStatus{
+		Results: []scapiv1alpha3.TestResult{result},
+	}
 }

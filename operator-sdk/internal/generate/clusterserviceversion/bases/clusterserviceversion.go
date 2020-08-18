@@ -25,6 +25,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"sigs.k8s.io/yaml"
 
+	"github.com/operator-framework/operator-sdk/internal/generate/clusterserviceversion/bases/definitions"
 	"github.com/operator-framework/operator-sdk/internal/util/k8sutil"
 	"github.com/operator-framework/operator-sdk/internal/util/projutil"
 )
@@ -80,9 +81,11 @@ func (b ClusterServiceVersion) GetBase() (base *v1alpha1.ClusterServiceVersion, 
 	if b.APIsDir != "" {
 		switch b.OperatorType {
 		case projutil.OperatorTypeGo:
-			if err := updateDescriptionsForGVKs(base, b.APIsDir, b.GVKs); err != nil {
-				return nil, fmt.Errorf("error generating ClusterServiceVersion base metadata: %w", err)
-			}
+			// Update descriptions from the APIs dir.
+			err = definitions.ApplyDefinitionsForKeysGo(base, b.APIsDir, b.GVKs)
+		}
+		if err != nil {
+			return nil, fmt.Errorf("error generating ClusterServiceVersion definitions metadata: %w", err)
 		}
 	}
 
@@ -186,7 +189,7 @@ func readClusterServiceVersionBase(path string) (*v1alpha1.ClusterServiceVersion
 		if typeMeta.Kind == v1alpha1.ClusterServiceVersionKind {
 			csv := &v1alpha1.ClusterServiceVersion{}
 			if err := yaml.Unmarshal(manifest, csv); err != nil {
-				return nil, fmt.Errorf("error unmarshalling ClusterServiceVersion from manifest %s: %v", path, err)
+				return nil, fmt.Errorf("error unmarshaling ClusterServiceVersion from manifest %s: %v", path, err)
 			}
 			return csv, nil
 		}

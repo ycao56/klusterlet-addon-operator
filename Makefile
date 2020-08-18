@@ -54,15 +54,7 @@ deps: init component/init
 # TODO look into adding yamllint; doesn't like operator-sdk generated files
 .PHONY: check
 # ## Runs a set of required checks
-check: ossccheck copyright-check
-
-.PHONY: ossccheck
-ossccheck:
-	ossc --check
-
-.PHONY: ossc
-ossc:
-	ossc
+check: copyright-check
 
 .PHONY: build
 ## Builds operator binary inside of an image

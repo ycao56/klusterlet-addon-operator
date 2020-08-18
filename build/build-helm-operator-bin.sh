@@ -12,10 +12,10 @@ pushd $CURR_FOLDER_PATH/../operator-sdk
 echo ">>> Building helm-operator binary"
 export GOARCH=amd64
 export GOOS=linux
-make build/operator-sdk-dev-${GOARCH}-linux-gnu
+make build/helm-operator-${GOARCH}-linux-gnu
 
 mkdir -p build/_output/bin/
-cp $(pwd)/build/operator-sdk-dev-${GOARCH}-linux-gnu build/_output/bin/helm-operator
+cp $(pwd)/build/helm-operator-${GOARCH}-linux-gnu build/_output/bin/helm-operator
 
 echo ">>> Done building helm-operator binary"
 

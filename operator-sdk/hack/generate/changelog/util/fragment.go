@@ -118,7 +118,7 @@ func LoadEntries(fragmentsDir, repo string) ([]FragmentEntry, error) {
 			log.Warnf("Skipping directory %q", fragFile.Name())
 			continue
 		}
-		if filepath.Ext(fragFile.Name()) != ".yaml" {
+		if filepath.Ext(fragFile.Name()) != ".yaml" && filepath.Ext(fragFile.Name()) != ".yml" {
 			log.Warnf("Skipping non-YAML file %q", fragFile.Name())
 			continue
 		}
@@ -176,7 +176,7 @@ func (g *gitPullRequestNumberGetter) GetPullRequestNumberFor(filename string) (u
 }
 
 func (g *gitPullRequestNumberGetter) getCommitMessage(filename string) (string, error) {
-	args := fmt.Sprintf("log --follow --pretty=format:%%s --diff-filter=A --find-renames=40%% %s", filename)
+	args := fmt.Sprintf("log --follow --pretty=format:%%s --diff-filter=A --find-renames=90%% %s", filename)
 	line, err := exec.Command("git", strings.Split(args, " ")...).CombinedOutput()
 	if err != nil {
 		return "", fmt.Errorf("failed to locate git commit for PR discovery: %v", err)
