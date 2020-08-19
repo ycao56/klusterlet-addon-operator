@@ -7,7 +7,7 @@
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ template "search.fullname" . }}
+  name: {{ .Values.org }}:{{ template "search.fullname" . }}
   labels:
     app: {{ template "search.name" . }}
     chart: {{ template "search.chart" . }}
@@ -20,5 +20,5 @@ subjects:
   namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
-  name: {{ template "search.fullname" . }}
+  name: {{ .Values.org }}:{{ template "search.fullname" . }}
   apiGroup: rbac.authorization.k8s.io

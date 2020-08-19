@@ -1,7 +1,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ template "iamPolicyController.clusterRole" . }}
+  name: {{ .Values.org }}:{{ template "iamPolicyController.clusterRole" . }}
   labels:
     app: {{ template "iamPolicyController.fullname" . }}
     chart: {{ template "iamPolicyController.chart" . }}
