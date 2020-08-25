@@ -44,7 +44,7 @@ spec:
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
         args:
-          - "/acm-agent"
+          - "/agent"
           - "--port=4443"
           - "--hub-kubeconfig=/var/run/klusterlet/kubeconfig"
           - "--cluster-name={{ .Values.clusterName }}"
