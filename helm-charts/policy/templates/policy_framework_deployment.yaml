@@ -36,6 +36,40 @@ spec:
     spec:
       serviceAccountName: {{ template "policy.fullname" . }}
       containers:
+      {{- if .Values.global.imageOverrides.klusterlet_addon_lease_controller }}
+      - name: lease-controller
+        image: "{{ .Values.global.imageOverrides.klusterlet_addon_lease_controller }}"
+        command:
+        - klusterlet-addon-lease-controller
+        args:
+        - -lease-name
+        - {{ .Values.leaseName }}
+        - -lease-namespace
+        - {{ .Values.clusterNamespace }}
+        - -hub-kubeconfig-secret
+        - {{ .Values.hubKubeconfigSecret }}
+        - -lease-duration
+        - "60"
+        - -startup-delay
+        - "10"
+        - -metrics-port
+        - "8394"
+        env:
+        - name: WATCH_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+      {{- end}}
       {{- if not (or (.Capabilities.APIVersions.Has "operator.open-cluster-management.io/v1/MultiClusterHub") (.Capabilities.APIVersions.Has "operator.open-cluster-management.io/v1beta1/MultiClusterHub")) }}
       - name: spec-sync
         image: "{{ .Values.global.imageOverrides.governance_policy_spec_sync }}"

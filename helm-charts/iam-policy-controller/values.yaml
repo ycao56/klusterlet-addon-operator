@@ -25,8 +25,11 @@ tolerations:
   key: node.kubernetes.io/not-ready
   operator: Exists
 
+leaseName: iam-policy-controller
+
 global:
   imagePullPolicy: Always
   imagePullSecret: null
   imageOverrides:
     iam_policy_controller: quay.io/open-cluster-management/iam-policy-controller:1.0.0
+    klusterlet_addon_lease_controller: ""

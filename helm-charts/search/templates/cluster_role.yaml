@@ -21,3 +21,20 @@ rules:
   - get
   - list
   - watch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - create
+- apiGroups:
+  - ""
+  resourceNames:
+  - search-collector-addon-lease.agent.open-cluster-management.io 
+  - search-collector*
+  resources:
+  - configmaps
+  verbs:
+  - patch
+  - update
+  - delete
