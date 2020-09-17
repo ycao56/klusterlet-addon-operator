@@ -53,10 +53,3 @@ Create the name of the cluster Rolebinding to use
 {{- define "iamPolicyController.clusterRoleBinding" -}}
   {{- template "iamPolicyController.fullname" . -}}-rolebinding
 {{- end -}}
-
-{{/*
-Create the name of the scc to use
-*/}}
-{{- define "iamPolicyController.scc" -}}
-  {{- template "iamPolicyController.fullname" . -}}-scc
-{{- end -}}

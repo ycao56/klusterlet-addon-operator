@@ -102,14 +102,8 @@ check_ocp_install(){
       echo "route installed correctly"
       _not_installed_route=0
     fi
-    _not_installed_scc=1
-    echo "checking scc installation"
-    kubectl get securitycontextconstraints -n klusterlet
-    if [ $(kubectl get securitycontextconstraints -n klusterlet | wc -l) -gt 1 ]; then
-      echo "scc installed correctly"
-      _not_installed_scc=0
-    fi
-    if [ $_not_installed_route != 0 ] || [ $_not_installed_scc != 0 ]; then
+
+    if [ $_not_installed_route != 0 ]; then
       return 1
     fi
     return 0
