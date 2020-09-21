@@ -7,21 +7,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: klusterlet-component-operator
+  name: klusterlet-addon-operator
   namespace: klusterlet
 spec:
   replicas: 1
   selector:
     matchLabels:
-      name: klusterlet-component-operator
+      name: klusterlet-addon-operator
   template:
     metadata:
       labels:
-        name: klusterlet-component-operator
+        name: klusterlet-addon-operator
     spec:
-      serviceAccountName: klusterlet-component-operator
+      serviceAccountName: klusterlet-addon-operator
       containers:
-        - name: klusterlet-component-operator
+        - name: klusterlet-addon-operator
           # Replace this with the built image name
           image: REPLACE_IMAGE
           imagePullPolicy: IfNotPresent
@@ -33,4 +33,4 @@ spec:
                 fieldRef:
                   fieldPath: metadata.name
             - name: OPERATOR_NAME
-              value: "klusterlet-component-operator"
+              value: "klusterlet-addon-operator"

@@ -1,5 +1,5 @@
 {{- if .Values.enabled }}
-{{- if (not (or (.Capabilities.APIVersions.Has "multiclusterhubs.operators.open-cluster-management.io/v1") (.Capabilities.APIVersions.Has "multiclusterhubs.operators.open-cluster-management.io/v1beta1")))}}
+{{- if not (or (.Capabilities.APIVersions.Has "operator.open-cluster-management.io/v1/MultiClusterHub") (.Capabilities.APIVersions.Has "operator.open-cluster-management.io/v1beta1/MultiClusterHub")) }}
 apiVersion: batch/v1
 kind: Job
 metadata:

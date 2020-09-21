@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: klusterlet-component-operator
+  name: klusterlet-addon-operator
   namespace: klusterlet
 spec:
   template:

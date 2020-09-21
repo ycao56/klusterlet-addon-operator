@@ -80,7 +80,7 @@ spec:
           - "--port=4443"
           - "--hub-kubeconfig=/var/run/klusterlet/kubeconfig"
           - "--cluster-name={{ .Values.clusterName }}"
-        {{- if (or (.Capabilities.APIVersions.Has "multiclusterhubs.operators.open-cluster-management.io/v1") (.Capabilities.APIVersions.Has "multiclusterhubs.operators.open-cluster-management.io/v1beta1")) }}
+        {{- if (or (.Capabilities.APIVersions.Has "operator.open-cluster-management.io/v1/MultiClusterHub") (.Capabilities.APIVersions.Has "operator.open-cluster-management.io/v1beta1/MultiClusterHub")) }}
           - "--agent-address={{ template "work-manager.fullname" . }}.{{ .Release.Namespace }}.svc"
           - "--agent-port=443"
         {{- else if .Capabilities.APIVersions.Has "route.openshift.io/v1" }}

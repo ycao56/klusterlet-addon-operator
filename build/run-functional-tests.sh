@@ -89,7 +89,7 @@ wait_installed() {
         fi
     done
     echo "====================== ERROR with config $CONFIG_FILE ==================="
-    echo "Timeout: Herlm charts deployment failed after "$_timeout_seconds" seconds"
+    echo "Timeout: Helm charts deployment failed after "$_timeout_seconds" seconds"
     for cr in $_result_not_success; do kubectl get $cr $cr -n klusterlet -o=jsonpath="{.metadata.name}{','}{.status.conditions[*].message}{'\n'}"; done
     return 1
 }
@@ -112,6 +112,7 @@ check_ocp_install(){
 #Create a cluster with as parameter the KinD config file and run the test
 run_test() {
   CONFIG_FILE=$1
+  SELF_IMPORT=$2
   echo "====================== START with config $CONFIG_FILE ==================="
   #Delete cluster
 	kind delete cluster --name=test-cluster
@@ -128,6 +129,10 @@ run_test() {
 
   #Apply all crds
   for file in `ls deploy/crds/agent.open-cluster-management.io_*_crd.yaml`; do kubectl apply -f $file; done
+
+  if [[ "$SELF_IMPORT" == true ]]; then 
+    kubectl apply -f deploy/crds/operator.open-cluster-management.io_multiclusterhub.crd.yaml 
+  fi
 
   #Try to apply the securitycontextconstraints
   ocp_env=0
@@ -163,9 +168,9 @@ run_test() {
   for dir in overlays/test/* ; do
     echo "Executing test "$dir
     kubectl apply -k $dir
-    kubectl patch deployment klusterlet-component-operator -n klusterlet -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"klusterlet-component-operator\",\"image\":\"${DOCKER_IMAGE}\"}]}}}}"
+    kubectl patch deployment klusterlet-addon-operator -n klusterlet -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"klusterlet-addon-operator\",\"image\":\"${DOCKER_IMAGE}\"}]}}}}"
     #Wait if all helm-charts are installed
-    wait_installed $CONFIG_FILE
+    wait_installed $CONFIG_FILE 
     _timeout=$?
     if [ $_timeout != 0 ]; then
       break
@@ -204,8 +209,12 @@ if [ $? != 0 ]; then
 fi
 
 FAILED=0
+SELF_IMPORT=false
 for kube_config in `ls $KIND_CONFIGS/*`; do
-  run_test $kube_config
+  if [[ "$kube_config" == *_self-import.yaml ]]; then 
+    SELF_IMPORT=true
+  fi
+  run_test $kube_config $SELF_IMPORT
   if [ $? != 0 ]; then
     FAILED=1
   fi
