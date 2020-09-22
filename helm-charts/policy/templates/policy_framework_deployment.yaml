@@ -43,7 +43,7 @@ spec:
         - klusterlet-addon-lease-controller
         args:
         - -lease-name
-        - {{ .Values.leaseName }}
+        - {{ .Values.leaseController.name }}
         - -lease-namespace
         - {{ .Values.clusterNamespace }}
         - -hub-kubeconfig-secret
@@ -54,6 +54,8 @@ spec:
         - "10"
         - -metrics-port
         - "8394"
+        resources:
+{{ toYaml .Values.leaseController.resources | indent 10 }}
         env:
         - name: WATCH_NAMESPACE
           valueFrom:

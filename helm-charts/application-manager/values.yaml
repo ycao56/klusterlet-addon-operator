@@ -26,7 +26,15 @@ resources:
   limits:
     memory: 2Gi
 
-leaseName: application-manager
+leaseController: 
+  name: application-manager
+  resources:
+    requests:
+      memory: "32Mi"
+      cpu: "20m"
+    limits:
+      memory: "256Mi"
+      cpu: "500m"
 
 global: 
   imagePullPolicy: Always 

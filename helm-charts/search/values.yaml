@@ -28,7 +28,15 @@ tolerations:
   value: "infra"
   effect: "NoSchedule"
 
-leaseName: search-collector
+leaseController: 
+  name: search-collector
+  resources:
+    requests:
+      memory: "32Mi"
+      cpu: "20m"
+    limits:
+      memory: "256Mi"
+      cpu: "500m"
 
 global: 
   imagePullPolicy: Always 

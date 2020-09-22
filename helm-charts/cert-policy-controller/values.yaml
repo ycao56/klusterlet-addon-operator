@@ -25,7 +25,15 @@ tolerations:
 serviceAccount:
   create: true
 
-leaseName: cert-policy-controller
+leaseController: 
+  name: cert-policy-controller
+  resources:
+    requests:
+      memory: "32Mi"
+      cpu: "20m"
+    limits:
+      memory: "256Mi"
+      cpu: "500m"
 
 global: 
   imagePullPolicy: Always 

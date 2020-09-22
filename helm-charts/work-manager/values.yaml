@@ -45,8 +45,17 @@ resources:
 
 
 logLevel: 5
-leaseName: work-manager
 
+leaseController: 
+  name: work-manager
+  resources:
+    requests:
+      memory: "32Mi"
+      cpu: "20m"
+    limits:
+      memory: "256Mi"
+      cpu: "500m"
+      
 global: 
   imagePullPolicy: Always 
   imagePullSecret: null
