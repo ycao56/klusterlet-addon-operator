@@ -1,4 +1,4 @@
-FROM quay.io/operator-framework/helm-operator:v0.18.2
+FROM quay.io/operator-framework/helm-operator:v0.19.4
 USER root
 RUN microdnf update -y
 
