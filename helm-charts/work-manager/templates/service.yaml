@@ -17,7 +17,9 @@ metadata:
     component: "work-manager"
     heritage: {{ .Release.Service }}
 spec:
+{{- if not (.Capabilities.APIVersions.Has "route.openshift.io/v1") }}
   type: {{ .Values.service.type }}
+{{- end }}
   ports:
     - name: app
       port: 443
