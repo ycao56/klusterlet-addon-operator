@@ -27,7 +27,6 @@ spec:
       hostIPC: false
       serviceAccountName: {{ template "iamPolicyController.serviceAccount" . }}
       containers:
-      {{- if .Values.global.imageOverrides.klusterlet_addon_lease_controller }}
       - name: lease-controller
         image: "{{ .Values.global.imageOverrides.klusterlet_addon_lease_controller }}"
         command:
@@ -60,7 +59,6 @@ spec:
             fieldRef:
               apiVersion: v1
               fieldPath: metadata.namespace
-      {{- end}}
       - name: {{ template "iamPolicyController.name" . }}
         image: "{{ .Values.global.imageOverrides.iam_policy_controller }}"
         imagePullPolicy: {{ .Values.global.imagePullPolicy }}

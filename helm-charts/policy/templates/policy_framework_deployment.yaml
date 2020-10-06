@@ -36,7 +36,6 @@ spec:
     spec:
       serviceAccountName: {{ template "policy.fullname" . }}
       containers:
-      {{- if .Values.global.imageOverrides.klusterlet_addon_lease_controller }}
       - name: lease-controller
         image: "{{ .Values.global.imageOverrides.klusterlet_addon_lease_controller }}"
         command:
@@ -71,7 +70,6 @@ spec:
             fieldRef:
               apiVersion: v1
               fieldPath: metadata.namespace
-      {{- end}}
       {{- if not (or (.Capabilities.APIVersions.Has "operator.open-cluster-management.io/v1/MultiClusterHub") (.Capabilities.APIVersions.Has "operator.open-cluster-management.io/v1beta1/MultiClusterHub")) }}
       - name: spec-sync
         image: "{{ .Values.global.imageOverrides.governance_policy_spec_sync }}"

@@ -29,7 +29,6 @@ spec:
     spec:
       serviceAccountName: {{ template "application-manager.fullname" . }}
       containers:
-      {{- if .Values.global.imageOverrides.klusterlet_addon_lease_controller }}
       - name: lease-controller
         image: "{{ .Values.global.imageOverrides.klusterlet_addon_lease_controller }}"
         command:
@@ -62,7 +61,6 @@ spec:
             fieldRef:
               apiVersion: v1
               fieldPath: metadata.namespace
-      {{- end}}
       - name: subscription-controller
         image: "{{ .Values.global.imageOverrides.multicluster_operators_subscription }}"
         imagePullPolicy: "{{ .Values.global.imagePullPolicy }}"

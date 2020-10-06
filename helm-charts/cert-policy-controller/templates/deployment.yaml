@@ -30,7 +30,6 @@ spec:
       securityContext:
         runAsNonRoot: {{ .Values.securityContext.pod.runAsNonRoot }}
       containers:
-      {{- if .Values.global.imageOverrides.klusterlet_addon_lease_controller }}
       - name: lease-controller
         image: "{{ .Values.global.imageOverrides.klusterlet_addon_lease_controller }}"
         command:
@@ -63,7 +62,6 @@ spec:
             fieldRef:
               apiVersion: v1
               fieldPath: metadata.namespace
-      {{- end}}
       - name: {{ .Chart.Name }}
         image: "{{ .Values.global.imageOverrides.cert_policy_controller }}"
         imagePullPolicy: {{ .Values.global.imagePullPolicy }}

@@ -30,7 +30,6 @@ spec:
       serviceAccountName: {{ template "work-manager.fullname" . }}
       containers:
       {{- if .Values.workManager.enabled }}
-      {{- if .Values.global.imageOverrides.klusterlet_addon_lease_controller }}
       - name: lease-controller
         image: "{{ .Values.global.imageOverrides.klusterlet_addon_lease_controller }}"
         command:
@@ -63,7 +62,6 @@ spec:
             fieldRef:
               apiVersion: v1
               fieldPath: metadata.namespace
-      {{- end}}
       - name: acm-agent
         image: "{{ .Values.global.imageOverrides.multicloud_manager }}"
         imagePullPolicy: {{ .Values.global.imagePullPolicy }}
