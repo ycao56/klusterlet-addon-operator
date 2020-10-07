@@ -94,6 +94,23 @@ wait_installed() {
     return 1
 }
 
+check_delete_pod_permission(){
+    echo "checking delete pod permission"
+    for file in `ls deploy/crs/agent.open-cluster-management.io_*_cr.yaml`; do 
+        n=$(kubectl get -f $file -o=jsonpath="{.spec.fullnameOverride}"); 
+        echo "- checking $n"
+        result=$(kubectl auth can-i delete pods --as=system:serviceaccount:klusterlet:$n -n klusterlet)
+        if [[ $n == iam-* ]]; then 
+          result=$(kubectl auth can-i delete pods --as=system:serviceaccount:klusterlet:$n-sa -n klusterlet)
+        fi 
+        if [ $result = no ]; then
+          echo "$n cannot delete pod"
+          return 1
+        fi
+    done
+    return 0
+}
+
 check_ocp_install(){
     echo "checking route installation: kubectl get route -n klusterlet"
     kubectl get route -l component=work-manager -n klusterlet
@@ -191,6 +208,11 @@ run_test() {
       if [ $_installed_failed != 0 ]; then
         break
       fi
+    fi
+    check_delete_pod_permission
+    _installed_failed=$?
+    if [ $_installed_failed != 0 ]; then
+      break
     fi
   done
 
