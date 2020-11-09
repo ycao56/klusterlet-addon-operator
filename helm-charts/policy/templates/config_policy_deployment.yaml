@@ -29,6 +29,7 @@ spec:
         app: {{ template "policy.name" . }}-config-policy
         component: "governance"
         controller: "operator"
+        name: config-policy-ctrl
         release: {{ .Release.Name }}
         heritage: {{ .Release.Service }}
         chart: {{ template "policy.chart" . }}
