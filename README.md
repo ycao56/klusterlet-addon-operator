@@ -1,4 +1,16 @@
-# klusterlet component operator
+# klusterlet addon operator
+
+Klusterlet addon operator supports deployment of add-ons on ManagedCluster for ACM.
+
+## Community, discussion, contribution, and support
+
+Check the [CONTRIBUTING Doc](CONTRIBUTING.md) for how to contribute to the repo.
+
+------
+
+## Getting Started
+
+This is a guide on how to build and deploy klusterlet addon operator from code.
 
 A HELM operator built with [operator-sdk](https://github.com/operator-framework/operator-sdk) used to deploy management components on remote clusters
 
