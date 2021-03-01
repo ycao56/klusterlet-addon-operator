@@ -1,6 +1,8 @@
+# Copyright (c) 2020 Red Hat, Inc.
+# Copyright Contributors to the Open Cluster Management project
+
 #!/bin/bash
 ###############################################################################
-# Copyright (c) 2020 Red Hat, Inc.
 ###############################################################################
 # set -x #To trace
 

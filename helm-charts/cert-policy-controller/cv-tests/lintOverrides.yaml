@@ -1,3 +1,5 @@
+# Copyright Contributors to the Open Cluster Management project
+
 overrides:
 - reason: "Cert-manager and its subcharts only runs on master nodes."
   rule: "PodHasArchBasedNodeAffinity"

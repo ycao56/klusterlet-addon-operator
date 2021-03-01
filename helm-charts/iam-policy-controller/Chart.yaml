@@ -1,3 +1,5 @@
+# Copyright Contributors to the Open Cluster Management project
+
 name: iam-policy-controller
 description: A Helm chart for deploying the IAM Policy Controller
 keywords:

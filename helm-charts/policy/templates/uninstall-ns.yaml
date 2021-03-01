@@ -1,3 +1,5 @@
+# Copyright Contributors to the Open Cluster Management project
+
 {{- if .Values.enabled }}
 {{- if not (or (.Capabilities.APIVersions.Has "operator.open-cluster-management.io/v1/MultiClusterHub") (.Capabilities.APIVersions.Has "operator.open-cluster-management.io/v1beta1/MultiClusterHub")) }}
 apiVersion: batch/v1
