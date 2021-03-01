@@ -1,3 +1,5 @@
+[comment]: # ( Copyright Contributors to the Open Cluster Management project )
+
 # What's new in 3.5.0
 * Functioning certificate policy controller.
 

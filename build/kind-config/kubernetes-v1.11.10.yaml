@@ -1,3 +1,5 @@
+# Copyright Contributors to the Open Cluster Management project
+
 # this config file contains all config fields with comments
 # NOTE: this is not a particularly useful config file
 kind: Cluster

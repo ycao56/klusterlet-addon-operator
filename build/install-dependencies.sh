@@ -1,3 +1,6 @@
+# Copyright (c) 2020 Red Hat, Inc.
+# Copyright Contributors to the Open Cluster Management project
+
 #!/bin/bash -e
 ###############################################################################
 # (c) Copyright IBM Corporation 2019, 2020. All Rights Reserved.
@@ -6,7 +9,6 @@
 # Contract with IBM Corp.
 # Licensed Materials - Property of IBM
 # 
-# Copyright (c) 2020 Red Hat, Inc.
 ###############################################################################
 export GO111MODULE=off
 
