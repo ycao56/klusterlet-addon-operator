@@ -25,9 +25,9 @@ A HELM operator built with [operator-sdk](https://github.com/operator-framework/
 > make deps
 ```
 
-## Running Klusterlet Component Operator for development
+## Running Klusterlet Addon Operator for development
 
-1. Link the `klusterlet-component-operator/helm-charts` directory to `/opt/helm/helm-charts`
+1. Link the `klusterlet-addon-operator/helm-charts` directory to `/opt/helm/helm-charts`
 
 ```shell
 sudo make utils:link:setup
@@ -55,7 +55,7 @@ make operator:run
 
 To manually create a instance of the component you will need to create the component CR the spec of the CR will be use as the value override for the helm chart associated with the .the `deploy/crd` folder contain example CR for the components
 
-The [klusterlet-operator](https://github.com/open-cluster-management/endpoint-operator) project automaically create and manage the update of the CR for the components in the klusterlet component operator. See Klusterlet Operator's README for how to run the Klusterlet Operator
+The [klusterlet-addon-controller](https://github.com/open-cluster-management/klusterlet-addon-controller) project automaically create and manage the update of the CR for the components in the klusterlet component operator. See Klusterlet Operator's README for how to run the Klusterlet Operator
 
 ## Build and publish a personal build to scratch artifactory
 
