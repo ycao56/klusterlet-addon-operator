@@ -18,22 +18,6 @@ A HELM operator built with [operator-sdk](https://github.com/operator-framework/
 
 ## Prerequisites
 
-<!-- Bring this back if we bring back multiarch builds
-- Must have [Go v1.12.x](https://golang.org/) installed. _NOTE: v1.13.x will NOT work_
-
-> If you already have 1.13.x install and do not want to overwrite it here is a useful script that will allow you to have both installed simultaneously
-
-```shell
-> curl -O https://dl.google.com/go/go1.12.17.darwin-amd64.tar.gz
-# may have to add a sudo before the mv
-> tar xzf go1.12.17.darwin-amd64.tar.gz && mv go /usr/local/go-1.12.17
-> export PATH=/usr/local/go-1.12.17/bin:$PATH
-> export GOROOT=/usr/local/go-1.12.17
-> go version
-go version go1.12.17 darwin/amd64
-```
--->
-
 - Must have [operator-sdk](https://github.com/operator-framework/operator-sdk) v0.18.1 installed
 
 ```shell
