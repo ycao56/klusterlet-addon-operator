@@ -1,0 +1,45 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, release-* ]
+  pull_request:
+    branches: [ main, release-* ]
+
+defaults:
+  run:
+    shell: bash
+    working-directory: klusterlet-addon-operator
+
+jobs:
+  main:
+    runs-on: ubuntu-18.04
+    env:
+      REGISTRY: localhost:5000
+    strategy:
+      matrix:
+        go: [ '1.15' ]
+    name: Functional tests
+    steps:
+    - name: Checkout Klusterlet Addon Operator
+      uses: actions/checkout@v2
+      with:
+        path: klusterlet-addon-operator
+        fetch-depth: 0 # Fetch all history for all tags and branches
+
+    - name: Set up Go ${{ matrix.go }}
+      uses: actions/setup-go@v2
+      id: go
+      with:
+        go-version: ${{ matrix.go }}
+    
+    - name: Run functional tests
+      run: |
+        make functional-test-full
+    
+    - name: Logs after Tests Failed
+      if:  ${{ failure() }}
+      run: KUBECONFIG=kind_kubeconfig.yaml kubectl logs  -n open-cluster-management `KUBECONFIG=kind_kubeconfig.yaml kubectl get po -n open-cluster-management -oname | grep klusterlet-addon-operator`
+
+
+    

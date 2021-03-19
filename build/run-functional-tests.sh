@@ -7,19 +7,10 @@
 # set -x #To trace
 
 export DOCKER_IMAGE=$1
+
 KIND_CONFIGS=build/kind-config
 KIND_KUBECONFIG="${PROJECT_DIR}/kind_kubeconfig.yaml"
 export KUBECONFIG=${KIND_KUBECONFIG}
-export PULL_SECRET=multicloud-image-pull-secret
-
-if [ -z $DOCKER_USER ]; then
-   echo "DOCKER_USER is not defined!"
-   exit 1
-fi
-if [ -z $DOCKER_PASS ]; then
-   echo "DOCKER_PASS is not defined!"
-   exit 1
-fi
 
 set_linux_arch () {
     local _arch=$(uname -m)
@@ -184,13 +175,6 @@ run_test() {
 
   #Create a generic klusterlet-bootstrap
   kubectl create secret generic klusterlet-bootstrap -n klusterlet --from-file=kubeconfig=$tmpKUBECONFIG
-
-  #Create the docker secret for quay.io
-  kubectl create secret docker-registry $PULL_SECRET \
-      --docker-server=quay.io/open-cluster-management \
-      --docker-username=$DOCKER_USER \
-      --docker-password=$DOCKER_PASS \
-      -n klusterlet
   
   for dir in overlays/test/* ; do
     echo "Executing test "$dir
