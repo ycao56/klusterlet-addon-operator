@@ -24,4 +24,4 @@ kubeadmConfigPatchesJSON6902:
 nodes:
 # the control plane node config
 - role: control-plane
-  image: kindest/node:v1.19.1@sha256:98cf5288864662e37115e362b23e4369c8c4a408f99cbc06e58ac30ddc721600
+  image: kindest/node:v1.20.2@sha256:15d3b5c4f521a84896ed1ead1b14e4774d02202d5c65ab68f30eeaf310a3b1a7
