@@ -203,7 +203,7 @@ run_test() {
   done
 
   #Delete cluster
-	#kind delete cluster --name=test-cluster
+	kind delete cluster --name=test-cluster
   echo "====================== END of config $CONFIG_FILE ======================"
   if [ $_timeout != 0 ]; then
     return 1
