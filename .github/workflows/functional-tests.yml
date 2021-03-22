@@ -34,6 +34,3 @@ jobs:
     - name: Logs after Tests Failed
       if:  ${{ failure() }}
       run: KUBECONFIG=kind_kubeconfig.yaml kubectl logs  -n open-cluster-management `KUBECONFIG=kind_kubeconfig.yaml kubectl get po -n open-cluster-management -oname | grep klusterlet-addon-operator`
-
-
-    

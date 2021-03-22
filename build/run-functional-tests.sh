@@ -56,7 +56,8 @@ install_kind () {
         return 1
     fi
 }
-
+echo "kind vesion"
+kind version
 # Wait until the cluster is imported by checking the hub side
 # Parameter: KinD Config File
 wait_installed() {
