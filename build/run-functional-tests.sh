@@ -7,19 +7,10 @@
 # set -x #To trace
 
 export DOCKER_IMAGE=$1
+
 KIND_CONFIGS=build/kind-config
 KIND_KUBECONFIG="${PROJECT_DIR}/kind_kubeconfig.yaml"
 export KUBECONFIG=${KIND_KUBECONFIG}
-export PULL_SECRET=multicloud-image-pull-secret
-
-if [ -z $DOCKER_USER ]; then
-   echo "DOCKER_USER is not defined!"
-   exit 1
-fi
-if [ -z $DOCKER_PASS ]; then
-   echo "DOCKER_PASS is not defined!"
-   exit 1
-fi
 
 set_linux_arch () {
     local _arch=$(uname -m)
@@ -51,11 +42,12 @@ install_kubectl () {
     fi
 }
 
+# force to install kind 0.7.0 to support kind cluster 1.11 creation 
 install_kind () {
-    if $(type kind >/dev/null 2>&1); then
-        echo "kind installed"
-        return 0
-    fi
+    # if $(type kind >/dev/null 2>&1); then
+    #     echo "kind installed"
+    #     return 0
+    # fi
     curl -Lo ./kind https://github.com/kubernetes-sigs/kind/releases/download/v0.7.0/kind-$(uname)-amd64
     chmod +x ./kind
     sudo mv ./kind /usr/local/bin/kind
@@ -65,7 +57,8 @@ install_kind () {
         return 1
     fi
 }
-
+echo "kind vesion"
+kind version
 # Wait until the cluster is imported by checking the hub side
 # Parameter: KinD Config File
 wait_installed() {
@@ -184,13 +177,6 @@ run_test() {
 
   #Create a generic klusterlet-bootstrap
   kubectl create secret generic klusterlet-bootstrap -n klusterlet --from-file=kubeconfig=$tmpKUBECONFIG
-
-  #Create the docker secret for quay.io
-  kubectl create secret docker-registry $PULL_SECRET \
-      --docker-server=quay.io/open-cluster-management \
-      --docker-username=$DOCKER_USER \
-      --docker-password=$DOCKER_PASS \
-      -n klusterlet
   
   for dir in overlays/test/* ; do
     echo "Executing test "$dir
