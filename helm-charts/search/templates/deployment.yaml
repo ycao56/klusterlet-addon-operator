@@ -46,7 +46,7 @@ spec:
         - -lease-name
         - {{ .Values.leaseController.name }}
         - -lease-namespace
-        - {{ .Values.clusterNamespace }}
+        - "{{ .Values.clusterNamespace }}"
         - -hub-kubeconfig-secret
         - {{ .Values.hubKubeconfigSecret }}
         - -lease-duration
@@ -76,9 +76,9 @@ spec:
         imagePullPolicy: {{ .Values.global.imagePullPolicy }}
         env:
         - name: CLUSTER_NAME
-          value: {{ .Values.clusterName }}
+          value: "{{ .Values.clusterName }}"
         - name: CLUSTER_NAMESPACE
-          value: {{ .Values.clusterNamespace }}
+          value: "{{ .Values.clusterNamespace }}"
         - name: HUB_CONFIG
           value: /hubconfig/kubeconfig
         resources:

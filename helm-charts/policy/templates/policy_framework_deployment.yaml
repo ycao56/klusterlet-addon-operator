@@ -46,7 +46,7 @@ spec:
         - -lease-name
         - {{ .Values.leaseController.name }}
         - -lease-namespace
-        - {{ .Values.clusterNamespace }}
+        - "{{ .Values.clusterNamespace }}"
         - -hub-kubeconfig-secret
         - {{ .Values.hubKubeconfigSecret }}
         - -lease-duration
@@ -81,7 +81,7 @@ spec:
         command: ["governance-policy-spec-sync"]
         env:
           - name: WATCH_NAMESPACE
-            value: {{ .Values.clusterNamespace }}
+            value: "{{ .Values.clusterNamespace }}"
           - name: POD_NAME
             valueFrom:
               fieldRef:
@@ -106,7 +106,7 @@ spec:
           - '--hub-cluster-configfile=/var/run/klusterlet/kubeconfig'
         env:
           - name: WATCH_NAMESPACE
-            value: {{ .Values.clusterNamespace }}
+            value: "{{ .Values.clusterNamespace }}"
           - name: POD_NAME
             valueFrom:
               fieldRef:
@@ -130,7 +130,7 @@ spec:
         command: ["governance-policy-template-sync"]
         env:
           - name: WATCH_NAMESPACE
-            value: {{ .Values.clusterNamespace }}
+            value: "{{ .Values.clusterNamespace }}"
           - name: POD_NAME
             valueFrom:
               fieldRef:

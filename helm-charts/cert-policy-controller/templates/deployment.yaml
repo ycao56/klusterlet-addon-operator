@@ -40,7 +40,7 @@ spec:
         - -lease-name
         - {{ .Values.leaseController.name }}
         - -lease-namespace
-        - {{ .Values.clusterNamespace }}
+        - "{{ .Values.clusterNamespace }}"
         - -hub-kubeconfig-secret
         - {{ .Values.hubKubeconfigSecret }}
         - -lease-duration

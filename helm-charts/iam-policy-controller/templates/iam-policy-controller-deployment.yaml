@@ -37,7 +37,7 @@ spec:
         - -lease-name
         - {{ .Values.leaseController.name }}
         - -lease-namespace
-        - {{ .Values.clusterNamespace }}
+        - "{{ .Values.clusterNamespace }}"
         - -hub-kubeconfig-secret
         - {{ .Values.hubKubeconfigSecret }}
         - -lease-duration
@@ -84,7 +84,7 @@ spec:
           timeoutSeconds: 2
         env:
         - name: WATCH_NAMESPACE
-          value: {{ .Values.clusterNamespace }}
+          value: "{{ .Values.clusterNamespace }}"
         - name: POD_NAME
           valueFrom:
             fieldRef:

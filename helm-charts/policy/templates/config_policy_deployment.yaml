@@ -46,7 +46,7 @@ spec:
         command: ["config-policy-controller"]
         env:
           - name: WATCH_NAMESPACE
-            value: {{ .Values.clusterNamespace }}
+            value: "{{ .Values.clusterNamespace }}"
           - name: POD_NAME
             valueFrom:
               fieldRef:
