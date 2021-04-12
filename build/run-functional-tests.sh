@@ -67,11 +67,15 @@ wait_installed() {
     _timeout_seconds=120
     _interval_seconds=10
     _max_nb_loop=$(($_timeout_seconds/$_interval_seconds))
+    deploy_array=("applicationmanager" "certpolicyctrl" "iampolicycontroller" "policycontroller" "searchcollector" "workmanager")
+
     while [ $_max_nb_loop -gt 0 ]
     do
-        _result=$(for file in `ls deploy/crs/agent.open-cluster-management.io_*_cr.yaml`; do kubectl get -f $file -o=jsonpath="{.metadata.name}{' '}{.status.conditions[?(@.reason=='InstallSuccessful')].reason}{'\n'}"; done)
+        _result=$(for t in ${deploy_array[@]}; do helm ls -n klusterlet | grep $t | awk '{print $1 " "  $8}'; done)
+        #_result=$(for file in `ls deploy/crs/agent.open-cluster-management.io_*_cr.yaml`; do kubectl get -f $file -o=jsonpath="{.metadata.name}{' '}{.status.conditions[?(@.reason=='InstallSuccessful')].reason}{'\n'}"; done)
         _result_exit_code=$?
-        _result_not_success=$(echo "$_result" | grep -v "InstallSuccessful")
+        _result_not_success=$(echo "$_result" | grep -v "deployed")
+       
         if [ $? == 0 ] || [ $_result_exit_code != 0 ] ; then
             echo "=========== Waiting for success ==========="
             echo "$_result"
@@ -85,7 +89,7 @@ wait_installed() {
     done
     echo "====================== ERROR with config $CONFIG_FILE ==================="
     echo "Timeout: Helm charts deployment failed after "$_timeout_seconds" seconds"
-    for cr in $_result_not_success; do kubectl get $cr $cr -n klusterlet -o=jsonpath="{.metadata.name}{','}{.status.conditions[*].message}{'\n'}"; done
+    for t in $_result_not_success; do helm ls -n klusterlet | grep $t | awk '{print $1 " "  $8}'; done
     return 1
 }
 
@@ -147,11 +151,20 @@ run_test() {
   #Load image into cluster
   kind load docker-image $DOCKER_IMAGE --name=test-cluster
 
-  #Apply all crds
-  for file in `ls deploy/crds/agent.open-cluster-management.io_*_crd.yaml`; do kubectl apply -f $file; done
+  if [[ $CONFIG_FILE == "build/kind-config/kubernetes-v1.11.10.yaml" || $CONFIG_FILE == "build/kind-config/kubernetes-v1.13.12.yaml" ]]; then
+    #Apply all crds
+    for file in `ls deploy/crds/agent.open-cluster-management.io_*_crd.yaml`; do kubectl apply -f $file; done
 
-  if [[ "$SELF_IMPORT" == true ]]; then 
-    kubectl apply -f deploy/crds/operator.open-cluster-management.io_multiclusterhub.crd.yaml 
+    if [[ "$SELF_IMPORT" == true ]]; then 
+      kubectl apply -f deploy/crds/operator.open-cluster-management.io_multiclusterhub.crd.yaml 
+    fi
+  else
+    #Apply all crds
+    for file in `ls deploy/crds-v1/agent.open-cluster-management.io_*_crd.yaml`; do kubectl apply -f $file; done
+
+    if [[ "$SELF_IMPORT" == true ]]; then 
+      kubectl apply -f deploy/crds-v1/operator.open-cluster-management.io_multiclusterhub.crd.yaml 
+    fi
   fi
 
   #Try to apply the securitycontextconstraints

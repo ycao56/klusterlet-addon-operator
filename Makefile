@@ -76,4 +76,5 @@ functional-test-full: build-image
 	build/run-functional-tests.sh ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:$(DOCKER_TAG)
 
 .PHONY: functional-test-full-no-build
-functional-test-full-no-build: build component/test/functional
+functional-test-full-no-build: 
+	build/run-functional-tests.sh ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:$(DOCKER_TAG)
