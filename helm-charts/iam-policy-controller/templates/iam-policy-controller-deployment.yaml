@@ -65,6 +65,7 @@ spec:
         image: "{{ .Values.global.imageOverrides.iam_policy_controller }}"
         imagePullPolicy: {{ .Values.global.imagePullPolicy }}
         args:
+        - --enable-lease=true
         - --v={{ .Values.args.verbosity }}
         {{- if .Values.args.frequency }}
         - --update-frequency={{ .Values.args.frequency }}
