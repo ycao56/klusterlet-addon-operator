@@ -68,7 +68,7 @@ spec:
         image: "{{ .Values.global.imageOverrides.cert_policy_controller }}"
         imagePullPolicy: {{ .Values.global.imagePullPolicy }}
         args:
-        - -- enable-lease=true
+        - --enable-lease=true
         {{- if .Values.args.frequency }}
         - --update-frequency={{ .Values.args.frequency }}
         {{- end }}
