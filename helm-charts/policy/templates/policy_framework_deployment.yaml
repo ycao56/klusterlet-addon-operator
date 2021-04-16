@@ -103,6 +103,7 @@ spec:
           {{- toYaml .Values.resources | nindent 10 }}
         command: ["governance-policy-status-sync"]
         args:
+          - '--enable-lease=true'
           - '--hub-cluster-configfile=/var/run/klusterlet/kubeconfig'
         env:
           - name: WATCH_NAMESPACE
