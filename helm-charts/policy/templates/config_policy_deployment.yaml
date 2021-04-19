@@ -44,6 +44,8 @@ spec:
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
         command: ["config-policy-controller"]
+        args:
+          - "--enable-lease=true"
         env:
           - name: WATCH_NAMESPACE
             value: "{{ .Values.clusterNamespace }}"
