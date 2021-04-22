@@ -556,6 +556,7 @@ spec:
                     clusterOverrides:
                       items:
                         type: object
+                        x-kubernetes-preserve-unknown-fields: true
                       minItems: 1
                       type: array
                   required:
@@ -643,6 +644,7 @@ spec:
                     packageOverrides:
                       items:
                         type: object
+                        x-kubernetes-preserve-unknown-fields: true
                       type: array
                   required:
                   - packageName
@@ -869,6 +871,7 @@ spec:
                             type: string
                           resourceStatus:
                             type: object
+                            x-kubernetes-preserve-unknown-fields: true
                         required:
                         - lastUpdateTime
                         type: object
