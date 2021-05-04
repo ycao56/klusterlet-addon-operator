@@ -17,6 +17,8 @@ spec:
       release: {{ .Release.Name }}
   template:
     metadata:
+      annotations:
+        target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
       labels:
         k8s-app: {{ template "iamPolicyController.name" . }}
         app: {{ template "iamPolicyController.fullname" . }}

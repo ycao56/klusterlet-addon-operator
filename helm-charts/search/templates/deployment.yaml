@@ -28,6 +28,8 @@ spec:
       heritage: {{ .Release.Service }}
   template:
     metadata:
+      annotations:
+        target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
       labels:
         app: {{ template "search.name" . }}
         component: "search"

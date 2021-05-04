@@ -21,6 +21,8 @@ spec:
       release: {{ .Release.Name }}
   template:
     metadata:
+      annotations:
+        target.workload.openshift.io/management: '{"effect": "PreferredDuringScheduling"}'
       labels:
         app: {{ template "application-manager.name" . }}
         component: "application-manager"
