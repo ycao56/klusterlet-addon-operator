@@ -27,16 +27,6 @@ tolerations:
   key: node.kubernetes.io/not-ready
   operator: Exists
 
-leaseController: 
-  name: iam-policy-controller
-  resources:
-    requests:
-      memory: "32Mi"
-      cpu: "20m"
-    limits:
-      memory: "256Mi"
-      cpu: "500m"
-
 global:
   imagePullPolicy: Always
   imagePullSecret: null

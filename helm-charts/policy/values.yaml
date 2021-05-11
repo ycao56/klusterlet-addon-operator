@@ -33,16 +33,6 @@ logLevel: 5
 
 postDeleteJobServiceAccount: null
 
-leaseController: 
-  name: policy-controller
-  resources:
-    requests:
-      memory: "32Mi"
-      cpu: "20m"
-    limits:
-      memory: "256Mi"
-      cpu: "500m"
-
 global: 
   imagePullPolicy: Always 
   imagePullSecret: null
