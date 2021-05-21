@@ -83,6 +83,10 @@ spec:
           value: "{{ .Values.clusterNamespace }}"
         - name: HUB_CONFIG
           value: /hubconfig/kubeconfig
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
         livenessProbe: null

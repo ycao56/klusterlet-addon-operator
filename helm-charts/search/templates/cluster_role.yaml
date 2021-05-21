@@ -40,3 +40,14 @@ rules:
   - patch
   - update
   - delete
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - get
+  - list
+  - patch
+  - update
+  - watch
+  - create
