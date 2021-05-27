@@ -40,38 +40,6 @@ spec:
     spec:
       serviceAccountName: {{ template "search.fullname" . }}
       containers:
-      - name: lease-controller
-        image: "{{ .Values.global.imageOverrides.klusterlet_addon_lease_controller }}"
-        command:
-        - klusterlet-addon-lease-controller
-        args:
-        - -lease-name
-        - {{ .Values.leaseController.name }}
-        - -lease-namespace
-        - "{{ .Values.clusterNamespace }}"
-        - -hub-kubeconfig-secret
-        - {{ .Values.hubKubeconfigSecret }}
-        - -lease-duration
-        - "60"
-        - -startup-delay
-        - "10"
-        resources:
-{{ toYaml .Values.leaseController.resources | indent 10 }}
-        env:
-        - name: WATCH_NAMESPACE
-          valueFrom:
-            fieldRef:
-              apiVersion: v1
-              fieldPath: metadata.namespace
-        - name: POD_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
-        - name: POD_NAMESPACE
-          valueFrom:
-            fieldRef:
-              apiVersion: v1
-              fieldPath: metadata.namespace
       {{- if not (or (.Capabilities.APIVersions.Has "operator.open-cluster-management.io/v1/MultiClusterHub") (.Capabilities.APIVersions.Has "operator.open-cluster-management.io/v1beta1/MultiClusterHub")) }}
       - name: collector
         image: "{{ .Values.global.imageOverrides.search_collector }}"
