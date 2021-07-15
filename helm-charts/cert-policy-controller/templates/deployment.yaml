@@ -39,6 +39,7 @@ spec:
         imagePullPolicy: {{ .Values.global.imagePullPolicy }}
         args:
         - --enable-lease=true
+        - --cluster-name={{ .Values.clusterName }}
         {{- if .Values.args.frequency }}
         - --update-frequency={{ .Values.args.frequency }}
         {{- end }}

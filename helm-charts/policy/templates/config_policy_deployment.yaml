@@ -48,6 +48,7 @@ spec:
         command: ["config-policy-controller"]
         args:
           - "--enable-lease=true"
+          - "--cluster-name={{ .Values.clusterName }}"
         env:
           - name: WATCH_NAMESPACE
             value: "{{ .Values.clusterNamespace }}"

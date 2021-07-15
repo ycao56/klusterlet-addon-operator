@@ -15,6 +15,7 @@ securityContext:
 
 nodeSelector: {}
 
+clusterName: null
 clusterNamespace: ""
 
 tolerations:
