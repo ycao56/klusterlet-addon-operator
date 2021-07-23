@@ -7,6 +7,7 @@
 OPENSOURCE.check
 .DS_Store
 kind_kubeconfig.yaml
+.idea
 
 # Folders
 .build-docker
