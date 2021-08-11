@@ -42,12 +42,11 @@ install_kubectl () {
     fi
 }
 
-# force to install kind 0.7.0 to support kind cluster 1.11 creation 
 install_kind () {
-    # if $(type kind >/dev/null 2>&1); then
-    #     echo "kind installed"
-    #     return 0
-    # fi
+    if $(type kind >/dev/null 2>&1); then
+        echo "kind installed"
+        return 0
+    fi
     curl -Lo ./kind https://github.com/kubernetes-sigs/kind/releases/download/v0.7.0/kind-$(uname)-amd64
     chmod +x ./kind
     sudo mv ./kind /usr/local/bin/kind
