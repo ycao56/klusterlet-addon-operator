@@ -111,3 +111,9 @@ rules:
   - roles
   verbs:
   - list
+- apiGroups:
+  - user.openshift.io
+  resources:
+  - groups
+  verbs:
+  - get
