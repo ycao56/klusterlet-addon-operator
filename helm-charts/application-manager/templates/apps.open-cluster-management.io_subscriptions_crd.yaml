@@ -319,6 +319,8 @@ spec:
                       type: string
                   type: object
               type: object
+            secondaryChannel:
+              type: string
             timewindow:
               description: help user control when the subscription will take affect
               properties:
@@ -773,6 +775,8 @@ spec:
                         type: string
                     type: object
                 type: object
+              secondaryChannel:
+                type: string
               timewindow:
                 description: help user control when the subscription will take affect
                 properties:
