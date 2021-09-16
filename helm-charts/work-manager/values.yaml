@@ -29,8 +29,6 @@ workManager:
 service:
   type: LoadBalancer
 
-nodeSelector: {}
-
 affinity: {}
 
 tolerations:
@@ -38,6 +36,9 @@ tolerations:
   operator: "Equal"
   value: "infra"
   effect: "NoSchedule"
+- key: node-role.kubernetes.io/infra
+  operator: Exists
+  effect: NoSchedule
 
 resources:
   requests:
@@ -54,3 +55,4 @@ global:
   imagePullSecret: null
   imageOverrides: 
     multicloud_manager: quay.io/open-cluster-management/multicloud-manager:3.2.0
+  nodeSelector: {}

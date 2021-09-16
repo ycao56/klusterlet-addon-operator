@@ -19,8 +19,6 @@ resources:
   limits:
     memory: 256Mi
 
-nodeSelector: {}
-
 affinity: {}
 
 tolerations:
@@ -28,6 +26,9 @@ tolerations:
   operator: "Equal"
   value: "infra"
   effect: "NoSchedule"
+- key: node-role.kubernetes.io/infra
+  operator: Exists
+  effect: NoSchedule
 
 logLevel: 5
 
@@ -42,3 +43,4 @@ global:
     governance_policy_template_sync: quay.io/open-cluster-management/governance-policy-template-sync:latest-dev
     config_policy_controller: quay.io/open-cluster-management/config-policy-controller:latest-dev
     klusterlet_addon_lease_controller: quay.io/open-cluster-management/klusterlet-addon-lease-controller:2.2.0
+  nodeSelector: {}

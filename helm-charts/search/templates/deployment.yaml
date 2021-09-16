@@ -67,7 +67,7 @@ spec:
         secret:
           secretName: {{ .Values.hubKubeconfigSecret }}
       {{- end }}
-      {{- with .Values.nodeSelector }}
+      {{- with .Values.global.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
       {{- end }}

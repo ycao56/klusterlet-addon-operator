@@ -20,8 +20,6 @@ resources:
   limits:
     memory: 512Mi
 
-nodeSelector: {}
-
 affinity: {}
 
 tolerations:
@@ -29,6 +27,9 @@ tolerations:
   operator: "Equal"
   value: "infra"
   effect: "NoSchedule"
+- key: node-role.kubernetes.io/infra
+  operator: Exists
+  effect: NoSchedule
 
 global: 
   imagePullPolicy: Always 
@@ -36,3 +37,4 @@ global:
   imageOverrides: 
     search_collector: quay.io/open-cluster-management/search-collector:3.3.0
     klusterlet_addon_lease_controller: quay.io/open-cluster-management/klusterlet-addon-lease-controller:2.2.0
+  nodeSelector: {}
