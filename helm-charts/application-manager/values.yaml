@@ -36,3 +36,7 @@ global:
     multicluster_operators_subscription: quay.io/open-cluster-management/multicluster-operators-subscription:1.0.0
     klusterlet_addon_lease_controller: quay.io/open-cluster-management/klusterlet-addon-lease-controller:2.2.0
   nodeSelector: {}
+  proxyConfig:
+    HTTP_PROXY: null
+    HTTPS_PROXY: null
+    NO_PROXY: null

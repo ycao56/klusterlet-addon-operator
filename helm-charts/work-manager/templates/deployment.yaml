@@ -66,6 +66,18 @@ spec:
             fieldRef:
               apiVersion: v1
               fieldPath: metadata.namespace
+        {{- if .Values.global.proxyConfig.HTTP_PROXY }}
+        - name: HTTP_PROXY
+          value: {{ .Values.global.proxyConfig.HTTP_PROXY }}
+        {{- end }}
+        {{- if .Values.global.proxyConfig.HTTPS_PROXY }}
+        - name: HTTPS_PROXY
+          value: {{ .Values.global.proxyConfig.HTTPS_PROXY }}
+        {{- end }}
+        {{- if .Values.global.proxyConfig.NO_PROXY }}
+        - name: NO_PROXY
+          value: {{ .Values.global.proxyConfig.NO_PROXY }}
+        {{- end }}
         livenessProbe:
           httpGet:
             path: /healthz

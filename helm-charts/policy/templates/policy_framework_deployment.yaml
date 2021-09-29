@@ -56,6 +56,18 @@ spec:
                 fieldPath: metadata.name
           - name: OPERATOR_NAME
             value: "governance-policy-spec-sync"
+          {{- if .Values.global.proxyConfig.HTTP_PROXY }}
+          - name: HTTP_PROXY
+            value: {{ .Values.global.proxyConfig.HTTP_PROXY }}
+          {{- end }}
+          {{- if .Values.global.proxyConfig.HTTPS_PROXY }}
+          - name: HTTPS_PROXY
+            value: {{ .Values.global.proxyConfig.HTTPS_PROXY }}
+          {{- end }}
+          {{- if .Values.global.proxyConfig.NO_PROXY }}
+          - name: NO_PROXY
+            value: {{ .Values.global.proxyConfig.NO_PROXY }}
+          {{- end }}
         args:
           - '--hub-cluster-configfile=/var/run/klusterlet/kubeconfig'
         livenessProbe: null
@@ -86,6 +98,18 @@ spec:
           - name: ON_MULTICLUSTERHUB
             value: "true"
           {{- end }}
+          {{- if .Values.global.proxyConfig.HTTP_PROXY }}
+          - name: HTTP_PROXY
+            value: {{ .Values.global.proxyConfig.HTTP_PROXY }}
+          {{- end }}
+          {{- if .Values.global.proxyConfig.HTTPS_PROXY }}
+          - name: HTTPS_PROXY
+            value: {{ .Values.global.proxyConfig.HTTPS_PROXY }}
+          {{- end }}
+          {{- if .Values.global.proxyConfig.NO_PROXY }}
+          - name: NO_PROXY
+            value: {{ .Values.global.proxyConfig.NO_PROXY }}
+          {{- end }}
         livenessProbe: null
         readinessProbe: null
         volumeMounts:
@@ -106,6 +130,18 @@ spec:
                 fieldPath: metadata.name
           - name: OPERATOR_NAME
             value: "governance-policy-template-sync"
+          {{- if .Values.global.proxyConfig.HTTP_PROXY }}
+          - name: HTTP_PROXY
+            value: {{ .Values.global.proxyConfig.HTTP_PROXY }}
+          {{- end }}
+          {{- if .Values.global.proxyConfig.HTTPS_PROXY }}
+          - name: HTTPS_PROXY
+            value: {{ .Values.global.proxyConfig.HTTPS_PROXY }}
+          {{- end }}
+          {{- if .Values.global.proxyConfig.NO_PROXY }}
+          - name: NO_PROXY
+            value: {{ .Values.global.proxyConfig.NO_PROXY }}
+          {{- end }}
         livenessProbe: null
         readinessProbe: null
       volumes:

@@ -38,3 +38,7 @@ global:
     search_collector: quay.io/open-cluster-management/search-collector:3.3.0
     klusterlet_addon_lease_controller: quay.io/open-cluster-management/klusterlet-addon-lease-controller:2.2.0
   nodeSelector: {}
+  proxyConfig:
+    HTTP_PROXY: null
+    HTTPS_PROXY: null
+    NO_PROXY: null

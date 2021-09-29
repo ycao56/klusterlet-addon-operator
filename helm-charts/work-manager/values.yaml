@@ -56,3 +56,7 @@ global:
   imageOverrides: 
     multicloud_manager: quay.io/open-cluster-management/multicloud-manager:3.2.0
   nodeSelector: {}
+  proxyConfig:
+    HTTP_PROXY: null
+    HTTPS_PROXY: null
+    NO_PROXY: null
