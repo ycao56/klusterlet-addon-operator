@@ -46,6 +46,9 @@ spec:
         {{- if .Values.args.defaultDuration }}
         - --default-duration={{ .Values.args.defaultDuration }}
         {{- end }}
+        {{- if semverCompare "< 1.14.0" .Capabilities.KubeVersion.Version }}
+        - --legacy-leader-elect=true
+        {{- end }}
         livenessProbe:
           exec:
             command:
