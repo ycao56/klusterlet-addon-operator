@@ -34,7 +34,7 @@ serviceAccount:
 clusterName: null
 
 global:
-  imagePullPolicy: Always
+  imagePullPolicy: IfNotPresent
   imagePullSecret: null
   imageOverrides:
     cert_policy_controller: quay.io/open-cluster-management/cert-policy-controller:3.6.0

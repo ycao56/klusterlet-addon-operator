@@ -35,7 +35,7 @@ logLevel: 5
 postDeleteJobServiceAccount: null
 
 global: 
-  imagePullPolicy: Always 
+  imagePullPolicy: IfNotPresent
   imagePullSecret: null
   imageOverrides: 
     governance_policy_spec_sync: quay.io/open-cluster-management/governance-policy-spec-sync:latest-dev

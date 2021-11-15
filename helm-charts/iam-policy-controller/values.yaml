@@ -30,7 +30,7 @@ tolerations:
   effect: NoSchedule
 
 global:
-  imagePullPolicy: Always
+  imagePullPolicy: IfNotPresent
   imagePullSecret: null
   imageOverrides:
     iam_policy_controller: quay.io/open-cluster-management/iam-policy-controller:1.0.0
