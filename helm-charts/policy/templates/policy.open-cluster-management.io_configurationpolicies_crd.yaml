@@ -44,10 +44,12 @@ spec:
               properties:
                 exclude:
                   items:
+                    minLength: 1
                     type: string
                   type: array
                 include:
                   items:
+                    minLength: 1
                     type: string
                   type: array
               type: object
@@ -58,24 +60,45 @@ spec:
                   complianceType:
                     description: 'ComplianceType specifies whether it is: musthave,
                       mustnothave, mustonlyhave'
+                    enum:
+                    - MustHave
+                    - Musthave
+                    - musthave
+                    - MustOnlyHave
+                    - Mustonlyhave
+                    - mustonlyhave
+                    - MustNotHave
+                    - Mustnothave
+                    - mustnothave
                     type: string
                   objectDefinition:
                     description: ObjectDefinition defines required fields for the
                       object
                     type: object
+                    x-kubernetes-preserve-unknown-fields: true
                 required:
                 - complianceType
                 type: object
               type: array
             remediationAction:
               description: 'RemediationAction : enforce or inform'
+              enum:
+              - Inform
+              - inform
+              - Enforce
+              - enforce
               type: string
             severity:
-              description: 'Severity : low, medium or high'
+              description: 'Severity : low, medium, high, or critical'
+              enum:
+              - low
+              - medium
+              - high
+              - critical
               type: string
           type: object
         status:
-          description: ConfigurationPolicyStatus is the status for a Policy resource
+          description: ConfigurationPolicyStatus defines the observed state of ConfigurationPolicy
           properties:
             compliancyDetails:
               items:
@@ -94,12 +117,12 @@ spec:
                     type: object
                   conditions:
                     items:
-                      description: Condition is the base struct for representing resource
-                        conditions
+                      description: Condition is the base struct for representing
+                        resource conditions
                       properties:
                         lastTransitionTime:
-                          description: The last time the condition transitioned from
-                            one status to another.
+                          description: The last time the condition transitioned
+                            from one status to another.
                           format: date-time
                           type: string
                         message:
@@ -149,7 +172,8 @@ spec:
                             description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
                             type: string
                           namespace:
-                            description: 'Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
+                            description: 'Namespace of the referent. More info:
+                              https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
                             type: string
                         type: object
                     type: object
@@ -158,6 +182,7 @@ spec:
                 type: object
               type: array
           type: object
+      type: object
   version: v1
   versions:
   - name: v1
@@ -185,13 +210,18 @@ spec:
   - name: v1
     schema:
       openAPIV3Schema:
-        description: ConfigurationPolicy is the Schema for the configurationpolicies API
+        description: ConfigurationPolicy is the Schema for the configurationpolicies
+          API
         properties:
           apiVersion:
-            description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
             type: string
           kind:
-            description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
             type: string
           metadata:
             type: object
@@ -207,10 +237,12 @@ spec:
                 properties:
                   exclude:
                     items:
+                      minLength: 1
                       type: string
                     type: array
                   include:
                     items:
+                      minLength: 1
                       type: string
                     type: array
                 type: object
@@ -219,10 +251,22 @@ spec:
                   description: ObjectTemplate describes how an object should look
                   properties:
                     complianceType:
-                      description: 'ComplianceType specifies wether it is a : //musthave, mustnothave, mustonlyhave'
+                      description: 'ComplianceType specifies whether it is: musthave,
+                        mustnothave, mustonlyhave'
+                      enum:
+                      - MustHave
+                      - Musthave
+                      - musthave
+                      - MustOnlyHave
+                      - Mustonlyhave
+                      - mustonlyhave
+                      - MustNotHave
+                      - Mustnothave
+                      - mustnothave
                       type: string
                     objectDefinition:
-                      description: ObjectDefinition defines required fields for the object
+                      description: ObjectDefinition defines required fields for the
+                        object
                       type: object
                       x-kubernetes-preserve-unknown-fields: true
                   required:
@@ -231,13 +275,23 @@ spec:
                 type: array
               remediationAction:
                 description: 'RemediationAction : enforce or inform'
+                enum:
+                - Inform
+                - inform
+                - Enforce
+                - enforce
                 type: string
               severity:
-                description: 'Severity : low, medium or high'
+                description: 'Severity : low, medium, high, or critical'
+                enum:
+                - low
+                - medium
+                - high
+                - critical
                 type: string
             type: object
           status:
-            description: ConfigurationPolicyStatus is the status for a Policy resource
+            description: ConfigurationPolicyStatus defines the observed state of ConfigurationPolicy
             properties:
               compliancyDetails:
                 items:
@@ -256,20 +310,24 @@ spec:
                       type: object
                     conditions:
                       items:
-                        description: Condition is the base struct for representing resource conditions
+                        description: Condition is the base struct for representing
+                          resource conditions
                         properties:
                           lastTransitionTime:
-                            description: The last time the condition transitioned from one status to another.
+                            description: The last time the condition transitioned
+                              from one status to another.
                             format: date-time
                             type: string
                           message:
-                            description: A human readable message indicating details about the transition.
+                            description: A human readable message indicating details
+                              about the transition.
                             type: string
                           reason:
                             description: The reason for the condition's last transition.
                             type: string
                           status:
-                            description: Status of the condition, one of True, False, Unknown.
+                            description: Status of the condition, one of True, False,
+                              Unknown.
                             type: string
                           type:
                             description: Type of condition, e.g Complete or Failed.
@@ -285,12 +343,14 @@ spec:
                 type: string
               relatedObjects:
                 items:
-                  description: RelatedObject is the list of objects matched by this Policy resource.
+                  description: RelatedObject is the list of objects matched by this
+                    Policy resource.
                   properties:
                     compliant:
                       type: string
                     object:
-                      description: ObjectResource is an object identified by the policy as a resource that needs to be validated.
+                      description: ObjectResource is an object identified by the policy
+                        as a resource that needs to be validated.
                       properties:
                         apiVersion:
                           description: API version of the referent.
@@ -305,10 +365,8 @@ spec:
                               description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
                               type: string
                             namespace:
-                              description: 'Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
-                              type: string
-                            selfLink:
-                              description: An unqualified REST API link to the referent.
+                              description: 'Namespace of the referent. More info:
+                                https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
                               type: string
                           type: object
                       type: object
