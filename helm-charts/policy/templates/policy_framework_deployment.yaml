@@ -70,8 +70,18 @@ spec:
           {{- end }}
         args:
           - '--hub-cluster-configfile=/var/run/klusterlet/kubeconfig'
-        livenessProbe: null
-        readinessProbe: null
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          failureThreshold: 3
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+          failureThreshold: 3
+          periodSeconds: 10
         volumeMounts:
           - name: klusterlet-config
             mountPath: /var/run/klusterlet
@@ -110,8 +120,18 @@ spec:
           - name: NO_PROXY
             value: {{ .Values.global.proxyConfig.NO_PROXY }}
           {{- end }}
-        livenessProbe: null
-        readinessProbe: null
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          failureThreshold: 3
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+          failureThreshold: 3
+          periodSeconds: 10
         volumeMounts:
           - name: klusterlet-config
             mountPath: /var/run/klusterlet
