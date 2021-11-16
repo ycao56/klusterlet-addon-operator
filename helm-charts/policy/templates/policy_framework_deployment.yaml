@@ -70,6 +70,7 @@ spec:
           {{- end }}
         args:
           - '--hub-cluster-configfile=/var/run/klusterlet/kubeconfig'
+          - '--health-probe-bind-address=8081'
         livenessProbe:
           httpGet:
             path: /healthz
@@ -95,6 +96,7 @@ spec:
         args:
           - '--enable-lease=true'
           - '--hub-cluster-configfile=/var/run/klusterlet/kubeconfig'
+          - '--health-probe-bind-address=8082'
         env:
           - name: WATCH_NAMESPACE
             value: "{{ .Values.clusterNamespace }}"
@@ -123,13 +125,13 @@ spec:
         livenessProbe:
           httpGet:
             path: /healthz
-            port: 8081
+            port: 8082
           failureThreshold: 3
           periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /readyz
-            port: 8081
+            port: 8082
           failureThreshold: 3
           periodSeconds: 10
         volumeMounts:
