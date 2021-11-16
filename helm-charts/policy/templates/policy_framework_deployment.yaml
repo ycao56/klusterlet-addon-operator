@@ -69,7 +69,11 @@ spec:
             value: {{ .Values.global.proxyConfig.NO_PROXY }}
           {{- end }}
         args:
+          - '--enable-lease=true'
           - '--hub-cluster-configfile=/var/run/klusterlet/kubeconfig'
+          {{- if semverCompare "< 1.14.0" .Capabilities.KubeVersion.Version }}
+          - --legacy-leader-elect=true
+          {{- end }}
         livenessProbe:
           httpGet:
             path: /healthz
@@ -95,6 +99,9 @@ spec:
         args:
           - '--enable-lease=true'
           - '--hub-cluster-configfile=/var/run/klusterlet/kubeconfig'
+          {{- if semverCompare "< 1.14.0" .Capabilities.KubeVersion.Version }}
+          - --legacy-leader-elect=true
+          {{- end }}
         env:
           - name: WATCH_NAMESPACE
             value: "{{ .Values.clusterNamespace }}"
