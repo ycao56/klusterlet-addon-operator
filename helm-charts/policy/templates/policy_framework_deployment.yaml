@@ -71,6 +71,7 @@ spec:
         args:
           - '--enable-lease=true'
           - '--hub-cluster-configfile=/var/run/klusterlet/kubeconfig'
+          - '--health-probe-bind-address=8081'
           {{- if semverCompare "< 1.14.0" .Capabilities.KubeVersion.Version }}
           - --legacy-leader-elect=true
           {{- end }}
@@ -99,6 +100,7 @@ spec:
         args:
           - '--enable-lease=true'
           - '--hub-cluster-configfile=/var/run/klusterlet/kubeconfig'
+          - '--health-probe-bind-address=8082'
           {{- if semverCompare "< 1.14.0" .Capabilities.KubeVersion.Version }}
           - --legacy-leader-elect=true
           {{- end }}
@@ -130,13 +132,13 @@ spec:
         livenessProbe:
           httpGet:
             path: /healthz
-            port: 8081
+            port: 8082
           failureThreshold: 3
           periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /readyz
-            port: 8081
+            port: 8082
           failureThreshold: 3
           periodSeconds: 10
         volumeMounts:
