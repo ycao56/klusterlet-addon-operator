@@ -56,7 +56,7 @@ install_kind () {
         return 1
     fi
 }
-echo "kind vesion"
+echo "kind version"
 kind version
 # Wait until the cluster is imported by checking the hub side
 # Parameter: KinD Config File
@@ -94,16 +94,31 @@ wait_installed() {
 
 check_delete_pod_permission(){
     echo "checking delete pod permission"
-    for file in `ls deploy/crs/agent.open-cluster-management.io_*_cr.yaml`; do 
+    for file in `ls deploy/crs/agent.open-cluster-management.io_*_cr.yaml`; do
         n=$(kubectl get -f $file -o=jsonpath="{.spec.fullnameOverride}"); 
         echo "- checking $n"
-        result=$(kubectl auth can-i delete pods --as=system:serviceaccount:klusterlet:$n -n klusterlet)
-        if [[ $n == iam-* ]]; then 
-          result=$(kubectl auth can-i delete pods --as=system:serviceaccount:klusterlet:$n-sa -n klusterlet)
-        fi 
+
+        _timeout_seconds=120
+        _interval_seconds=10
+        _max_nb_loop=$(($_timeout_seconds/$_interval_seconds))
+        while [ $_max_nb_loop -gt 0 ]
+        do
+          result=$(kubectl auth can-i delete pods --as=system:serviceaccount:klusterlet:$n -n klusterlet)
+          if [[ $n == iam-* ]]; then
+            result=$(kubectl auth can-i delete pods --as=system:serviceaccount:klusterlet:$n-sa -n klusterlet)
+          fi
+          if [ $result = no ]; then
+            echo "$n cannot delete pod, and retry"
+            sleep $_interval_seconds
+            _max_nb_loop=$(($_max_nb_loop-1))
+          else
+            _max_nb_loop=0
+          fi
+        done
+
         if [ $result = no ]; then
-          echo "$n cannot delete pod"
-          return 1
+           echo "$n cannot delete pod"
+           return 1
         fi
     done
     return 0
@@ -246,6 +261,7 @@ for kube_config in `ls $KIND_CONFIGS/*`; do
   fi
   run_test $kube_config $SELF_IMPORT
   if [ $? != 0 ]; then
+    echo "$kube_config KinD configuration failed"
     FAILED=1
   fi
 done
