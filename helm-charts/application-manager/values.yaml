@@ -30,7 +30,7 @@ resources:
     memory: 2Gi
 
 global: 
-  imagePullPolicy: Always 
+  imagePullPolicy: IfNotPresent
   imagePullSecret: null
   imageOverrides: 
     multicluster_operators_subscription: quay.io/open-cluster-management/multicluster-operators-subscription:1.0.0
