@@ -41,6 +41,9 @@ spec:
         {{- if .Values.args.frequency }}
         - --update-frequency={{ .Values.args.frequency }}
         {{- end }}
+        {{- if semverCompare "< 1.14.0" .Capabilities.KubeVersion.Version }}
+        - --legacy-leader-elect=true
+        {{- end }}
         livenessProbe:
           exec:
             command:

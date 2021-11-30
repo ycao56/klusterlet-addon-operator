@@ -53,3 +53,17 @@ Create the name of the cluster Rolebinding to use
 {{- define "iamPolicyController.clusterRoleBinding" -}}
   {{- template "iamPolicyController.fullname" . -}}-rolebinding
 {{- end -}}
+
+{{/*
+Create the name of the leader election role to use
+*/}}
+{{- define "iamPolicyController.leaderElectionRole" -}}
+  {{- template "iamPolicyController.fullname" . -}}-leader-election-role
+{{- end -}}
+
+{{/*
+Create the name of the leader election role binding to use
+*/}}
+{{- define "iamPolicyController.leaderElectionRoleBinding" -}}
+  {{- template "iamPolicyController.fullname" . -}}-leader-election-rolebinding
+{{- end -}}
