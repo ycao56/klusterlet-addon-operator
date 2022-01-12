@@ -15,7 +15,7 @@ export COMPONENT_SCRIPTS_PATH = $(BUILD_DIR)
 
 export IMAGE_DESCRIPTION  = Klusterlet_Component_Operator
 export DOCKER_FILE        = $(BUILD_DIR)/Dockerfile
-export DOCKER_REGISTRY   ?= quay.io/open-cluster-management
+export DOCKER_REGISTRY   ?= quay.io/stolostron
 export DOCKER_IMAGE      ?= klusterlet-addon-operator
 export DOCKER_TAG        ?= latest
 export DOCKER_BUILDER    ?= docker
