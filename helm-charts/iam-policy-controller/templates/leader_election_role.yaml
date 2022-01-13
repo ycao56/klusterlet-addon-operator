@@ -10,7 +10,6 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 rules:
-{{- if semverCompare "< 1.14.0" .Capabilities.KubeVersion.Version }}
 - apiGroups:
   - ""
   resources:
@@ -23,7 +22,6 @@ rules:
   - update
   - patch
   - delete
-{{- else }}
 - apiGroups:
   - coordination.k8s.io
   resources:
@@ -43,4 +41,3 @@ rules:
   verbs:
   - create
   - patch
-{{- end }}
