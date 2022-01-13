@@ -84,7 +84,6 @@ spec:
         args:
           - "--alsologtostderr"
           - "--cluster-name={{ .Values.clusterName }}"
-          - "--cluster-namespace={{ .Values.clusterNamespace }}"
           - "--hub-cluster-configfile=/var/run/klusterlet/kubeconfig"
         livenessProbe:
           exec:
