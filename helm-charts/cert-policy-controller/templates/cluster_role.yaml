@@ -25,79 +25,35 @@ rules:
   verbs:
   - list
 - apiGroups:
-  - apps
-  resources:
-  - deployments
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
-- apiGroups:
-  - apps
-  resources:
-  - deployments/status
-  verbs:
-  - get
-  - update
-  - patch
-- apiGroups:
-  - policy.open-cluster-management.io
-  resources:
-  - certificatepolicies
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
-- apiGroups:
-  - policy.open-cluster-management.io
-  resources:
-  - certificatepolicies/status
-  verbs:
-  - get
-  - update
-  - patch
-- apiGroups:
-  - admissionregistration.k8s.io
-  resources:
-  - mutatingwebhookconfigurations
-  - validatingwebhookconfigurations
-  verbs:
-  - get
-  - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
-- apiGroups:
   - ""
   resources:
   - secrets
   verbs:
   - get
   - list
-  - watch
-  - create
-  - update
-  - patch
-  - delete
 - apiGroups:
-  - ""
+  - policy.open-cluster-management.io
   resources:
-  - services
+  - certificatepolicies
   verbs:
+  - create
+  - delete
   - get
   - list
-  - watch
-  - create
-  - update
   - patch
-  - delete
+  - update
+  - watch
+- apiGroups:
+  - policy.open-cluster-management.io
+  resources:
+  - certificatepolicies/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - policy.open-cluster-management.io
+  resources:
+  - certificatepolicies/status
+  verbs:
+  - get
+  - patch
+  - update
