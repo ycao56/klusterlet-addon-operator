@@ -69,7 +69,6 @@ spec:
             value: {{ .Values.global.proxyConfig.NO_PROXY }}
           {{- end }}
         args:
-          - '--enable-lease=true'
           - '--hub-cluster-configfile=/var/run/klusterlet/kubeconfig'
           - '--health-probe-bind-address=:8081'
           {{- if semverCompare "< 1.14.0" .Capabilities.KubeVersion.Version }}
